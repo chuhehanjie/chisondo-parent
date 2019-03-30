@@ -404,4 +404,17 @@
 		</foreach>
 	</delete>
 
+	<select id="queryTeaSpectrumById" parameterType="java.lang.Integer" resultType="com.chisondo.server.modules.tea.entity.AppChapuEntity">
+		SELECT t.chapu_id as chapuId,
+			t.name,
+			t.brand,
+			t.image,
+			s.sort_id as sortId,
+			s.name as sortName
+		FROM t_app_chapu t
+		INNER JOIN t_app_tea_sort s ON s.sort_id = t.sort
+		WHERE t.chapu_id = #{id}
+		limit 1
+	</select>
+
 </mapper>

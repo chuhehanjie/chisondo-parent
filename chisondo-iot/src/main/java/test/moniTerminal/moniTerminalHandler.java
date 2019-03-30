@@ -1,16 +1,13 @@
 package test.moniTerminal;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.iot.common.utils.IOTUtils;
-import com.chisondo.iot.http.request.DeviceHttpReq;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
+import com.chisondo.model.http.req.DeviceHttpReq;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.CharsetUtil;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
-import test.CountHelper;
 
 
 /**

@@ -85,6 +85,11 @@ public class AppChapuEntity  implements Serializable {
 	//
 	private Integer topFlag;
 
+	private Integer sortId;
+
+	private String sortName;
+
+
 	public void setChapuId(Integer chapuId) {
 		this.chapuId = chapuId;
 	}
@@ -329,5 +334,21 @@ public class AppChapuEntity  implements Serializable {
 
 	public Integer getTopFlag() {
 		return topFlag;
+	}
+
+	public Integer getSortId() {
+		return sortId;
+	}
+
+	public void setSortId(Integer sortId) {
+		this.sortId = sortId;
+	}
+
+	public String getSortName() {
+		return sortName;
+	}
+
+	public void setSortName(String sortName) {
+		this.sortName = sortName;
 	}
 }

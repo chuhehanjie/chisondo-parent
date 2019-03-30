@@ -51,5 +51,9 @@ public class AppChapuServiceImpl implements AppChapuService {
 	public void deleteBatch(Integer[] chapuIds){
 		appChapuDao.deleteBatch(chapuIds);
 	}
-	
+
+	@Override
+	public AppChapuEntity queryTeaSpectrumById(Integer id) {
+		return this.appChapuDao.queryTeaSpectrumById(id);
+	}
 }

@@ -6,11 +6,11 @@ import com.chisondo.iot.common.utils.RestTemplateUtils;
 import com.chisondo.iot.device.request.DevStatusReportReq;
 import com.chisondo.iot.device.request.StartWork4DevReq;
 import com.chisondo.iot.device.request.WorkMsg;
-import com.chisondo.iot.device.response.DeviceServerResp;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
-import com.chisondo.iot.http.request.DeviceHttpReq;
-import com.chisondo.iot.http.request.StartWorkingReq;
+import com.chisondo.model.http.req.DeviceHttpReq;
+import com.chisondo.model.http.req.StartWorkingReq;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
+import com.chisondo.model.http.resp.DeviceHttpResp;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -105,17 +105,16 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             // 向设备发送请求
             deviceChannel.writeAndFlush(JSONObject.toJSONString(req));
 //            deviceChannel.writeAndFlush(Unpooled.copiedBuffer(JSONObject.toJSONString(req) + "\n", CharsetUtil.UTF_8));
-        } else if (msg instanceof DeviceServerResp) {
+        } else if (msg instanceof DeviceHttpResp) {
             // 接收设备发送的响应，并将响应发到 http server
-            DeviceServerResp resp = (DeviceServerResp) msg;
+            DeviceHttpResp resp = (DeviceHttpResp) msg;
             if (null == resp.getDeviceID()) {
                 System.out.println("resp = " + JSONObject.toJSONString(resp));
                 return;
             }
             Channel httpChannel = DevHttpChannelManager.getChannelByDeviceId(resp.getDeviceID());
             if (null != httpChannel) {
-                ByteBuf buf = Unpooled.copiedBuffer(JSONObject.toJSONString(resp), CharsetUtil.UTF_8);
-                FullHttpResponse response = IOTUtils.responseOK(HttpResponseStatus.OK, buf);
+                FullHttpResponse response = IOTUtils.buildResponse(resp);
                 httpChannel.writeAndFlush(response).addListener((obj) -> {
                     ChannelFuture future = (ChannelFuture) obj;
                     DevHttpChannelManager.removeHttpChannel(resp.getDeviceID(), future.channel());

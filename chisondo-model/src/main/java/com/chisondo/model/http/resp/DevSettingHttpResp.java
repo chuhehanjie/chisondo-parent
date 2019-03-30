@@ -11,7 +11,7 @@ public class DevSettingHttpResp extends CommonHttpResp {
 
     private BoilWaterMsgResp boilwatermsg;
 
-    private DevParamMsg chapumsg;
+    private TeaSpectrumMsgResp chapumsg;
 
     public String getAction() {
         return action;
@@ -53,11 +53,11 @@ public class DevSettingHttpResp extends CommonHttpResp {
         this.boilwatermsg = boilwatermsg;
     }
 
-    public DevParamMsg getChapumsg() {
+    public TeaSpectrumMsgResp getChapumsg() {
         return chapumsg;
     }
 
-    public void setChapumsg(DevParamMsg chapumsg) {
+    public void setChapumsg(TeaSpectrumMsgResp chapumsg) {
         this.chapumsg = chapumsg;
     }
 }

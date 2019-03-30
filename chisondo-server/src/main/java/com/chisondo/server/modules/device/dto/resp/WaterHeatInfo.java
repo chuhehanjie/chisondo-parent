@@ -5,6 +5,15 @@ public class WaterHeatInfo {
     private Integer	soak; // 设定时间	烧水默认 0
     private Integer	waterlevel; // 出水量	分8档
 
+    public WaterHeatInfo() {
+    }
+
+    public WaterHeatInfo(Integer temperature, Integer soak, Integer waterlevel) {
+        this.temperature = temperature;
+        this.soak = soak;
+        this.waterlevel = waterlevel;
+    }
+
     public Integer getTemperature() {
         return temperature;
     }

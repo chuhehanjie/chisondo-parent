@@ -13,5 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface AppChapuDao extends BaseDao<AppChapuEntity> {
-	
+
+    AppChapuEntity queryTeaSpectrumById(Integer id);
 }

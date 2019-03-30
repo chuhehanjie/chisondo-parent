@@ -128,4 +128,21 @@ public class Constant {
         int WARM_CONTROL = 6;
     }
 
+    /**
+     * 设备提示音标识
+     */
+    public interface DevVolumeFlag {
+        /**
+         * 有提示音
+         */
+        int YES = 0;
+        /**
+         * 无提示音
+         */
+        int NO = 1;
+    }
+    public interface DevVolumeCtrl {
+        int OPEN = 1;
+        int CLOSE = 2;
+    }
 }

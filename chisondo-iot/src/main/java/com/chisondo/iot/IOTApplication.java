@@ -196,4 +196,5 @@ public class IOTApplication {
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
+
 }

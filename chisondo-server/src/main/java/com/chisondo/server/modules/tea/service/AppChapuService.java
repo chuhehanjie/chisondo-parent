@@ -27,4 +27,6 @@ public interface AppChapuService {
 	void delete(Integer chapuId);
 	
 	void deleteBatch(Integer[] chapuIds);
+
+	AppChapuEntity queryTeaSpectrumById(Integer id);
 }

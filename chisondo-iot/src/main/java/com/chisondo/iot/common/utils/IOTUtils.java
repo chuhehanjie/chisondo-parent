@@ -1,19 +1,36 @@
 package com.chisondo.iot.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.constant.DevReqURIConstant;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.MemoryAttribute;
+import io.netty.util.CharsetUtil;
+import org.springframework.http.MediaType;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class IOTUtils {
+
+    public static List<String> reqUriList;
+
+    static {
+        reqUriList = new ArrayList<>();
+        reqUriList.add(DevReqURIConstant.START_WORK);
+        reqUriList.add(DevReqURIConstant.QRY_DEV_PARAM);
+    }
+
+    public static List<String> getReqUriList() {
+        return reqUriList;
+    }
 
     public static String convertByteBufToString(ByteBuf buf) {
         String str;
@@ -27,11 +44,18 @@ public final class IOTUtils {
         return str;
     }
 
-    public static FullHttpResponse responseOK(HttpResponseStatus status, ByteBuf content) {
+    public static FullHttpResponse buildResponse(Object obj) {
+        return buildResponse(HttpResponseStatus.OK, obj);
+    }
+    public static FullHttpResponse buildResponse(HttpResponseStatus status, Object obj) {
+        return buildResponse(status, JSONObject.toJSONString(obj));
+    }
+    public static FullHttpResponse buildResponse(HttpResponseStatus status, String data) {
+        ByteBuf content = Unpooled.copiedBuffer(data, CharsetUtil.UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, content);
         if (content != null) {
-            response.headers().set("Content-Type", "application/json;charset=UTF-8");
-            response.headers().set("Content_Length", response.content().readableBytes());
+            response.headers().set(org.springframework.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
+            response.headers().set(org.springframework.http.HttpHeaders.CONTENT_LENGTH, response.content().readableBytes());
         }
         return response;
     }
@@ -63,12 +87,8 @@ public final class IOTUtils {
             if (strContentType.contains("x-www-form-urlencoded")) {
                 params  = getFormParams(fullHttpRequest);
             } else if (strContentType.contains("application/json")) {
-                try {
-                    String json = getJSONFromRequest(fullHttpRequest);
-                    params = JSONObject.parseObject(json, Map.class);
-                } catch (UnsupportedEncodingException e) {
-                    return null;
-                }
+                String json = getJSONFromRequest(fullHttpRequest);
+                params = JSONObject.parseObject(json, Map.class);
             } else {
                 return null;
             }
@@ -100,11 +120,11 @@ public final class IOTUtils {
     /*
      * 解析json数据（Content-Type = application/json）
      */
-    public static String getJSONFromRequest(FullHttpRequest fullHttpRequest) throws UnsupportedEncodingException {
+    public static String getJSONFromRequest(FullHttpRequest fullHttpRequest) {
         ByteBuf content = fullHttpRequest.content();
         byte[] reqContent = new byte[content.readableBytes()];
         content.readBytes(reqContent);
-        String json = new String(reqContent, "UTF-8");
+        String json = new String(reqContent, CharsetUtil.UTF_8);
         return json;
     }
 }

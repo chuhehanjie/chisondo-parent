@@ -2,24 +2,21 @@ package com.chisondo.iot.http.handler;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.iot.common.exception.DeviceNotConnectException;
 import com.chisondo.iot.common.utils.IOTUtils;
-import com.chisondo.iot.device.response.DeviceServerResp;
+import com.chisondo.iot.common.utils.SpringContextUtils;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
-import com.chisondo.iot.http.request.DeviceHttpReq;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import com.chisondo.model.http.HttpStatus;
+import com.chisondo.model.http.req.DeviceHttpReq;
+import com.chisondo.model.http.resp.DeviceHttpResp;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import static io.netty.buffer.Unpooled.copiedBuffer;
 
 
 /**
@@ -52,64 +49,30 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
         // TODO http 路由处理 https://blog.csdn.net/joeyon1985/article/details/53586004
+
         // 接收由 http 发送的消息
         Channel httpChannel = ctx.channel();
-        if (request.method() == HttpMethod.GET) {
-
-        } else if (request.method() == HttpMethod.POST) {
-            String json = IOTUtils.getJSONFromRequest(request);
-            DeviceHttpReq req = JSONObject.parseObject(json, DeviceHttpReq.class);
-            String deviceId = req.getDeviceId();
-            Channel deviceChannel = DevTcpChannelManager.getChannelByDevice(req.getDeviceId());
-            if (null == deviceChannel) {
-                DeviceServerResp devServerResp = new DeviceServerResp(200, "error", "test", deviceId);
-                String data = JSONObject.toJSONString(devServerResp);
-                ByteBuf buf = copiedBuffer(data, CharsetUtil.UTF_8);
-                FullHttpResponse response = IOTUtils.responseOK(HttpResponseStatus.OK, buf);
+        // 校验请求路由
+        String uri = request.uri().replace("/", "");
+        if (!IOTUtils.getReqUriList().contains(uri)) {
+            FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_BAD_REQUEST, "错误的请求"));
+            httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        } else {
+            if (request.method() != HttpMethod.POST) {
+                FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_METHOD_NOT_ALLOWED, "只支持POST请求"));
                 httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+            } else {
+                DevBusiHandler devBusiHandler = (DevBusiHandler) SpringContextUtils.getBean("busiHandler4" + uri);
+                try {
+                    devBusiHandler.handle(request, httpChannel);
+                } catch (Exception e) {
+                    log.error("发送请求到设备异常", e);
+                    FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "发送请求到设备异常"));
+                    httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                }
             }
-            DevHttpChannelManager.addHttpChannel(deviceId, httpChannel);
-//            deviceChannel.writeAndFlush(Unpooled.copiedBuffer(req + "\n", CharsetUtil.UTF_8));
-            deviceChannel.writeAndFlush(JSONObject.toJSONString(req) + "\n");
         }
-        /*if (true) {
-            String data = "Hello World";
-            ByteBuf buf = copiedBuffer(data, CharsetUtil.UTF_8);
-            FullHttpResponse response = this.responseOK(HttpResponseStatus.OK, buf);
-            channel.writeAndFlush(response).addListener((obj) -> {
-                DevHttpChannelManager.removeHttpChannel(deviceId, future.channel());
-                ChannelFuture future = (ChannelFuture) obj;
-                future.channel().close();
-            });
-            return;
-        }
-
-        // TODO 应该使用 decoder 解码为对象 后续实现
-        HttpServerReq req = null; // JSONObject.parseObject(msg.toString(), HttpServerReq.class);
-
-        if (ObjectUtils.nullSafeEquals(req.getType(), "START_WORING")) {
-            StartWorkingReq startWorkingReq = JSONObject.parseObject(req.getBody(), StartWorkingReq.class);
-            Device device = DeviceChannelManager.getDeviceById(startWorkingReq.getDeviceId());
-            Channel deviceChannel = DeviceChannelManager.getChannelByDevice(device);
-            deviceChannel.writeAndFlush(startWorkingReq);
-        }
-
-        //json 处理使用mongo 的document
-
-        // TODO 接收设备的请求
-        //doRule(incoming, s);
-
-//		for (Channel channel : channels) {
-//            if (channel != incoming){
-//                //channel.writeAndFlush("[" + incoming.remoteAddress() + "]" + s + "\n");
-//            } else {
-//            	channel.writeAndFlush("[you]" + s + "\n");
-//            }
-//        }*/
-
-
     }
-
 
 
     @Override

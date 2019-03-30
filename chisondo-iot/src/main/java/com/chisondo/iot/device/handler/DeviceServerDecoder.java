@@ -3,8 +3,8 @@ package com.chisondo.iot.device.handler;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.device.request.DevStatusReportReq;
-import com.chisondo.iot.device.response.DeviceServerResp;
-import com.chisondo.iot.http.request.DeviceHttpReq;
+import com.chisondo.model.http.req.DeviceHttpReq;
+import com.chisondo.model.http.resp.DeviceHttpResp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
@@ -21,7 +21,7 @@ public class DeviceServerDecoder extends StringDecoder {
             DevStatusReportReq reportReq = JSONObject.parseObject(json, DevStatusReportReq.class);
             out.add(reportReq);
         } else if (this.isQueryDevStatusResp(json) || this.isErrorResp(json)) {
-            DeviceServerResp deviceResp = JSONObject.parseObject(json, DeviceServerResp.class);
+            DeviceHttpResp deviceResp = JSONObject.parseObject(json, DeviceHttpResp.class);
             out.add(deviceResp);
         } else {
             // http request

@@ -1,4 +1,4 @@
-package com.chisondo.iot.http.request;
+package com.chisondo.model.http.req;
 
 import java.io.Serializable;
 

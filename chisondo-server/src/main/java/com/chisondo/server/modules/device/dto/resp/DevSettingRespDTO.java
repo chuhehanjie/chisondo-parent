@@ -9,7 +9,7 @@ public class DevSettingRespDTO implements Serializable {
     private String deviceName; //设备名称
     private String devicePwd; // 连接密码
     private int isOpenSound; // 是否静音	0-有提示音；1-无提音
-    private List<WaterHeatInfo> waterHeat; // 烧水参数
+    private WaterHeatInfo waterHeat; // 烧水参数
 
     private List<TeaSpectrumInfo> chapuInfo; // 茶谱信息
 
@@ -37,11 +37,11 @@ public class DevSettingRespDTO implements Serializable {
         this.isOpenSound = isOpenSound;
     }
 
-    public List<WaterHeatInfo> getWaterHeat() {
+    public WaterHeatInfo getWaterHeat() {
         return waterHeat;
     }
 
-    public void setWaterHeat(List<WaterHeatInfo> waterHeat) {
+    public void setWaterHeat(WaterHeatInfo waterHeat) {
         this.waterHeat = waterHeat;
     }
 
