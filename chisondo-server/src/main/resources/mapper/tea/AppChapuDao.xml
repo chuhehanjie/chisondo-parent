@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.tea.dao.AppChapuDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.tea.entity.AppChapuEntity" id="appChapuMap">
+        <result property="chapuId" column="chapu_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="image" column="image"/>
+        <result property="sort" column="sort"/>
+        <result property="shape" column="shape"/>
+        <result property="brand" column="brand"/>
+        <result property="amount" column="amount"/>
+        <result property="awake" column="awake"/>
+        <result property="makeTimes" column="make_times"/>
+        <result property="desc" column="desc"/>
+        <result property="commentTimes" column="comment_times"/>
+        <result property="belikeTimes" column="belike_times"/>
+        <result property="publicTime" column="public_time"/>
+        <result property="standard" column="standard"/>
+        <result property="temp" column="temp"/>
+        <result property="status" column="status"/>
+        <result property="useTimes" column="use_times"/>
+        <result property="dislikeTimes" column="dislike_times"/>
+        <result property="variety" column="variety"/>
+        <result property="addrProvince" column="addr_province"/>
+        <result property="addrCity" column="addr_city"/>
+        <result property="addrDistrict" column="addr_district"/>
+        <result property="addrDetail" column="addr_detail"/>
+        <result property="productYear" column="product_year"/>
+        <result property="productSeason" column="product_season"/>
+        <result property="youpinId" column="youpin_id"/>
+        <result property="teaBrandId" column="tea_brand_id"/>
+        <result property="teaName" column="tea_name"/>
+        <result property="merchantName" column="merchant_name"/>
+        <result property="teaPrice" column="tea_price"/>
+        <result property="texture" column="texture"/>
+        <result property="authAttr" column="auth_attr"/>
+        <result property="officialChked" column="official_chked"/>
+        <result property="topFlag" column="top_flag"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.AppChapuEntity">
+		select * from t_app_chapu where chapu_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.tea.entity.AppChapuEntity">
+		select * from t_app_chapu where 1=1
+			<if test="chapuId != null and chapuId !='' ">
+				AND chapu_id = #{chapuId}
+			</if>
+				<if test="userId != null and userId !='' ">
+				AND user_id = #{userId}
+			</if>
+				<if test="name != null and name !='' ">
+				AND name = #{name}
+			</if>
+				<if test="image != null and image !='' ">
+				AND image = #{image}
+			</if>
+				<if test="sort != null and sort !='' ">
+				AND sort = #{sort}
+			</if>
+				<if test="shape != null and shape !='' ">
+				AND shape = #{shape}
+			</if>
+				<if test="brand != null and brand !='' ">
+				AND brand = #{brand}
+			</if>
+				<if test="amount != null and amount !='' ">
+				AND amount = #{amount}
+			</if>
+				<if test="awake != null and awake !='' ">
+				AND awake = #{awake}
+			</if>
+				<if test="makeTimes != null and makeTimes !='' ">
+				AND make_times = #{makeTimes}
+			</if>
+				<if test="desc != null and desc !='' ">
+				AND desc = #{desc}
+			</if>
+				<if test="commentTimes != null and commentTimes !='' ">
+				AND comment_times = #{commentTimes}
+			</if>
+				<if test="belikeTimes != null and belikeTimes !='' ">
+				AND belike_times = #{belikeTimes}
+			</if>
+				<if test="publicTime != null and publicTime !='' ">
+				AND public_time = #{publicTime}
+			</if>
+				<if test="standard != null and standard !='' ">
+				AND standard = #{standard}
+			</if>
+				<if test="temp != null and temp !='' ">
+				AND temp = #{temp}
+			</if>
+				<if test="status != null and status !='' ">
+				AND status = #{status}
+			</if>
+				<if test="useTimes != null and useTimes !='' ">
+				AND use_times = #{useTimes}
+			</if>
+				<if test="dislikeTimes != null and dislikeTimes !='' ">
+				AND dislike_times = #{dislikeTimes}
+			</if>
+				<if test="variety != null and variety !='' ">
+				AND variety = #{variety}
+			</if>
+				<if test="addrProvince != null and addrProvince !='' ">
+				AND addr_province = #{addrProvince}
+			</if>
+				<if test="addrCity != null and addrCity !='' ">
+				AND addr_city = #{addrCity}
+			</if>
+				<if test="addrDistrict != null and addrDistrict !='' ">
+				AND addr_district = #{addrDistrict}
+			</if>
+				<if test="addrDetail != null and addrDetail !='' ">
+				AND addr_detail = #{addrDetail}
+			</if>
+				<if test="productYear != null and productYear !='' ">
+				AND product_year = #{productYear}
+			</if>
+				<if test="productSeason != null and productSeason !='' ">
+				AND product_season = #{productSeason}
+			</if>
+				<if test="youpinId != null and youpinId !='' ">
+				AND youpin_id = #{youpinId}
+			</if>
+				<if test="teaBrandId != null and teaBrandId !='' ">
+				AND tea_brand_id = #{teaBrandId}
+			</if>
+				<if test="teaName != null and teaName !='' ">
+				AND tea_name = #{teaName}
+			</if>
+				<if test="merchantName != null and merchantName !='' ">
+				AND merchant_name = #{merchantName}
+			</if>
+				<if test="teaPrice != null and teaPrice !='' ">
+				AND tea_price = #{teaPrice}
+			</if>
+				<if test="texture != null and texture !='' ">
+				AND texture = #{texture}
+			</if>
+				<if test="authAttr != null and authAttr !='' ">
+				AND auth_attr = #{authAttr}
+			</if>
+				<if test="officialChked != null and officialChked !='' ">
+				AND official_chked = #{officialChked}
+			</if>
+				<if test="topFlag != null and topFlag !='' ">
+				AND top_flag = #{topFlag}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by chapu_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_app_chapu where 1=1
+			<if test="chapuId != null and chapuId !='' ">
+                AND chapu_id = #{chapuId}
+            </if>
+				<if test="userId != null and userId !='' ">
+                AND user_id = #{userId}
+            </if>
+				<if test="name != null and name !='' ">
+                AND name = #{name}
+            </if>
+				<if test="image != null and image !='' ">
+                AND image = #{image}
+            </if>
+				<if test="sort != null and sort !='' ">
+                AND sort = #{sort}
+            </if>
+				<if test="shape != null and shape !='' ">
+                AND shape = #{shape}
+            </if>
+				<if test="brand != null and brand !='' ">
+                AND brand = #{brand}
+            </if>
+				<if test="amount != null and amount !='' ">
+                AND amount = #{amount}
+            </if>
+				<if test="awake != null and awake !='' ">
+                AND awake = #{awake}
+            </if>
+				<if test="makeTimes != null and makeTimes !='' ">
+                AND make_times = #{makeTimes}
+            </if>
+				<if test="desc != null and desc !='' ">
+                AND desc = #{desc}
+            </if>
+				<if test="commentTimes != null and commentTimes !='' ">
+                AND comment_times = #{commentTimes}
+            </if>
+				<if test="belikeTimes != null and belikeTimes !='' ">
+                AND belike_times = #{belikeTimes}
+            </if>
+				<if test="publicTime != null and publicTime !='' ">
+                AND public_time = #{publicTime}
+            </if>
+				<if test="standard != null and standard !='' ">
+                AND standard = #{standard}
+            </if>
+				<if test="temp != null and temp !='' ">
+                AND temp = #{temp}
+            </if>
+				<if test="status != null and status !='' ">
+                AND status = #{status}
+            </if>
+				<if test="useTimes != null and useTimes !='' ">
+                AND use_times = #{useTimes}
+            </if>
+				<if test="dislikeTimes != null and dislikeTimes !='' ">
+                AND dislike_times = #{dislikeTimes}
+            </if>
+				<if test="variety != null and variety !='' ">
+                AND variety = #{variety}
+            </if>
+				<if test="addrProvince != null and addrProvince !='' ">
+                AND addr_province = #{addrProvince}
+            </if>
+				<if test="addrCity != null and addrCity !='' ">
+                AND addr_city = #{addrCity}
+            </if>
+				<if test="addrDistrict != null and addrDistrict !='' ">
+                AND addr_district = #{addrDistrict}
+            </if>
+				<if test="addrDetail != null and addrDetail !='' ">
+                AND addr_detail = #{addrDetail}
+            </if>
+				<if test="productYear != null and productYear !='' ">
+                AND product_year = #{productYear}
+            </if>
+				<if test="productSeason != null and productSeason !='' ">
+                AND product_season = #{productSeason}
+            </if>
+				<if test="youpinId != null and youpinId !='' ">
+                AND youpin_id = #{youpinId}
+            </if>
+				<if test="teaBrandId != null and teaBrandId !='' ">
+                AND tea_brand_id = #{teaBrandId}
+            </if>
+				<if test="teaName != null and teaName !='' ">
+                AND tea_name = #{teaName}
+            </if>
+				<if test="merchantName != null and merchantName !='' ">
+                AND merchant_name = #{merchantName}
+            </if>
+				<if test="teaPrice != null and teaPrice !='' ">
+                AND tea_price = #{teaPrice}
+            </if>
+				<if test="texture != null and texture !='' ">
+                AND texture = #{texture}
+            </if>
+				<if test="authAttr != null and authAttr !='' ">
+                AND auth_attr = #{authAttr}
+            </if>
+				<if test="officialChked != null and officialChked !='' ">
+                AND official_chked = #{officialChked}
+            </if>
+				<if test="topFlag != null and topFlag !='' ">
+                AND top_flag = #{topFlag}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.AppChapuEntity" useGeneratedKeys="true" keyProperty="chapuId">
+		insert into t_app_chapu
+		(
+			`user_id`, 
+			`name`, 
+			`image`, 
+			`sort`, 
+			`shape`, 
+			`brand`, 
+			`amount`, 
+			`awake`, 
+			`make_times`, 
+			`desc`, 
+			`comment_times`, 
+			`belike_times`, 
+			`public_time`, 
+			`standard`, 
+			`temp`, 
+			`status`, 
+			`use_times`, 
+			`dislike_times`, 
+			`variety`, 
+			`addr_province`, 
+			`addr_city`, 
+			`addr_district`, 
+			`addr_detail`, 
+			`product_year`, 
+			`product_season`, 
+			`youpin_id`, 
+			`tea_brand_id`, 
+			`tea_name`, 
+			`merchant_name`, 
+			`tea_price`, 
+			`texture`, 
+			`auth_attr`, 
+			`official_chked`, 
+			`top_flag`
+		)
+		values
+		(
+			#{userId}, 
+			#{name}, 
+			#{image}, 
+			#{sort}, 
+			#{shape}, 
+			#{brand}, 
+			#{amount}, 
+			#{awake}, 
+			#{makeTimes}, 
+			#{desc}, 
+			#{commentTimes}, 
+			#{belikeTimes}, 
+			#{publicTime}, 
+			#{standard}, 
+			#{temp}, 
+			#{status}, 
+			#{useTimes}, 
+			#{dislikeTimes}, 
+			#{variety}, 
+			#{addrProvince}, 
+			#{addrCity}, 
+			#{addrDistrict}, 
+			#{addrDetail}, 
+			#{productYear}, 
+			#{productSeason}, 
+			#{youpinId}, 
+			#{teaBrandId}, 
+			#{teaName}, 
+			#{merchantName}, 
+			#{teaPrice}, 
+			#{texture}, 
+			#{authAttr}, 
+			#{officialChked}, 
+			#{topFlag}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.tea.entity.AppChapuEntity">
+		update t_app_chapu 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="image != null">`image` = #{image}, </if>
+			<if test="sort != null">`sort` = #{sort}, </if>
+			<if test="shape != null">`shape` = #{shape}, </if>
+			<if test="brand != null">`brand` = #{brand}, </if>
+			<if test="amount != null">`amount` = #{amount}, </if>
+			<if test="awake != null">`awake` = #{awake}, </if>
+			<if test="makeTimes != null">`make_times` = #{makeTimes}, </if>
+			<if test="desc != null">`desc` = #{desc}, </if>
+			<if test="commentTimes != null">`comment_times` = #{commentTimes}, </if>
+			<if test="belikeTimes != null">`belike_times` = #{belikeTimes}, </if>
+			<if test="publicTime != null">`public_time` = #{publicTime}, </if>
+			<if test="standard != null">`standard` = #{standard}, </if>
+			<if test="temp != null">`temp` = #{temp}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="useTimes != null">`use_times` = #{useTimes}, </if>
+			<if test="dislikeTimes != null">`dislike_times` = #{dislikeTimes}, </if>
+			<if test="variety != null">`variety` = #{variety}, </if>
+			<if test="addrProvince != null">`addr_province` = #{addrProvince}, </if>
+			<if test="addrCity != null">`addr_city` = #{addrCity}, </if>
+			<if test="addrDistrict != null">`addr_district` = #{addrDistrict}, </if>
+			<if test="addrDetail != null">`addr_detail` = #{addrDetail}, </if>
+			<if test="productYear != null">`product_year` = #{productYear}, </if>
+			<if test="productSeason != null">`product_season` = #{productSeason}, </if>
+			<if test="youpinId != null">`youpin_id` = #{youpinId}, </if>
+			<if test="teaBrandId != null">`tea_brand_id` = #{teaBrandId}, </if>
+			<if test="teaName != null">`tea_name` = #{teaName}, </if>
+			<if test="merchantName != null">`merchant_name` = #{merchantName}, </if>
+			<if test="teaPrice != null">`tea_price` = #{teaPrice}, </if>
+			<if test="texture != null">`texture` = #{texture}, </if>
+			<if test="authAttr != null">`auth_attr` = #{authAttr}, </if>
+			<if test="officialChked != null">`official_chked` = #{officialChked}, </if>
+			<if test="topFlag != null">`top_flag` = #{topFlag}</if>
+		</set>
+		where chapu_id = #{chapuId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_app_chapu where chapu_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_app_chapu where chapu_id in 
+		<foreach item="chapuId" collection="array" open="(" separator="," close=")">
+			#{chapuId}
+		</foreach>
+	</delete>
+
+</mapper>

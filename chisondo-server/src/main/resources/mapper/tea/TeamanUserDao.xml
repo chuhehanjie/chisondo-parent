@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.tea.dao.TeamanUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.tea.entity.TeamanUserEntity" id="teamanUserMap">
+        <result property="id" column="id"/>
+        <result property="teamanId" column="teaman_id"/>
+        <result property="userMobileNo" column="user_mobile_no"/>
+        <result property="regTime" column="reg_time"/>
+        <result property="userName" column="user_name"/>
+        <result property="openid" column="openid"/>
+        <result property="userImg" column="user_img"/>
+        <result property="dataSource" column="Data_source"/>
+        <result property="companyId" column="company_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.TeamanUserEntity">
+		select * from tb_teaman_user where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.tea.entity.TeamanUserEntity">
+		select * from tb_teaman_user where 1=1
+			<if test="id != null and id !='' ">
+				AND id = #{id}
+			</if>
+				<if test="teamanId != null and teamanId !='' ">
+				AND teaman_id = #{teamanId}
+			</if>
+				<if test="userMobileNo != null and userMobileNo !='' ">
+				AND user_mobile_no = #{userMobileNo}
+			</if>
+				<if test="regTime != null and regTime !='' ">
+				AND reg_time = #{regTime}
+			</if>
+				<if test="userName != null and userName !='' ">
+				AND user_name = #{userName}
+			</if>
+				<if test="openid != null and openid !='' ">
+				AND openid = #{openid}
+			</if>
+				<if test="userImg != null and userImg !='' ">
+				AND user_img = #{userImg}
+			</if>
+				<if test="dataSource != null and dataSource !='' ">
+				AND Data_source = #{dataSource}
+			</if>
+				<if test="companyId != null and companyId !='' ">
+				AND company_id = #{companyId}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_teaman_user where 1=1
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
+				<if test="teamanId != null and teamanId !='' ">
+                AND teaman_id = #{teamanId}
+            </if>
+				<if test="userMobileNo != null and userMobileNo !='' ">
+                AND user_mobile_no = #{userMobileNo}
+            </if>
+				<if test="regTime != null and regTime !='' ">
+                AND reg_time = #{regTime}
+            </if>
+				<if test="userName != null and userName !='' ">
+                AND user_name = #{userName}
+            </if>
+				<if test="openid != null and openid !='' ">
+                AND openid = #{openid}
+            </if>
+				<if test="userImg != null and userImg !='' ">
+                AND user_img = #{userImg}
+            </if>
+				<if test="dataSource != null and dataSource !='' ">
+                AND Data_source = #{dataSource}
+            </if>
+				<if test="companyId != null and companyId !='' ">
+                AND company_id = #{companyId}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.TeamanUserEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_teaman_user
+		(
+			`teaman_id`, 
+			`user_mobile_no`, 
+			`reg_time`, 
+			`user_name`, 
+			`openid`, 
+			`user_img`, 
+			`Data_source`, 
+			`company_id`
+		)
+		values
+		(
+			#{teamanId}, 
+			#{userMobileNo}, 
+			#{regTime}, 
+			#{userName}, 
+			#{openid}, 
+			#{userImg}, 
+			#{dataSource}, 
+			#{companyId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.tea.entity.TeamanUserEntity">
+		update tb_teaman_user 
+		<set>
+			<if test="teamanId != null">`teaman_id` = #{teamanId}, </if>
+			<if test="userMobileNo != null">`user_mobile_no` = #{userMobileNo}, </if>
+			<if test="regTime != null">`reg_time` = #{regTime}, </if>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="userImg != null">`user_img` = #{userImg}, </if>
+			<if test="dataSource != null">`Data_source` = #{dataSource}, </if>
+			<if test="companyId != null">`company_id` = #{companyId}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_teaman_user where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_teaman_user where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

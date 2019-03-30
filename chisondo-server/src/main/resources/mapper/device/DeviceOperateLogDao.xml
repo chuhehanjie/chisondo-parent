@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.device.dao.DeviceOperateLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.device.entity.DeviceOperateLogEntity" id="deviceOperateLogMap">
+        <result property="id" column="id"/>
+        <result property="deviceId" column="device_Id"/>
+        <result property="teamanId" column="teaman_id"/>
+        <result property="userMobileNo" column="user_mobile_no"/>
+        <result property="operType" column="oper_type"/>
+        <result property="reqContent" column="req_content"/>
+        <result property="resContent" column="res_content"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="operResult" column="oper_result"/>
+        <result property="desc" column="desc"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DeviceOperateLogEntity">
+		select * from tb_device_operate_log where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.DeviceOperateLogEntity">
+		select * from tb_device_operate_log where 1=1
+			<if test="id != null and id !='' ">
+				AND id = #{id}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_Id = #{deviceId}
+			</if>
+				<if test="teamanId != null and teamanId !='' ">
+				AND teaman_id = #{teamanId}
+			</if>
+				<if test="userMobileNo != null and userMobileNo !='' ">
+				AND user_mobile_no = #{userMobileNo}
+			</if>
+				<if test="operType != null and operType !='' ">
+				AND oper_type = #{operType}
+			</if>
+				<if test="reqContent != null and reqContent !='' ">
+				AND req_content = #{reqContent}
+			</if>
+				<if test="resContent != null and resContent !='' ">
+				AND res_content = #{resContent}
+			</if>
+				<if test="startTime != null and startTime !='' ">
+				AND start_time = #{startTime}
+			</if>
+				<if test="endTime != null and endTime !='' ">
+				AND end_time = #{endTime}
+			</if>
+				<if test="operResult != null and operResult !='' ">
+				AND oper_result = #{operResult}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_device_operate_log where 1=1
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_Id = #{deviceId}
+            </if>
+				<if test="teamanId != null and teamanId !='' ">
+                AND teaman_id = #{teamanId}
+            </if>
+				<if test="userMobileNo != null and userMobileNo !='' ">
+                AND user_mobile_no = #{userMobileNo}
+            </if>
+				<if test="operType != null and operType !='' ">
+                AND oper_type = #{operType}
+            </if>
+				<if test="reqContent != null and reqContent !='' ">
+                AND req_content = #{reqContent}
+            </if>
+				<if test="resContent != null and resContent !='' ">
+                AND res_content = #{resContent}
+            </if>
+				<if test="startTime != null and startTime !='' ">
+                AND start_time = #{startTime}
+            </if>
+				<if test="endTime != null and endTime !='' ">
+                AND end_time = #{endTime}
+            </if>
+				<if test="operResult != null and operResult !='' ">
+                AND oper_result = #{operResult}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.device.entity.DeviceOperateLogEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_device_operate_log
+		(
+			`device_Id`, 
+			`teaman_id`, 
+			`user_mobile_no`, 
+			`oper_type`, 
+			`req_content`, 
+			`res_content`, 
+			`start_time`, 
+			`end_time`, 
+			`oper_result`,
+			`desc`
+		)
+		values
+		(
+			#{deviceId}, 
+			#{teamanId}, 
+			#{userMobileNo}, 
+			#{operType}, 
+			#{reqContent}, 
+			#{resContent}, 
+			#{startTime}, 
+			#{endTime}, 
+			#{operResult},
+			#{desc}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DeviceOperateLogEntity">
+		update tb_device_operate_log 
+		<set>
+			<if test="deviceId != null">`device_Id` = #{deviceId}, </if>
+			<if test="teamanId != null">`teaman_id` = #{teamanId}, </if>
+			<if test="userMobileNo != null">`user_mobile_no` = #{userMobileNo}, </if>
+			<if test="operType != null">`oper_type` = #{operType}, </if>
+			<if test="reqContent != null">`req_content` = #{reqContent}, </if>
+			<if test="resContent != null">`res_content` = #{resContent}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="operResult != null">`oper_result` = #{operResult},</if>
+			<if test="desc != null">`desc` = #{desc}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_device_operate_log where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_device_operate_log where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

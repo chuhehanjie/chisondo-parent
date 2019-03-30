@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.user.dao.UserDeviceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.user.entity.UserDeviceEntity" id="userDeviceMap">
+        <result property="id" column="id"/>
+        <result property="teamanId" column="teaman_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="privateTag" column="private_tag"/>
+        <result property="defaultTag" column="default_tag"/>
+        <result property="firstLinkTime" column="first_link_time"/>
+        <result property="lastLinkTime" column="last_link_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserDeviceEntity">
+		select * from tb_user_device where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.user.entity.UserDeviceEntity">
+		select * from tb_user_device where 1=1
+			<if test="id != null and id !='' ">
+				AND id = #{id}
+			</if>
+				<if test="teamanId != null and teamanId !='' ">
+				AND teaman_id = #{teamanId}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="privateTag != null and privateTag !='' ">
+				AND private_tag = #{privateTag}
+			</if>
+				<if test="defaultTag != null and defaultTag !='' ">
+				AND default_tag = #{defaultTag}
+			</if>
+				<if test="firstLinkTime != null and firstLinkTime !='' ">
+				AND first_link_time = #{firstLinkTime}
+			</if>
+				<if test="lastLinkTime != null and lastLinkTime !='' ">
+				AND last_link_time = #{lastLinkTime}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_user_device where 1=1
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
+				<if test="teamanId != null and teamanId !='' ">
+                AND teaman_id = #{teamanId}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="privateTag != null and privateTag !='' ">
+                AND private_tag = #{privateTag}
+            </if>
+				<if test="defaultTag != null and defaultTag !='' ">
+                AND default_tag = #{defaultTag}
+            </if>
+				<if test="firstLinkTime != null and firstLinkTime !='' ">
+                AND first_link_time = #{firstLinkTime}
+            </if>
+				<if test="lastLinkTime != null and lastLinkTime !='' ">
+                AND last_link_time = #{lastLinkTime}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.user.entity.UserDeviceEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_user_device
+		(
+			`teaman_id`, 
+			`device_id`, 
+			`private_tag`, 
+			`default_tag`, 
+			`first_link_time`, 
+			`last_link_time`
+		)
+		values
+		(
+			#{teamanId}, 
+			#{deviceId}, 
+			#{privateTag}, 
+			#{defaultTag}, 
+			#{firstLinkTime}, 
+			#{lastLinkTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.user.entity.UserDeviceEntity">
+		update tb_user_device 
+		<set>
+			<if test="teamanId != null">`teaman_id` = #{teamanId}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="privateTag != null">`private_tag` = #{privateTag}, </if>
+			<if test="defaultTag != null">`default_tag` = #{defaultTag}, </if>
+			<if test="firstLinkTime != null">`first_link_time` = #{firstLinkTime}, </if>
+			<if test="lastLinkTime != null">`last_link_time` = #{lastLinkTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_user_device where id = #{value}
+	</delete>
+
+	<delete id="delUserDeviceByParams">
+		delete from tb_user_device where teaman_id = #{teamanId} and device_id = #{deviceId}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_user_device where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<update id="setDefaultDevice">
+		update tb_user_device set default_tag = #{operFlag} where device_id = #{deviceId}
+	</update>
+
+</mapper>

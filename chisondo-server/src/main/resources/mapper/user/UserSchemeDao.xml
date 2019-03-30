@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.user.dao.UserSchemeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.user.entity.UserSchemeEntity" id="userSchemeMap">
+        <result property="schemeId" column="scheme_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="schemeNo" column="scheme_no"/>
+        <result property="heatTemp" column="heat_temp"/>
+        <result property="powerLevel" column="power_level"/>
+        <result property="makeTemp" column="make_temp"/>
+        <result property="makeDura" column="make_dura"/>
+        <result property="warmTemp" column="warm_temp"/>
+        <result property="warmDura" column="warm_dura"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserSchemeEntity">
+		select * from tb_user_scheme where scheme_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.user.entity.UserSchemeEntity">
+		select * from tb_user_scheme where 1=1
+			<if test="schemeId != null and schemeId !='' ">
+				AND scheme_id = #{schemeId}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="schemeNo != null and schemeNo !='' ">
+				AND scheme_no = #{schemeNo}
+			</if>
+				<if test="heatTemp != null and heatTemp !='' ">
+				AND heat_temp = #{heatTemp}
+			</if>
+				<if test="powerLevel != null and powerLevel !='' ">
+				AND power_level = #{powerLevel}
+			</if>
+				<if test="makeTemp != null and makeTemp !='' ">
+				AND make_temp = #{makeTemp}
+			</if>
+				<if test="makeDura != null and makeDura !='' ">
+				AND make_dura = #{makeDura}
+			</if>
+				<if test="warmTemp != null and warmTemp !='' ">
+				AND warm_temp = #{warmTemp}
+			</if>
+				<if test="warmDura != null and warmDura !='' ">
+				AND warm_dura = #{warmDura}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by scheme_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_user_scheme where 1=1
+			<if test="schemeId != null and schemeId !='' ">
+                AND scheme_id = #{schemeId}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="schemeNo != null and schemeNo !='' ">
+                AND scheme_no = #{schemeNo}
+            </if>
+				<if test="heatTemp != null and heatTemp !='' ">
+                AND heat_temp = #{heatTemp}
+            </if>
+				<if test="powerLevel != null and powerLevel !='' ">
+                AND power_level = #{powerLevel}
+            </if>
+				<if test="makeTemp != null and makeTemp !='' ">
+                AND make_temp = #{makeTemp}
+            </if>
+				<if test="makeDura != null and makeDura !='' ">
+                AND make_dura = #{makeDura}
+            </if>
+				<if test="warmTemp != null and warmTemp !='' ">
+                AND warm_temp = #{warmTemp}
+            </if>
+				<if test="warmDura != null and warmDura !='' ">
+                AND warm_dura = #{warmDura}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.user.entity.UserSchemeEntity" useGeneratedKeys="true" keyProperty="schemeId">
+		insert into tb_user_scheme
+		(
+			`device_id`, 
+			`scheme_no`, 
+			`heat_temp`, 
+			`power_level`, 
+			`make_temp`, 
+			`make_dura`, 
+			`warm_temp`, 
+			`warm_dura`
+		)
+		values
+		(
+			#{deviceId}, 
+			#{schemeNo}, 
+			#{heatTemp}, 
+			#{powerLevel}, 
+			#{makeTemp}, 
+			#{makeDura}, 
+			#{warmTemp}, 
+			#{warmDura}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.user.entity.UserSchemeEntity">
+		update tb_user_scheme 
+		<set>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="schemeNo != null">`scheme_no` = #{schemeNo}, </if>
+			<if test="heatTemp != null">`heat_temp` = #{heatTemp}, </if>
+			<if test="powerLevel != null">`power_level` = #{powerLevel}, </if>
+			<if test="makeTemp != null">`make_temp` = #{makeTemp}, </if>
+			<if test="makeDura != null">`make_dura` = #{makeDura}, </if>
+			<if test="warmTemp != null">`warm_temp` = #{warmTemp}, </if>
+			<if test="warmDura != null">`warm_dura` = #{warmDura}</if>
+		</set>
+		where scheme_id = #{schemeId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_user_scheme where scheme_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_user_scheme where scheme_id in 
+		<foreach item="schemeId" collection="array" open="(" separator="," close=")">
+			#{schemeId}
+		</foreach>
+	</delete>
+
+</mapper>

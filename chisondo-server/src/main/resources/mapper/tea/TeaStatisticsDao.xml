@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.tea.dao.TeaStatisticsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.tea.entity.TeaStatisticsEntity" id="teaStatisticsMap">
+        <result property="userId" column="user_id"/>
+        <result property="userNum" column="user_num"/>
+        <result property="amountTotal" column="amount_total"/>
+        <result property="amountDaily" column="amount_daily"/>
+        <result property="amountDayList" column="amount_day_list"/>
+        <result property="sortPercent" column="sort_percent"/>
+        <result property="sortFavAm" column="sort_fav_am"/>
+        <result property="sortFavPm" column="sort_fav_pm"/>
+        <result property="sortFavNight" column="sort_fav_night"/>
+        <result property="myContDays" column="my_cont_days"/>
+        <result property="myBeatPercent" column="my_beat_percent"/>
+        <result property="myExceedDays" column="my_exceed_days"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.TeaStatisticsEntity">
+		select * from tb_tea_statistics where user_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.tea.entity.TeaStatisticsEntity">
+		select * from tb_tea_statistics where 1=1
+			<if test="userId != null and userId !='' ">
+				AND user_id = #{userId}
+			</if>
+				<if test="userNum != null and userNum !='' ">
+				AND user_num = #{userNum}
+			</if>
+				<if test="amountTotal != null and amountTotal !='' ">
+				AND amount_total = #{amountTotal}
+			</if>
+				<if test="amountDaily != null and amountDaily !='' ">
+				AND amount_daily = #{amountDaily}
+			</if>
+				<if test="amountDayList != null and amountDayList !='' ">
+				AND amount_day_list = #{amountDayList}
+			</if>
+				<if test="sortPercent != null and sortPercent !='' ">
+				AND sort_percent = #{sortPercent}
+			</if>
+				<if test="sortFavAm != null and sortFavAm !='' ">
+				AND sort_fav_am = #{sortFavAm}
+			</if>
+				<if test="sortFavPm != null and sortFavPm !='' ">
+				AND sort_fav_pm = #{sortFavPm}
+			</if>
+				<if test="sortFavNight != null and sortFavNight !='' ">
+				AND sort_fav_night = #{sortFavNight}
+			</if>
+				<if test="myContDays != null and myContDays !='' ">
+				AND my_cont_days = #{myContDays}
+			</if>
+				<if test="myBeatPercent != null and myBeatPercent !='' ">
+				AND my_beat_percent = #{myBeatPercent}
+			</if>
+				<if test="myExceedDays != null and myExceedDays !='' ">
+				AND my_exceed_days = #{myExceedDays}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by user_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_tea_statistics where 1=1
+			<if test="userId != null and userId !='' ">
+                AND user_id = #{userId}
+            </if>
+				<if test="userNum != null and userNum !='' ">
+                AND user_num = #{userNum}
+            </if>
+				<if test="amountTotal != null and amountTotal !='' ">
+                AND amount_total = #{amountTotal}
+            </if>
+				<if test="amountDaily != null and amountDaily !='' ">
+                AND amount_daily = #{amountDaily}
+            </if>
+				<if test="amountDayList != null and amountDayList !='' ">
+                AND amount_day_list = #{amountDayList}
+            </if>
+				<if test="sortPercent != null and sortPercent !='' ">
+                AND sort_percent = #{sortPercent}
+            </if>
+				<if test="sortFavAm != null and sortFavAm !='' ">
+                AND sort_fav_am = #{sortFavAm}
+            </if>
+				<if test="sortFavPm != null and sortFavPm !='' ">
+                AND sort_fav_pm = #{sortFavPm}
+            </if>
+				<if test="sortFavNight != null and sortFavNight !='' ">
+                AND sort_fav_night = #{sortFavNight}
+            </if>
+				<if test="myContDays != null and myContDays !='' ">
+                AND my_cont_days = #{myContDays}
+            </if>
+				<if test="myBeatPercent != null and myBeatPercent !='' ">
+                AND my_beat_percent = #{myBeatPercent}
+            </if>
+				<if test="myExceedDays != null and myExceedDays !='' ">
+                AND my_exceed_days = #{myExceedDays}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.TeaStatisticsEntity">
+		insert into tb_tea_statistics
+		(
+			`user_id`, 
+			`user_num`, 
+			`amount_total`, 
+			`amount_daily`, 
+			`amount_day_list`, 
+			`sort_percent`, 
+			`sort_fav_am`, 
+			`sort_fav_pm`, 
+			`sort_fav_night`, 
+			`my_cont_days`, 
+			`my_beat_percent`, 
+			`my_exceed_days`
+		)
+		values
+		(
+			#{userId}, 
+			#{userNum}, 
+			#{amountTotal}, 
+			#{amountDaily}, 
+			#{amountDayList}, 
+			#{sortPercent}, 
+			#{sortFavAm}, 
+			#{sortFavPm}, 
+			#{sortFavNight}, 
+			#{myContDays}, 
+			#{myBeatPercent}, 
+			#{myExceedDays}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.tea.entity.TeaStatisticsEntity">
+		update tb_tea_statistics 
+		<set>
+			<if test="userNum != null">`user_num` = #{userNum}, </if>
+			<if test="amountTotal != null">`amount_total` = #{amountTotal}, </if>
+			<if test="amountDaily != null">`amount_daily` = #{amountDaily}, </if>
+			<if test="amountDayList != null">`amount_day_list` = #{amountDayList}, </if>
+			<if test="sortPercent != null">`sort_percent` = #{sortPercent}, </if>
+			<if test="sortFavAm != null">`sort_fav_am` = #{sortFavAm}, </if>
+			<if test="sortFavPm != null">`sort_fav_pm` = #{sortFavPm}, </if>
+			<if test="sortFavNight != null">`sort_fav_night` = #{sortFavNight}, </if>
+			<if test="myContDays != null">`my_cont_days` = #{myContDays}, </if>
+			<if test="myBeatPercent != null">`my_beat_percent` = #{myBeatPercent}, </if>
+			<if test="myExceedDays != null">`my_exceed_days` = #{myExceedDays}</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_tea_statistics where user_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_tea_statistics where user_id in 
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+</mapper>

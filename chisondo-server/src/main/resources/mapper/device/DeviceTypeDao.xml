@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.device.dao.DeviceTypeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.device.entity.DeviceTypeEntity" id="deviceTypeMap">
+        <result property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DeviceTypeEntity">
+		select * from tb_device_type where type_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.DeviceTypeEntity">
+		select * from tb_device_type where 1=1
+			<if test="typeId != null and typeId !='' ">
+				AND type_id = #{typeId}
+			</if>
+				<if test="typeName != null and typeName !='' ">
+				AND type_name = #{typeName}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by type_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_device_type where 1=1
+			<if test="typeId != null and typeId !='' ">
+                AND type_id = #{typeId}
+            </if>
+				<if test="typeName != null and typeName !='' ">
+                AND type_name = #{typeName}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.device.entity.DeviceTypeEntity">
+		insert into tb_device_type
+		(
+			`type_id`, 
+			`type_name`
+		)
+		values
+		(
+			#{typeId}, 
+			#{typeName}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DeviceTypeEntity">
+		update tb_device_type 
+		<set>
+			<if test="typeName != null">`type_name` = #{typeName}</if>
+		</set>
+		where type_id = #{typeId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_device_type where type_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_device_type where type_id in 
+		<foreach item="typeId" collection="array" open="(" separator="," close=")">
+			#{typeId}
+		</foreach>
+	</delete>
+
+</mapper>

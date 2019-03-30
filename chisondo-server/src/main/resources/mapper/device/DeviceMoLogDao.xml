@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.device.dao.DeviceMoLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.device.entity.DeviceMoLogEntity" id="deviceMoLogMap">
+        <result property="logId" column="log_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="moContent" column="mo_content"/>
+        <result property="moTime" column="mo_time"/>
+        <result property="deviceIp" column="device_ip"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DeviceMoLogEntity">
+		select * from tb_device_mo_log where log_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.DeviceMoLogEntity">
+		select * from tb_device_mo_log where 1=1
+			<if test="logId != null and logId !='' ">
+				AND log_id = #{logId}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="moContent != null and moContent !='' ">
+				AND mo_content = #{moContent}
+			</if>
+				<if test="moTime != null and moTime !='' ">
+				AND mo_time = #{moTime}
+			</if>
+				<if test="deviceIp != null and deviceIp !='' ">
+				AND device_ip = #{deviceIp}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by log_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_device_mo_log where 1=1
+			<if test="logId != null and logId !='' ">
+                AND log_id = #{logId}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="moContent != null and moContent !='' ">
+                AND mo_content = #{moContent}
+            </if>
+				<if test="moTime != null and moTime !='' ">
+                AND mo_time = #{moTime}
+            </if>
+				<if test="deviceIp != null and deviceIp !='' ">
+                AND device_ip = #{deviceIp}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.device.entity.DeviceMoLogEntity">
+		insert into tb_device_mo_log
+		(
+			`log_id`, 
+			`device_id`, 
+			`mo_content`, 
+			`mo_time`, 
+			`device_ip`
+		)
+		values
+		(
+			#{logId}, 
+			#{deviceId}, 
+			#{moContent}, 
+			#{moTime}, 
+			#{deviceIp}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DeviceMoLogEntity">
+		update tb_device_mo_log 
+		<set>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="moContent != null">`mo_content` = #{moContent}, </if>
+			<if test="moTime != null">`mo_time` = #{moTime}, </if>
+			<if test="deviceIp != null">`device_ip` = #{deviceIp}</if>
+		</set>
+		where log_id = #{logId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_device_mo_log where log_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_device_mo_log where log_id in 
+		<foreach item="logId" collection="array" open="(" separator="," close=")">
+			#{logId}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.device.dao.DeviceStateInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity" id="deviceStateInfoMap">
+        <result property="deviceId" column="device_id"/>
+        <result property="onlineState" column="online_state"/>
+        <result property="deviceStateInfo" column="device_state_info"/>
+        <result property="connectState" column="connect_state"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="lastConnTime" column="last_conn_time"/>
+        <result property="lastValTime" column="last_val_time"/>
+        <result property="clientIpAddress" column="client_ip_address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="district" column="district"/>
+        <result property="address" column="address"/>
+        <result property="makeTemp" column="make_temp"/>
+        <result property="temp" column="temp"/>
+        <result property="warm" column="warm"/>
+        <result property="density" column="density"/>
+        <result property="waterlv" column="waterlv"/>
+        <result property="makeDura" column="make_dura"/>
+        <result property="reamin" column="reamin"/>
+        <result property="tea" column="tea"/>
+        <result property="water" column="water"/>
+        <result property="makeType" column="make_type"/>
+        <result property="teaSortId" column="tea_sort_id"/>
+        <result property="teaSortName" column="tea_sort_name"/>
+        <result property="chapuName" column="chapu_name"/>
+        <result property="chapuImage" column="chapu_image"/>
+        <result property="chapuMakeTimes" column="chapu_make_times"/>
+        <result property="index" column="index"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
+		select * from tb_device_state_info where device_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
+		select * from tb_device_state_info where 1=1
+			<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="onlineState != null and onlineState !='' ">
+				AND online_state = #{onlineState}
+			</if>
+				<if test="deviceStateInfo != null and deviceStateInfo !='' ">
+				AND device_state_info = #{deviceStateInfo}
+			</if>
+				<if test="connectState != null and connectState !='' ">
+				AND connect_state = #{connectState}
+			</if>
+				<if test="lastConnTime != null and lastConnTime !='' ">
+				AND last_conn_time = #{lastConnTime}
+			</if>
+				<if test="lastValTime != null and lastValTime !='' ">
+				AND last_val_time = #{lastValTime}
+			</if>
+				<if test="clientIpAddress != null and clientIpAddress !='' ">
+				AND client_ip_address = #{clientIpAddress}
+			</if>
+				<if test="longitude != null and longitude !='' ">
+				AND longitude = #{longitude}
+			</if>
+				<if test="latitude != null and latitude !='' ">
+				AND latitude = #{latitude}
+			</if>
+				<if test="province != null and province !='' ">
+				AND province = #{province}
+			</if>
+				<if test="city != null and city !='' ">
+				AND city = #{city}
+			</if>
+				<if test="district != null and district !='' ">
+				AND district = #{district}
+			</if>
+				<if test="address != null and address !='' ">
+				AND address = #{address}
+			</if>
+				<if test="makeTemp != null and makeTemp !='' ">
+				AND make_temp = #{makeTemp}
+			</if>
+				<if test="temp != null and temp !='' ">
+				AND temp = #{temp}
+			</if>
+				<if test="warm != null and warm !='' ">
+				AND warm = #{warm}
+			</if>
+				<if test="density != null and density !='' ">
+				AND density = #{density}
+			</if>
+				<if test="waterlv != null and waterlv !='' ">
+				AND waterlv = #{waterlv}
+			</if>
+				<if test="makeDura != null and makeDura !='' ">
+				AND make_dura = #{makeDura}
+			</if>
+				<if test="reamin != null and reamin !='' ">
+				AND reamin = #{reamin}
+			</if>
+				<if test="tea != null and tea !='' ">
+				AND tea = #{tea}
+			</if>
+				<if test="water != null and water !='' ">
+				AND water = #{water}
+			</if>
+				<if test="makeType != null and makeType !='' ">
+				AND make_type = #{makeType}
+			</if>
+				<if test="teaSortId != null and teaSortId !='' ">
+				AND tea_sort_id = #{teaSortId}
+			</if>
+				<if test="teaSortName != null and teaSortName !='' ">
+				AND tea_sort_name = #{teaSortName}
+			</if>
+				<if test="chapuName != null and chapuName !='' ">
+				AND chapu_name = #{chapuName}
+			</if>
+				<if test="chapuImage != null and chapuImage !='' ">
+				AND chapu_image = #{chapuImage}
+			</if>
+				<if test="chapuMakeTimes != null and chapuMakeTimes !='' ">
+				AND chapu_make_times = #{chapuMakeTimes}
+			</if>
+				<if test="index != null and index !='' ">
+				AND index = #{index}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by device_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_device_state_info where 1=1
+			<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="onlineState != null and onlineState !='' ">
+                AND online_state = #{onlineState}
+            </if>
+				<if test="deviceStateInfo != null and deviceStateInfo !='' ">
+                AND device_state_info = #{deviceStateInfo}
+            </if>
+				<if test="connectState != null and connectState !='' ">
+                AND connect_state = #{connectState}
+            </if>
+				<if test="lastConnTime != null and lastConnTime !='' ">
+                AND last_conn_time = #{lastConnTime}
+            </if>
+				<if test="lastValTime != null and lastValTime !='' ">
+                AND last_val_time = #{lastValTime}
+            </if>
+				<if test="clientIpAddress != null and clientIpAddress !='' ">
+                AND client_ip_address = #{clientIpAddress}
+            </if>
+				<if test="longitude != null and longitude !='' ">
+                AND longitude = #{longitude}
+            </if>
+				<if test="latitude != null and latitude !='' ">
+                AND latitude = #{latitude}
+            </if>
+				<if test="province != null and province !='' ">
+                AND province = #{province}
+            </if>
+				<if test="city != null and city !='' ">
+                AND city = #{city}
+            </if>
+				<if test="district != null and district !='' ">
+                AND district = #{district}
+            </if>
+				<if test="address != null and address !='' ">
+                AND address = #{address}
+            </if>
+				<if test="makeTemp != null and makeTemp !='' ">
+                AND make_temp = #{makeTemp}
+            </if>
+				<if test="temp != null and temp !='' ">
+                AND temp = #{temp}
+            </if>
+				<if test="warm != null and warm !='' ">
+                AND warm = #{warm}
+            </if>
+				<if test="density != null and density !='' ">
+                AND density = #{density}
+            </if>
+				<if test="waterlv != null and waterlv !='' ">
+                AND waterlv = #{waterlv}
+            </if>
+				<if test="makeDura != null and makeDura !='' ">
+                AND make_dura = #{makeDura}
+            </if>
+				<if test="reamin != null and reamin !='' ">
+                AND reamin = #{reamin}
+            </if>
+				<if test="tea != null and tea !='' ">
+                AND tea = #{tea}
+            </if>
+				<if test="water != null and water !='' ">
+                AND water = #{water}
+            </if>
+				<if test="makeType != null and makeType !='' ">
+                AND make_type = #{makeType}
+            </if>
+				<if test="teaSortId != null and teaSortId !='' ">
+                AND tea_sort_id = #{teaSortId}
+            </if>
+				<if test="teaSortName != null and teaSortName !='' ">
+                AND tea_sort_name = #{teaSortName}
+            </if>
+				<if test="chapuName != null and chapuName !='' ">
+                AND chapu_name = #{chapuName}
+            </if>
+				<if test="chapuImage != null and chapuImage !='' ">
+                AND chapu_image = #{chapuImage}
+            </if>
+				<if test="chapuMakeTimes != null and chapuMakeTimes !='' ">
+                AND chapu_make_times = #{chapuMakeTimes}
+            </if>
+				<if test="index != null and index !='' ">
+                AND index = #{index}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
+		insert into tb_device_state_info
+		(
+			`device_id`, 
+			`online_state`, 
+			`device_state_info`, 
+			`connect_state`, 
+			`update_time`, 
+			`last_conn_time`, 
+			`last_val_time`, 
+			`client_ip_address`, 
+			`longitude`, 
+			`latitude`, 
+			`province`, 
+			`city`, 
+			`district`, 
+			`address`, 
+			`make_temp`, 
+			`temp`, 
+			`warm`, 
+			`density`, 
+			`waterlv`, 
+			`make_dura`, 
+			`reamin`, 
+			`tea`, 
+			`water`, 
+			`make_type`, 
+			`tea_sort_id`, 
+			`tea_sort_name`, 
+			`chapu_name`, 
+			`chapu_image`, 
+			`chapu_make_times`, 
+			`index`
+		)
+		values
+		(
+			#{deviceId}, 
+			#{onlineState}, 
+			#{deviceStateInfo}, 
+			#{connectState}, 
+			#{updateTime}, 
+			#{lastConnTime}, 
+			#{lastValTime}, 
+			#{clientIpAddress}, 
+			#{longitude}, 
+			#{latitude}, 
+			#{province}, 
+			#{city}, 
+			#{district}, 
+			#{address}, 
+			#{makeTemp}, 
+			#{temp}, 
+			#{warm}, 
+			#{density}, 
+			#{waterlv}, 
+			#{makeDura}, 
+			#{reamin}, 
+			#{tea}, 
+			#{water}, 
+			#{makeType}, 
+			#{teaSortId}, 
+			#{teaSortName}, 
+			#{chapuName}, 
+			#{chapuImage}, 
+			#{chapuMakeTimes}, 
+			#{index}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
+		update tb_device_state_info 
+		<set>
+			<if test="onlineState != null">`online_state` = #{onlineState}, </if>
+			<if test="deviceStateInfo != null">`device_state_info` = #{deviceStateInfo}, </if>
+			<if test="connectState != null">`connect_state` = #{connectState}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="lastConnTime != null">`last_conn_time` = #{lastConnTime}, </if>
+			<if test="lastValTime != null">`last_val_time` = #{lastValTime}, </if>
+			<if test="clientIpAddress != null">`client_ip_address` = #{clientIpAddress}, </if>
+			<if test="longitude != null">`longitude` = #{longitude}, </if>
+			<if test="latitude != null">`latitude` = #{latitude}, </if>
+			<if test="province != null">`province` = #{province}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="district != null">`district` = #{district}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="makeTemp != null">`make_temp` = #{makeTemp}, </if>
+			<if test="temp != null">`temp` = #{temp}, </if>
+			<if test="warm != null">`warm` = #{warm}, </if>
+			<if test="density != null">`density` = #{density}, </if>
+			<if test="waterlv != null">`waterlv` = #{waterlv}, </if>
+			<if test="makeDura != null">`make_dura` = #{makeDura}, </if>
+			<if test="reamin != null">`reamin` = #{reamin}, </if>
+			<if test="tea != null">`tea` = #{tea}, </if>
+			<if test="water != null">`water` = #{water}, </if>
+			<if test="makeType != null">`make_type` = #{makeType}, </if>
+			<if test="teaSortId != null">`tea_sort_id` = #{teaSortId}, </if>
+			<if test="teaSortName != null">`tea_sort_name` = #{teaSortName}, </if>
+			<if test="chapuName != null">`chapu_name` = #{chapuName}, </if>
+			<if test="chapuImage != null">`chapu_image` = #{chapuImage}, </if>
+			<if test="chapuMakeTimes != null">`chapu_make_times` = #{chapuMakeTimes}, </if>
+			<if test="index != null">`index` = #{index}</if>
+		</set>
+		where device_id = #{deviceId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_device_state_info where device_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_device_state_info where device_id in 
+		<foreach item="deviceId" collection="array" open="(" separator="," close=")">
+			#{deviceId}
+		</foreach>
+	</delete>
+
+</mapper>

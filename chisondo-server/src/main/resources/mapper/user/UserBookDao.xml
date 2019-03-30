@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.user.dao.UserBookDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.user.entity.UserBookEntity" id="userBookMap">
+        <result property="id" column="id"/>
+        <result property="teamanId" column="teaman_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="configCmd" column="config_cmd"/>
+        <result property="processTime" column="process_time"/>
+        <result property="logTime" column="log_time"/>
+        <result property="validFlag" column="valid_flag"/>
+        <result property="chapuId" column="chapu_id"/>
+        <result property="chapuName" column="chapu_name"/>
+        <result property="informFlag" column="inform_flag"/>
+        <result property="teaSortId" column="tea_sort_id"/>
+        <result property="teaSortName" column="tea_sort_name"/>
+        <result property="reservNo" column="reserv_no"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserBookEntity">
+		select * from tb_user_book where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.user.entity.UserBookEntity">
+		select * from tb_user_book where 1=1
+			<if test="id != null and id !='' ">
+				AND id = #{id}
+			</if>
+				<if test="teamanId != null and teamanId !='' ">
+				AND teaman_id = #{teamanId}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="configCmd != null and configCmd !='' ">
+				AND config_cmd = #{configCmd}
+			</if>
+				<if test="processTime != null and processTime !='' ">
+				AND process_time = #{processTime}
+			</if>
+				<if test="logTime != null and logTime !='' ">
+				AND log_time = #{logTime}
+			</if>
+				<if test="validFlag != null and validFlag !='' ">
+				AND valid_flag = #{validFlag}
+			</if>
+				<if test="chapuId != null and chapuId !='' ">
+				AND chapu_id = #{chapuId}
+			</if>
+				<if test="chapuName != null and chapuName !='' ">
+				AND chapu_name = #{chapuName}
+			</if>
+				<if test="informFlag != null and informFlag !='' ">
+				AND inform_flag = #{informFlag}
+			</if>
+				<if test="teaSortId != null and teaSortId !='' ">
+				AND tea_sort_id = #{teaSortId}
+			</if>
+				<if test="teaSortName != null and teaSortName !='' ">
+				AND tea_sort_name = #{teaSortName}
+			</if>
+				<if test="reservNo != null and reservNo !='' ">
+				AND reserv_no = #{reservNo}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_user_book where 1=1
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
+				<if test="teamanId != null and teamanId !='' ">
+                AND teaman_id = #{teamanId}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="configCmd != null and configCmd !='' ">
+                AND config_cmd = #{configCmd}
+            </if>
+				<if test="processTime != null and processTime !='' ">
+                AND process_time = #{processTime}
+            </if>
+				<if test="logTime != null and logTime !='' ">
+                AND log_time = #{logTime}
+            </if>
+				<if test="validFlag != null and validFlag !='' ">
+                AND valid_flag = #{validFlag}
+            </if>
+				<if test="chapuId != null and chapuId !='' ">
+                AND chapu_id = #{chapuId}
+            </if>
+				<if test="chapuName != null and chapuName !='' ">
+                AND chapu_name = #{chapuName}
+            </if>
+				<if test="informFlag != null and informFlag !='' ">
+                AND inform_flag = #{informFlag}
+            </if>
+				<if test="teaSortId != null and teaSortId !='' ">
+                AND tea_sort_id = #{teaSortId}
+            </if>
+				<if test="teaSortName != null and teaSortName !='' ">
+                AND tea_sort_name = #{teaSortName}
+            </if>
+				<if test="reservNo != null and reservNo !='' ">
+                AND reserv_no = #{reservNo}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.user.entity.UserBookEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_user_book
+		(
+			`teaman_id`, 
+			`device_id`, 
+			`config_cmd`, 
+			`process_time`, 
+			`log_time`, 
+			`valid_flag`, 
+			`chapu_id`, 
+			`chapu_name`, 
+			`inform_flag`, 
+			`tea_sort_id`, 
+			`tea_sort_name`, 
+			`reserv_no`
+		)
+		values
+		(
+			#{teamanId}, 
+			#{deviceId}, 
+			#{configCmd}, 
+			#{processTime}, 
+			#{logTime}, 
+			#{validFlag}, 
+			#{chapuId}, 
+			#{chapuName}, 
+			#{informFlag}, 
+			#{teaSortId}, 
+			#{teaSortName}, 
+			#{reservNo}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.user.entity.UserBookEntity">
+		update tb_user_book 
+		<set>
+			<if test="teamanId != null">`teaman_id` = #{teamanId}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="configCmd != null">`config_cmd` = #{configCmd}, </if>
+			<if test="processTime != null">`process_time` = #{processTime}, </if>
+			<if test="logTime != null">`log_time` = #{logTime}, </if>
+			<if test="validFlag != null">`valid_flag` = #{validFlag}, </if>
+			<if test="chapuId != null">`chapu_id` = #{chapuId}, </if>
+			<if test="chapuName != null">`chapu_name` = #{chapuName}, </if>
+			<if test="informFlag != null">`inform_flag` = #{informFlag}, </if>
+			<if test="teaSortId != null">`tea_sort_id` = #{teaSortId}, </if>
+			<if test="teaSortName != null">`tea_sort_name` = #{teaSortName}, </if>
+			<if test="reservNo != null">`reserv_no` = #{reservNo}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_user_book where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_user_book where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

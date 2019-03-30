@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.tea.dao.AppTeaSortDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.tea.entity.AppTeaSortEntity" id="appTeaSortMap">
+        <result property="sortId" column="sort_id"/>
+        <result property="name" column="name"/>
+        <result property="picPath" column="pic_path"/>
+        <result property="desc" column="desc"/>
+        <result property="tempMin" column="temp_min"/>
+        <result property="tempMax" column="temp_max"/>
+        <result property="duraMin" column="dura_min"/>
+        <result property="duraMax" column="dura_max"/>
+        <result property="isDefault" column="is_default"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.AppTeaSortEntity">
+		select * from t_app_tea_sort where sort_id = #{value}
+	</select>
+
+	<select id="queryAllTeaSorts" resultType="com.chisondo.server.modules.tea.dto.TeaSortRowDTO">
+		select
+			t.sort_id AS sortId,
+			t.name,
+			t.pic_path AS imgUrl,
+			t.desc,
+			t.temp_min AS tempMin,
+			t.temp_max AS tempMax,
+			t.dura_min AS duraMin,
+			t.dura_max AS duraMax,
+			t.is_default AS isDefault
+		FROM t_app_tea_sort t
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.tea.entity.AppTeaSortEntity">
+		select * from t_app_tea_sort where 1=1
+			<if test="sortId != null and sortId !='' ">
+				AND sort_id = #{sortId}
+			</if>
+				<if test="name != null and name !='' ">
+				AND name = #{name}
+			</if>
+				<if test="picPath != null and picPath !='' ">
+				AND pic_path = #{picPath}
+			</if>
+				<if test="desc != null and desc !='' ">
+				AND desc = #{desc}
+			</if>
+				<if test="tempMin != null and tempMin !='' ">
+				AND temp_min = #{tempMin}
+			</if>
+				<if test="tempMax != null and tempMax !='' ">
+				AND temp_max = #{tempMax}
+			</if>
+				<if test="duraMin != null and duraMin !='' ">
+				AND dura_min = #{duraMin}
+			</if>
+				<if test="duraMax != null and duraMax !='' ">
+				AND dura_max = #{duraMax}
+			</if>
+				<if test="isDefault != null and isDefault !='' ">
+				AND is_default = #{isDefault}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by sort_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_app_tea_sort where 1=1
+			<if test="sortId != null and sortId !='' ">
+                AND sort_id = #{sortId}
+            </if>
+				<if test="name != null and name !='' ">
+                AND name = #{name}
+            </if>
+				<if test="picPath != null and picPath !='' ">
+                AND pic_path = #{picPath}
+            </if>
+				<if test="desc != null and desc !='' ">
+                AND desc = #{desc}
+            </if>
+				<if test="tempMin != null and tempMin !='' ">
+                AND temp_min = #{tempMin}
+            </if>
+				<if test="tempMax != null and tempMax !='' ">
+                AND temp_max = #{tempMax}
+            </if>
+				<if test="duraMin != null and duraMin !='' ">
+                AND dura_min = #{duraMin}
+            </if>
+				<if test="duraMax != null and duraMax !='' ">
+                AND dura_max = #{duraMax}
+            </if>
+				<if test="isDefault != null and isDefault !='' ">
+                AND is_default = #{isDefault}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.AppTeaSortEntity" useGeneratedKeys="true" keyProperty="sortId">
+		insert into t_app_tea_sort
+		(
+			`name`, 
+			`pic_path`, 
+			`desc`, 
+			`temp_min`, 
+			`temp_max`, 
+			`dura_min`, 
+			`dura_max`, 
+			`is_default`
+		)
+		values
+		(
+			#{name}, 
+			#{picPath}, 
+			#{desc}, 
+			#{tempMin}, 
+			#{tempMax}, 
+			#{duraMin}, 
+			#{duraMax}, 
+			#{isDefault}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.tea.entity.AppTeaSortEntity">
+		update t_app_tea_sort 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="picPath != null">`pic_path` = #{picPath}, </if>
+			<if test="desc != null">`desc` = #{desc}, </if>
+			<if test="tempMin != null">`temp_min` = #{tempMin}, </if>
+			<if test="tempMax != null">`temp_max` = #{tempMax}, </if>
+			<if test="duraMin != null">`dura_min` = #{duraMin}, </if>
+			<if test="duraMax != null">`dura_max` = #{duraMax}, </if>
+			<if test="isDefault != null">`is_default` = #{isDefault}</if>
+		</set>
+		where sort_id = #{sortId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_app_tea_sort where sort_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_app_tea_sort where sort_id in 
+		<foreach item="sortId" collection="array" open="(" separator="," close=")">
+			#{sortId}
+		</foreach>
+	</delete>
+
+</mapper>

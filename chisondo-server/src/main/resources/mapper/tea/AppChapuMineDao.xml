@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.tea.dao.AppChapuMineDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.tea.entity.AppChapuMineEntity" id="appChapuMineMap">
+        <result property="userId" column="user_id"/>
+        <result property="chapuId" column="chapu_id"/>
+        <result property="flag" column="flag"/>
+        <result property="operTime" column="oper_time"/>
+        <result property="useTimes" column="use_times"/>
+        <result property="lastUseTime" column="last_use_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.AppChapuMineEntity">
+		select * from t_app_chapu_mine where user_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.tea.entity.AppChapuMineEntity">
+		select * from t_app_chapu_mine where 1=1
+			<if test="userId != null and userId !='' ">
+				AND user_id = #{userId}
+			</if>
+				<if test="chapuId != null and chapuId !='' ">
+				AND chapu_id = #{chapuId}
+			</if>
+				<if test="flag != null and flag !='' ">
+				AND flag = #{flag}
+			</if>
+				<if test="operTime != null and operTime !='' ">
+				AND oper_time = #{operTime}
+			</if>
+				<if test="useTimes != null and useTimes !='' ">
+				AND use_times = #{useTimes}
+			</if>
+				<if test="lastUseTime != null and lastUseTime !='' ">
+				AND last_use_time = #{lastUseTime}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by user_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_app_chapu_mine where 1=1
+			<if test="userId != null and userId !='' ">
+                AND user_id = #{userId}
+            </if>
+				<if test="chapuId != null and chapuId !='' ">
+                AND chapu_id = #{chapuId}
+            </if>
+				<if test="flag != null and flag !='' ">
+                AND flag = #{flag}
+            </if>
+				<if test="operTime != null and operTime !='' ">
+                AND oper_time = #{operTime}
+            </if>
+				<if test="useTimes != null and useTimes !='' ">
+                AND use_times = #{useTimes}
+            </if>
+				<if test="lastUseTime != null and lastUseTime !='' ">
+                AND last_use_time = #{lastUseTime}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.AppChapuMineEntity">
+		insert into t_app_chapu_mine
+		(
+			`user_id`, 
+			`chapu_id`, 
+			`flag`, 
+			`oper_time`, 
+			`use_times`, 
+			`last_use_time`
+		)
+		values
+		(
+			#{userId}, 
+			#{chapuId}, 
+			#{flag}, 
+			#{operTime}, 
+			#{useTimes}, 
+			#{lastUseTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.tea.entity.AppChapuMineEntity">
+		update t_app_chapu_mine 
+		<set>
+			<if test="chapuId != null">`chapu_id` = #{chapuId}, </if>
+			<if test="flag != null">`flag` = #{flag}, </if>
+			<if test="operTime != null">`oper_time` = #{operTime}, </if>
+			<if test="useTimes != null">`use_times` = #{useTimes}, </if>
+			<if test="lastUseTime != null">`last_use_time` = #{lastUseTime}</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_app_chapu_mine where user_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_app_chapu_mine where user_id in 
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+</mapper>

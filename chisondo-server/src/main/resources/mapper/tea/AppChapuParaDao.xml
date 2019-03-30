@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.tea.dao.AppChapuParaDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.tea.entity.AppChapuParaEntity" id="appChapuParaMap">
+        <result property="chapuId" column="chapu_id"/>
+        <result property="number" column="number"/>
+        <result property="temp" column="temp"/>
+        <result property="dura" column="dura"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.AppChapuParaEntity">
+		select * from t_app_chapu_para where chapu_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.tea.entity.AppChapuParaEntity">
+		select * from t_app_chapu_para where 1=1
+			<if test="chapuId != null and chapuId !='' ">
+				AND chapu_id = #{chapuId}
+			</if>
+				<if test="number != null and number !='' ">
+				AND number = #{number}
+			</if>
+				<if test="temp != null and temp !='' ">
+				AND temp = #{temp}
+			</if>
+				<if test="dura != null and dura !='' ">
+				AND dura = #{dura}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by chapu_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_app_chapu_para where 1=1
+			<if test="chapuId != null and chapuId !='' ">
+                AND chapu_id = #{chapuId}
+            </if>
+				<if test="number != null and number !='' ">
+                AND number = #{number}
+            </if>
+				<if test="temp != null and temp !='' ">
+                AND temp = #{temp}
+            </if>
+				<if test="dura != null and dura !='' ">
+                AND dura = #{dura}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.AppChapuParaEntity">
+		insert into t_app_chapu_para
+		(
+			`chapu_id`, 
+			`number`, 
+			`temp`, 
+			`dura`
+		)
+		values
+		(
+			#{chapuId}, 
+			#{number}, 
+			#{temp}, 
+			#{dura}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.tea.entity.AppChapuParaEntity">
+		update t_app_chapu_para 
+		<set>
+			<if test="number != null">`number` = #{number}, </if>
+			<if test="temp != null">`temp` = #{temp}, </if>
+			<if test="dura != null">`dura` = #{dura}</if>
+		</set>
+		where chapu_id = #{chapuId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_app_chapu_para where chapu_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_app_chapu_para where chapu_id in 
+		<foreach item="chapuId" collection="array" open="(" separator="," close=")">
+			#{chapuId}
+		</foreach>
+	</delete>
+
+</mapper>

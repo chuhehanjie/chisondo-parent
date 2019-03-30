@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.user.dao.UserDeviceMtLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.user.entity.UserDeviceMtLogEntity" id="userDeviceMtLogMap">
+        <result property="logId" column="log_id"/>
+        <result property="teamanId" column="teaman_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="cmdContent" column="cmd_content"/>
+        <result property="userIp" column="user_ip"/>
+        <result property="deviceIp" column="device_ip"/>
+        <result property="mtTime" column="mt_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserDeviceMtLogEntity">
+		select * from tb_user_device_mt_log where log_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.user.entity.UserDeviceMtLogEntity">
+		select * from tb_user_device_mt_log where 1=1
+			<if test="logId != null and logId !='' ">
+				AND log_id = #{logId}
+			</if>
+				<if test="teamanId != null and teamanId !='' ">
+				AND teaman_id = #{teamanId}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="cmdContent != null and cmdContent !='' ">
+				AND cmd_content = #{cmdContent}
+			</if>
+				<if test="userIp != null and userIp !='' ">
+				AND user_ip = #{userIp}
+			</if>
+				<if test="deviceIp != null and deviceIp !='' ">
+				AND device_ip = #{deviceIp}
+			</if>
+				<if test="mtTime != null and mtTime !='' ">
+				AND mt_time = #{mtTime}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by log_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_user_device_mt_log where 1=1
+			<if test="logId != null and logId !='' ">
+                AND log_id = #{logId}
+            </if>
+				<if test="teamanId != null and teamanId !='' ">
+                AND teaman_id = #{teamanId}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="cmdContent != null and cmdContent !='' ">
+                AND cmd_content = #{cmdContent}
+            </if>
+				<if test="userIp != null and userIp !='' ">
+                AND user_ip = #{userIp}
+            </if>
+				<if test="deviceIp != null and deviceIp !='' ">
+                AND device_ip = #{deviceIp}
+            </if>
+				<if test="mtTime != null and mtTime !='' ">
+                AND mt_time = #{mtTime}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.user.entity.UserDeviceMtLogEntity" useGeneratedKeys="true" keyProperty="logId">
+		insert into tb_user_device_mt_log
+		(
+			`teaman_id`, 
+			`device_id`, 
+			`cmd_content`, 
+			`user_ip`, 
+			`device_ip`, 
+			`mt_time`
+		)
+		values
+		(
+			#{teamanId}, 
+			#{deviceId}, 
+			#{cmdContent}, 
+			#{userIp}, 
+			#{deviceIp}, 
+			#{mtTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.user.entity.UserDeviceMtLogEntity">
+		update tb_user_device_mt_log 
+		<set>
+			<if test="teamanId != null">`teaman_id` = #{teamanId}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="cmdContent != null">`cmd_content` = #{cmdContent}, </if>
+			<if test="userIp != null">`user_ip` = #{userIp}, </if>
+			<if test="deviceIp != null">`device_ip` = #{deviceIp}, </if>
+			<if test="mtTime != null">`mt_time` = #{mtTime}</if>
+		</set>
+		where log_id = #{logId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_user_device_mt_log where log_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_user_device_mt_log where log_id in 
+		<foreach item="logId" collection="array" open="(" separator="," close=")">
+			#{logId}
+		</foreach>
+	</delete>
+
+</mapper>

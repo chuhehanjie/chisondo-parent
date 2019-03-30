@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.device.dao.DevOnlineStatisticsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.device.entity.DevOnlineStatisticsEntity" id="devOnlineStatisticsMap">
+        <result property="rowId" column="row_id"/>
+        <result property="onlineNum" column="online_num"/>
+        <result property="saveTime" column="save_time"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DevOnlineStatisticsEntity">
+		select * from tb_dev_online_statistics where row_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.DevOnlineStatisticsEntity">
+		select * from tb_dev_online_statistics where 1=1
+			<if test="rowId != null and rowId !='' ">
+				AND row_id = #{rowId}
+			</if>
+				<if test="onlineNum != null and onlineNum !='' ">
+				AND online_num = #{onlineNum}
+			</if>
+				<if test="saveTime != null and saveTime !='' ">
+				AND save_time = #{saveTime}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by row_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_dev_online_statistics where 1=1
+			<if test="rowId != null and rowId !='' ">
+                AND row_id = #{rowId}
+            </if>
+				<if test="onlineNum != null and onlineNum !='' ">
+                AND online_num = #{onlineNum}
+            </if>
+				<if test="saveTime != null and saveTime !='' ">
+                AND save_time = #{saveTime}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.device.entity.DevOnlineStatisticsEntity" useGeneratedKeys="true" keyProperty="rowId">
+		insert into tb_dev_online_statistics
+		(
+			`online_num`, 
+			`save_time`
+		)
+		values
+		(
+			#{onlineNum}, 
+			#{saveTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DevOnlineStatisticsEntity">
+		update tb_dev_online_statistics 
+		<set>
+			<if test="onlineNum != null">`online_num` = #{onlineNum}, </if>
+			<if test="saveTime != null">`save_time` = #{saveTime}</if>
+		</set>
+		where row_id = #{rowId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_dev_online_statistics where row_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_dev_online_statistics where row_id in 
+		<foreach item="rowId" collection="array" open="(" separator="," close=")">
+			#{rowId}
+		</foreach>
+	</delete>
+
+</mapper>

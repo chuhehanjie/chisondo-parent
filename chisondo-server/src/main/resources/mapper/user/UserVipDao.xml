@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.user.dao.UserVipDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.user.entity.UserVipEntity" id="dataVipMap">
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="vipNickname" column="VIP_NICKNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="vipPwd" column="VIP_PWD"/>
+        <result property="vipName" column="VIP_NAME"/>
+        <result property="vipEmail" column="VIP_EMAIL"/>
+        <result property="sex" column="SEX"/>
+        <result property="vipHeadImg" column="VIP_HEAD_IMG"/>
+        <result property="personalizedSignature" column="PERSONALIZED_SIGNATURE"/>
+        <result property="useTag" column="USE_TAG"/>
+        <result property="rsrvStr1" column="RSRV_STR1"/>
+        <result property="rsrvStr3" column="RSRV_STR3"/>
+        <result property="rsrvStr2" column="RSRV_STR2"/>
+        <result property="rsrvNum1" column="RSRV_NUM1"/>
+        <result property="rsrvNum2" column="RSRV_NUM2"/>
+        <result property="rsrvNum3" column="RSRV_NUM3"/>
+        <result property="qqId" column="QQ_ID"/>
+        <result property="qqNickname" column="QQ_NICKNAME"/>
+        <result property="wechatId" column="WECHAT_ID"/>
+        <result property="wechatNickname" column="WECHAT_NICKNAME"/>
+        <result property="microblogId" column="MICROBLOG_ID"/>
+        <result property="microblogNickname" column="MICROBLOG_NICKNAME"/>
+        <result property="regTime" column="reg_time"/>
+        <result property="birthday" column="birthday"/>
+        <result property="backImg" column="back_img"/>
+        <result property="nicknameJianpin" column="nickname_jianpin"/>
+        <result property="nameFirstJianpin" column="name_first_jianpin"/>
+        <result property="loginTime" column="login_time"/>
+        <result property="isTalent" column="is_talent"/>
+        <result property="talentSettime" column="talent_settime"/>
+        <result property="wechatUnionid" column="wechat_unionid"/>
+        <result property="chaqinOpenid" column="chaqin_openid"/>
+        <result property="appMarketName" column="app_market_name"/>
+        <result property="isFirstLogin4bind" column="is_first_login_4bind"/>
+        <result property="recomUserId" column="recom_user_id"/>
+        <result property="regSrcType" column="reg_src_type"/>
+        <result property="regSrc" column="reg_src"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserVipEntity">
+		select * from t_data_vip where MEMBER_ID = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.user.entity.UserVipEntity">
+		select * from t_data_vip where 1=1
+			<if test="memberId != null and memberId !='' ">
+				AND MEMBER_ID = #{memberId}
+			</if>
+				<if test="vipNickname != null and vipNickname !='' ">
+				AND VIP_NICKNAME = #{vipNickname}
+			</if>
+				<if test="phone != null and phone !='' ">
+				AND PHONE = #{phone}
+			</if>
+				<if test="vipPwd != null and vipPwd !='' ">
+				AND VIP_PWD = #{vipPwd}
+			</if>
+				<if test="vipName != null and vipName !='' ">
+				AND VIP_NAME = #{vipName}
+			</if>
+				<if test="vipEmail != null and vipEmail !='' ">
+				AND VIP_EMAIL = #{vipEmail}
+			</if>
+				<if test="sex != null and sex !='' ">
+				AND SEX = #{sex}
+			</if>
+				<if test="vipHeadImg != null and vipHeadImg !='' ">
+				AND VIP_HEAD_IMG = #{vipHeadImg}
+			</if>
+				<if test="personalizedSignature != null and personalizedSignature !='' ">
+				AND PERSONALIZED_SIGNATURE = #{personalizedSignature}
+			</if>
+				<if test="useTag != null and useTag !='' ">
+				AND USE_TAG = #{useTag}
+			</if>
+				<if test="rsrvStr1 != null and rsrvStr1 !='' ">
+				AND RSRV_STR1 = #{rsrvStr1}
+			</if>
+				<if test="rsrvStr3 != null and rsrvStr3 !='' ">
+				AND RSRV_STR3 = #{rsrvStr3}
+			</if>
+				<if test="rsrvStr2 != null and rsrvStr2 !='' ">
+				AND RSRV_STR2 = #{rsrvStr2}
+			</if>
+				<if test="rsrvNum1 != null and rsrvNum1 !='' ">
+				AND RSRV_NUM1 = #{rsrvNum1}
+			</if>
+				<if test="rsrvNum2 != null and rsrvNum2 !='' ">
+				AND RSRV_NUM2 = #{rsrvNum2}
+			</if>
+				<if test="rsrvNum3 != null and rsrvNum3 !='' ">
+				AND RSRV_NUM3 = #{rsrvNum3}
+			</if>
+				<if test="qqId != null and qqId !='' ">
+				AND QQ_ID = #{qqId}
+			</if>
+				<if test="qqNickname != null and qqNickname !='' ">
+				AND QQ_NICKNAME = #{qqNickname}
+			</if>
+				<if test="wechatId != null and wechatId !='' ">
+				AND WECHAT_ID = #{wechatId}
+			</if>
+				<if test="wechatNickname != null and wechatNickname !='' ">
+				AND WECHAT_NICKNAME = #{wechatNickname}
+			</if>
+				<if test="microblogId != null and microblogId !='' ">
+				AND MICROBLOG_ID = #{microblogId}
+			</if>
+				<if test="microblogNickname != null and microblogNickname !='' ">
+				AND MICROBLOG_NICKNAME = #{microblogNickname}
+			</if>
+				<if test="regTime != null and regTime !='' ">
+				AND reg_time = #{regTime}
+			</if>
+				<if test="birthday != null and birthday !='' ">
+				AND birthday = #{birthday}
+			</if>
+				<if test="backImg != null and backImg !='' ">
+				AND back_img = #{backImg}
+			</if>
+				<if test="nicknameJianpin != null and nicknameJianpin !='' ">
+				AND nickname_jianpin = #{nicknameJianpin}
+			</if>
+				<if test="nameFirstJianpin != null and nameFirstJianpin !='' ">
+				AND name_first_jianpin = #{nameFirstJianpin}
+			</if>
+				<if test="loginTime != null and loginTime !='' ">
+				AND login_time = #{loginTime}
+			</if>
+				<if test="isTalent != null and isTalent !='' ">
+				AND is_talent = #{isTalent}
+			</if>
+				<if test="talentSettime != null and talentSettime !='' ">
+				AND talent_settime = #{talentSettime}
+			</if>
+				<if test="wechatUnionid != null and wechatUnionid !='' ">
+				AND wechat_unionid = #{wechatUnionid}
+			</if>
+				<if test="chaqinOpenid != null and chaqinOpenid !='' ">
+				AND chaqin_openid = #{chaqinOpenid}
+			</if>
+				<if test="appMarketName != null and appMarketName !='' ">
+				AND app_market_name = #{appMarketName}
+			</if>
+				<if test="isFirstLogin4bind != null and isFirstLogin4bind !='' ">
+				AND is_first_login_4bind = #{isFirstLogin4bind}
+			</if>
+				<if test="recomUserId != null and recomUserId !='' ">
+				AND recom_user_id = #{recomUserId}
+			</if>
+				<if test="regSrcType != null and regSrcType !='' ">
+				AND reg_src_type = #{regSrcType}
+			</if>
+				<if test="regSrc != null and regSrc !='' ">
+				AND reg_src = #{regSrc}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by MEMBER_ID desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_data_vip where 1=1
+			<if test="memberId != null and memberId !='' ">
+                AND MEMBER_ID = #{memberId}
+            </if>
+				<if test="vipNickname != null and vipNickname !='' ">
+                AND VIP_NICKNAME = #{vipNickname}
+            </if>
+				<if test="phone != null and phone !='' ">
+                AND PHONE = #{phone}
+            </if>
+				<if test="vipPwd != null and vipPwd !='' ">
+                AND VIP_PWD = #{vipPwd}
+            </if>
+				<if test="vipName != null and vipName !='' ">
+                AND VIP_NAME = #{vipName}
+            </if>
+				<if test="vipEmail != null and vipEmail !='' ">
+                AND VIP_EMAIL = #{vipEmail}
+            </if>
+				<if test="sex != null and sex !='' ">
+                AND SEX = #{sex}
+            </if>
+				<if test="vipHeadImg != null and vipHeadImg !='' ">
+                AND VIP_HEAD_IMG = #{vipHeadImg}
+            </if>
+				<if test="personalizedSignature != null and personalizedSignature !='' ">
+                AND PERSONALIZED_SIGNATURE = #{personalizedSignature}
+            </if>
+				<if test="useTag != null and useTag !='' ">
+                AND USE_TAG = #{useTag}
+            </if>
+				<if test="rsrvStr1 != null and rsrvStr1 !='' ">
+                AND RSRV_STR1 = #{rsrvStr1}
+            </if>
+				<if test="rsrvStr3 != null and rsrvStr3 !='' ">
+                AND RSRV_STR3 = #{rsrvStr3}
+            </if>
+				<if test="rsrvStr2 != null and rsrvStr2 !='' ">
+                AND RSRV_STR2 = #{rsrvStr2}
+            </if>
+				<if test="rsrvNum1 != null and rsrvNum1 !='' ">
+                AND RSRV_NUM1 = #{rsrvNum1}
+            </if>
+				<if test="rsrvNum2 != null and rsrvNum2 !='' ">
+                AND RSRV_NUM2 = #{rsrvNum2}
+            </if>
+				<if test="rsrvNum3 != null and rsrvNum3 !='' ">
+                AND RSRV_NUM3 = #{rsrvNum3}
+            </if>
+				<if test="qqId != null and qqId !='' ">
+                AND QQ_ID = #{qqId}
+            </if>
+				<if test="qqNickname != null and qqNickname !='' ">
+                AND QQ_NICKNAME = #{qqNickname}
+            </if>
+				<if test="wechatId != null and wechatId !='' ">
+                AND WECHAT_ID = #{wechatId}
+            </if>
+				<if test="wechatNickname != null and wechatNickname !='' ">
+                AND WECHAT_NICKNAME = #{wechatNickname}
+            </if>
+				<if test="microblogId != null and microblogId !='' ">
+                AND MICROBLOG_ID = #{microblogId}
+            </if>
+				<if test="microblogNickname != null and microblogNickname !='' ">
+                AND MICROBLOG_NICKNAME = #{microblogNickname}
+            </if>
+				<if test="regTime != null and regTime !='' ">
+                AND reg_time = #{regTime}
+            </if>
+				<if test="birthday != null and birthday !='' ">
+                AND birthday = #{birthday}
+            </if>
+				<if test="backImg != null and backImg !='' ">
+                AND back_img = #{backImg}
+            </if>
+				<if test="nicknameJianpin != null and nicknameJianpin !='' ">
+                AND nickname_jianpin = #{nicknameJianpin}
+            </if>
+				<if test="nameFirstJianpin != null and nameFirstJianpin !='' ">
+                AND name_first_jianpin = #{nameFirstJianpin}
+            </if>
+				<if test="loginTime != null and loginTime !='' ">
+                AND login_time = #{loginTime}
+            </if>
+				<if test="isTalent != null and isTalent !='' ">
+                AND is_talent = #{isTalent}
+            </if>
+				<if test="talentSettime != null and talentSettime !='' ">
+                AND talent_settime = #{talentSettime}
+            </if>
+				<if test="wechatUnionid != null and wechatUnionid !='' ">
+                AND wechat_unionid = #{wechatUnionid}
+            </if>
+				<if test="chaqinOpenid != null and chaqinOpenid !='' ">
+                AND chaqin_openid = #{chaqinOpenid}
+            </if>
+				<if test="appMarketName != null and appMarketName !='' ">
+                AND app_market_name = #{appMarketName}
+            </if>
+				<if test="isFirstLogin4bind != null and isFirstLogin4bind !='' ">
+                AND is_first_login_4bind = #{isFirstLogin4bind}
+            </if>
+				<if test="recomUserId != null and recomUserId !='' ">
+                AND recom_user_id = #{recomUserId}
+            </if>
+				<if test="regSrcType != null and regSrcType !='' ">
+                AND reg_src_type = #{regSrcType}
+            </if>
+				<if test="regSrc != null and regSrc !='' ">
+                AND reg_src = #{regSrc}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.user.entity.UserVipEntity" useGeneratedKeys="true" keyProperty="memberId">
+		insert into t_data_vip
+		(
+			`VIP_NICKNAME`, 
+			`PHONE`, 
+			`VIP_PWD`, 
+			`VIP_NAME`, 
+			`VIP_EMAIL`, 
+			`SEX`, 
+			`VIP_HEAD_IMG`, 
+			`PERSONALIZED_SIGNATURE`, 
+			`USE_TAG`, 
+			`RSRV_STR1`, 
+			`RSRV_STR3`, 
+			`RSRV_STR2`, 
+			`RSRV_NUM1`, 
+			`RSRV_NUM2`, 
+			`RSRV_NUM3`, 
+			`QQ_ID`, 
+			`QQ_NICKNAME`, 
+			`WECHAT_ID`, 
+			`WECHAT_NICKNAME`, 
+			`MICROBLOG_ID`, 
+			`MICROBLOG_NICKNAME`, 
+			`reg_time`, 
+			`birthday`, 
+			`back_img`, 
+			`nickname_jianpin`, 
+			`name_first_jianpin`, 
+			`login_time`, 
+			`is_talent`, 
+			`talent_settime`, 
+			`wechat_unionid`, 
+			`chaqin_openid`, 
+			`app_market_name`, 
+			`is_first_login_4bind`, 
+			`recom_user_id`, 
+			`reg_src_type`, 
+			`reg_src`
+		)
+		values
+		(
+			#{vipNickname}, 
+			#{phone}, 
+			#{vipPwd}, 
+			#{vipName}, 
+			#{vipEmail}, 
+			#{sex}, 
+			#{vipHeadImg}, 
+			#{personalizedSignature}, 
+			#{useTag}, 
+			#{rsrvStr1}, 
+			#{rsrvStr3}, 
+			#{rsrvStr2}, 
+			#{rsrvNum1}, 
+			#{rsrvNum2}, 
+			#{rsrvNum3}, 
+			#{qqId}, 
+			#{qqNickname}, 
+			#{wechatId}, 
+			#{wechatNickname}, 
+			#{microblogId}, 
+			#{microblogNickname}, 
+			#{regTime}, 
+			#{birthday}, 
+			#{backImg}, 
+			#{nicknameJianpin}, 
+			#{nameFirstJianpin}, 
+			#{loginTime}, 
+			#{isTalent}, 
+			#{talentSettime}, 
+			#{wechatUnionid}, 
+			#{chaqinOpenid}, 
+			#{appMarketName}, 
+			#{isFirstLogin4bind}, 
+			#{recomUserId}, 
+			#{regSrcType}, 
+			#{regSrc}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.user.entity.UserVipEntity">
+		update t_data_vip 
+		<set>
+			<if test="vipNickname != null">`VIP_NICKNAME` = #{vipNickname}, </if>
+			<if test="phone != null">`PHONE` = #{phone}, </if>
+			<if test="vipPwd != null">`VIP_PWD` = #{vipPwd}, </if>
+			<if test="vipName != null">`VIP_NAME` = #{vipName}, </if>
+			<if test="vipEmail != null">`VIP_EMAIL` = #{vipEmail}, </if>
+			<if test="sex != null">`SEX` = #{sex}, </if>
+			<if test="vipHeadImg != null">`VIP_HEAD_IMG` = #{vipHeadImg}, </if>
+			<if test="personalizedSignature != null">`PERSONALIZED_SIGNATURE` = #{personalizedSignature}, </if>
+			<if test="useTag != null">`USE_TAG` = #{useTag}, </if>
+			<if test="rsrvStr1 != null">`RSRV_STR1` = #{rsrvStr1}, </if>
+			<if test="rsrvStr3 != null">`RSRV_STR3` = #{rsrvStr3}, </if>
+			<if test="rsrvStr2 != null">`RSRV_STR2` = #{rsrvStr2}, </if>
+			<if test="rsrvNum1 != null">`RSRV_NUM1` = #{rsrvNum1}, </if>
+			<if test="rsrvNum2 != null">`RSRV_NUM2` = #{rsrvNum2}, </if>
+			<if test="rsrvNum3 != null">`RSRV_NUM3` = #{rsrvNum3}, </if>
+			<if test="qqId != null">`QQ_ID` = #{qqId}, </if>
+			<if test="qqNickname != null">`QQ_NICKNAME` = #{qqNickname}, </if>
+			<if test="wechatId != null">`WECHAT_ID` = #{wechatId}, </if>
+			<if test="wechatNickname != null">`WECHAT_NICKNAME` = #{wechatNickname}, </if>
+			<if test="microblogId != null">`MICROBLOG_ID` = #{microblogId}, </if>
+			<if test="microblogNickname != null">`MICROBLOG_NICKNAME` = #{microblogNickname}, </if>
+			<if test="regTime != null">`reg_time` = #{regTime}, </if>
+			<if test="birthday != null">`birthday` = #{birthday}, </if>
+			<if test="backImg != null">`back_img` = #{backImg}, </if>
+			<if test="nicknameJianpin != null">`nickname_jianpin` = #{nicknameJianpin}, </if>
+			<if test="nameFirstJianpin != null">`name_first_jianpin` = #{nameFirstJianpin}, </if>
+			<if test="loginTime != null">`login_time` = #{loginTime}, </if>
+			<if test="isTalent != null">`is_talent` = #{isTalent}, </if>
+			<if test="talentSettime != null">`talent_settime` = #{talentSettime}, </if>
+			<if test="wechatUnionid != null">`wechat_unionid` = #{wechatUnionid}, </if>
+			<if test="chaqinOpenid != null">`chaqin_openid` = #{chaqinOpenid}, </if>
+			<if test="appMarketName != null">`app_market_name` = #{appMarketName}, </if>
+			<if test="isFirstLogin4bind != null">`is_first_login_4bind` = #{isFirstLogin4bind}, </if>
+			<if test="recomUserId != null">`recom_user_id` = #{recomUserId}, </if>
+			<if test="regSrcType != null">`reg_src_type` = #{regSrcType}, </if>
+			<if test="regSrc != null">`reg_src` = #{regSrc}</if>
+		</set>
+		where MEMBER_ID = #{memberId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_data_vip where MEMBER_ID = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_data_vip where MEMBER_ID in 
+		<foreach item="memberId" collection="array" open="(" separator="," close=")">
+			#{memberId}
+		</foreach>
+	</delete>
+
+</mapper>

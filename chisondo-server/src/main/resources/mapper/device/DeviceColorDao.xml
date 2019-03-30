@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.device.dao.DeviceColorDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.device.entity.DeviceColorEntity" id="deviceColorMap">
+        <result property="colorId" column="color_id"/>
+        <result property="deviceTypeId" column="device_type_id"/>
+        <result property="colorRgb" column="color_rgb"/>
+        <result property="colorName" column="color_name"/>
+        <result property="imageLarge" column="image_large"/>
+        <result property="imageSmall" column="image_small"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DeviceColorEntity">
+		select * from tb_device_color where color_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.DeviceColorEntity">
+		select * from tb_device_color where 1=1
+			<if test="colorId != null and colorId !='' ">
+				AND color_id = #{colorId}
+			</if>
+				<if test="deviceTypeId != null and deviceTypeId !='' ">
+				AND device_type_id = #{deviceTypeId}
+			</if>
+				<if test="colorRgb != null and colorRgb !='' ">
+				AND color_rgb = #{colorRgb}
+			</if>
+				<if test="colorName != null and colorName !='' ">
+				AND color_name = #{colorName}
+			</if>
+				<if test="imageLarge != null and imageLarge !='' ">
+				AND image_large = #{imageLarge}
+			</if>
+				<if test="imageSmall != null and imageSmall !='' ">
+				AND image_small = #{imageSmall}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by color_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_device_color where 1=1
+			<if test="colorId != null and colorId !='' ">
+                AND color_id = #{colorId}
+            </if>
+				<if test="deviceTypeId != null and deviceTypeId !='' ">
+                AND device_type_id = #{deviceTypeId}
+            </if>
+				<if test="colorRgb != null and colorRgb !='' ">
+                AND color_rgb = #{colorRgb}
+            </if>
+				<if test="colorName != null and colorName !='' ">
+                AND color_name = #{colorName}
+            </if>
+				<if test="imageLarge != null and imageLarge !='' ">
+                AND image_large = #{imageLarge}
+            </if>
+				<if test="imageSmall != null and imageSmall !='' ">
+                AND image_small = #{imageSmall}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.device.entity.DeviceColorEntity" useGeneratedKeys="true" keyProperty="colorId">
+		insert into tb_device_color
+		(
+			`device_type_id`, 
+			`color_rgb`, 
+			`color_name`, 
+			`image_large`, 
+			`image_small`
+		)
+		values
+		(
+			#{deviceTypeId}, 
+			#{colorRgb}, 
+			#{colorName}, 
+			#{imageLarge}, 
+			#{imageSmall}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DeviceColorEntity">
+		update tb_device_color 
+		<set>
+			<if test="deviceTypeId != null">`device_type_id` = #{deviceTypeId}, </if>
+			<if test="colorRgb != null">`color_rgb` = #{colorRgb}, </if>
+			<if test="colorName != null">`color_name` = #{colorName}, </if>
+			<if test="imageLarge != null">`image_large` = #{imageLarge}, </if>
+			<if test="imageSmall != null">`image_small` = #{imageSmall}</if>
+		</set>
+		where color_id = #{colorId}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_device_color where color_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_device_color where color_id in 
+		<foreach item="colorId" collection="array" open="(" separator="," close=")">
+			#{colorId}
+		</foreach>
+	</delete>
+
+</mapper>

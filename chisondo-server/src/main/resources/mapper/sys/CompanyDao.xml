@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.sys.dao.CompanyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.sys.entity.CompanyEntity" id="companyMap">
+        <result property="id" column="id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="companyAddress" column="company_address"/>
+        <result property="relaName" column="rela_name"/>
+        <result property="relaPhone" column="rela_phone"/>
+        <result property="website" column="website"/>
+        <result property="key" column="key"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.sys.entity.CompanyEntity">
+		select * from tb_company where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.sys.entity.CompanyEntity">
+		select * from tb_company where 1=1
+			<if test="id != null and id !='' ">
+				AND id = #{id}
+			</if>
+				<if test="companyName != null and companyName !='' ">
+				AND company_name = #{companyName}
+			</if>
+				<if test="companyAddress != null and companyAddress !='' ">
+				AND company_address = #{companyAddress}
+			</if>
+				<if test="relaName != null and relaName !='' ">
+				AND rela_name = #{relaName}
+			</if>
+				<if test="relaPhone != null and relaPhone !='' ">
+				AND rela_phone = #{relaPhone}
+			</if>
+				<if test="website != null and website !='' ">
+				AND website = #{website}
+			</if>
+				<if test="key != null and key !='' ">
+				AND key = #{key}
+			</if>
+				<if test="remark != null and remark !='' ">
+				AND remark = #{remark}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_company where 1=1
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
+				<if test="companyName != null and companyName !='' ">
+                AND company_name = #{companyName}
+            </if>
+				<if test="companyAddress != null and companyAddress !='' ">
+                AND company_address = #{companyAddress}
+            </if>
+				<if test="relaName != null and relaName !='' ">
+                AND rela_name = #{relaName}
+            </if>
+				<if test="relaPhone != null and relaPhone !='' ">
+                AND rela_phone = #{relaPhone}
+            </if>
+				<if test="website != null and website !='' ">
+                AND website = #{website}
+            </if>
+				<if test="key != null and key !='' ">
+                AND key = #{key}
+            </if>
+				<if test="remark != null and remark !='' ">
+                AND remark = #{remark}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.sys.entity.CompanyEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_company
+		(
+			`company_name`, 
+			`company_address`, 
+			`rela_name`, 
+			`rela_phone`, 
+			`website`, 
+			`key`, 
+			`remark`
+		)
+		values
+		(
+			#{companyName}, 
+			#{companyAddress}, 
+			#{relaName}, 
+			#{relaPhone}, 
+			#{website}, 
+			#{key}, 
+			#{remark}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.sys.entity.CompanyEntity">
+		update tb_company 
+		<set>
+			<if test="companyName != null">`company_name` = #{companyName}, </if>
+			<if test="companyAddress != null">`company_address` = #{companyAddress}, </if>
+			<if test="relaName != null">`rela_name` = #{relaName}, </if>
+			<if test="relaPhone != null">`rela_phone` = #{relaPhone}, </if>
+			<if test="website != null">`website` = #{website}, </if>
+			<if test="key != null">`key` = #{key}, </if>
+			<if test="remark != null">`remark` = #{remark}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_company where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_company where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

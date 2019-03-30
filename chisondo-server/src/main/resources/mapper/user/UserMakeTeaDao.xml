@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.user.dao.UserMakeTeaDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.user.entity.UserMakeTeaEntity" id="userMakeTeaMap">
+        <result property="id" column="id"/>
+        <result property="teamanId" column="teaman_id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="chapuId" column="chapu_id"/>
+        <result property="chapuName" column="chapu_name"/>
+        <result property="maxNum" column="max_num"/>
+        <result property="makeIndex" column="make_index"/>
+        <result property="addTime" column="add_time"/>
+        <result property="lastTime" column="last_time"/>
+        <result property="cancelTime" column="cancel_time"/>
+        <result property="status" column="status"/>
+        <result property="temperature" column="temperature"/>
+        <result property="warm" column="warm"/>
+        <result property="soak" column="soak"/>
+        <result property="teaSortId" column="tea_sort_id"/>
+        <result property="teaSortName" column="tea_sort_name"/>
+        <result property="makeType" column="make_type"/>
+        <result property="barcode" column="barcode"/>
+        <result property="density" column="density"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserMakeTeaEntity">
+		select * from tb_user_make_tea where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.user.entity.UserMakeTeaEntity">
+		select * from tb_user_make_tea where 1=1
+			<if test="id != null and id !='' ">
+				AND id = #{id}
+			</if>
+				<if test="teamanId != null and teamanId !='' ">
+				AND teaman_id = #{teamanId}
+			</if>
+				<if test="deviceId != null and deviceId !='' ">
+				AND device_id = #{deviceId}
+			</if>
+				<if test="chapuId != null and chapuId !='' ">
+				AND chapu_id = #{chapuId}
+			</if>
+				<if test="chapuName != null and chapuName !='' ">
+				AND chapu_name = #{chapuName}
+			</if>
+				<if test="maxNum != null and maxNum !='' ">
+				AND max_num = #{maxNum}
+			</if>
+				<if test="makeIndex != null and makeIndex !='' ">
+				AND make_index = #{makeIndex}
+			</if>
+				<if test="addTime != null and addTime !='' ">
+				AND add_time = #{addTime}
+			</if>
+				<if test="lastTime != null and lastTime !='' ">
+				AND last_time = #{lastTime}
+			</if>
+				<if test="cancelTime != null and cancelTime !='' ">
+				AND cancel_time = #{cancelTime}
+			</if>
+				<if test="status != null and status !='' ">
+				AND status = #{status}
+			</if>
+				<if test="temperature != null and temperature !='' ">
+				AND temperature = #{temperature}
+			</if>
+				<if test="warm != null and warm !='' ">
+				AND warm = #{warm}
+			</if>
+				<if test="soak != null and soak !='' ">
+				AND soak = #{soak}
+			</if>
+				<if test="teaSortId != null and teaSortId !='' ">
+				AND tea_sort_id = #{teaSortId}
+			</if>
+				<if test="teaSortName != null and teaSortName !='' ">
+				AND tea_sort_name = #{teaSortName}
+			</if>
+				<if test="makeType != null and makeType !='' ">
+				AND make_type = #{makeType}
+			</if>
+				<if test="barcode != null and barcode !='' ">
+				AND barcode = #{barcode}
+			</if>
+				<if test="density != null and density !='' ">
+				AND density = #{density}
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_user_make_tea where 1=1
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
+				<if test="teamanId != null and teamanId !='' ">
+                AND teaman_id = #{teamanId}
+            </if>
+				<if test="deviceId != null and deviceId !='' ">
+                AND device_id = #{deviceId}
+            </if>
+				<if test="chapuId != null and chapuId !='' ">
+                AND chapu_id = #{chapuId}
+            </if>
+				<if test="chapuName != null and chapuName !='' ">
+                AND chapu_name = #{chapuName}
+            </if>
+				<if test="maxNum != null and maxNum !='' ">
+                AND max_num = #{maxNum}
+            </if>
+				<if test="makeIndex != null and makeIndex !='' ">
+                AND make_index = #{makeIndex}
+            </if>
+				<if test="addTime != null and addTime !='' ">
+                AND add_time = #{addTime}
+            </if>
+				<if test="lastTime != null and lastTime !='' ">
+                AND last_time = #{lastTime}
+            </if>
+				<if test="cancelTime != null and cancelTime !='' ">
+                AND cancel_time = #{cancelTime}
+            </if>
+				<if test="status != null and status !='' ">
+                AND status = #{status}
+            </if>
+				<if test="temperature != null and temperature !='' ">
+                AND temperature = #{temperature}
+            </if>
+				<if test="warm != null and warm !='' ">
+                AND warm = #{warm}
+            </if>
+				<if test="soak != null and soak !='' ">
+                AND soak = #{soak}
+            </if>
+				<if test="teaSortId != null and teaSortId !='' ">
+                AND tea_sort_id = #{teaSortId}
+            </if>
+				<if test="teaSortName != null and teaSortName !='' ">
+                AND tea_sort_name = #{teaSortName}
+            </if>
+				<if test="makeType != null and makeType !='' ">
+                AND make_type = #{makeType}
+            </if>
+				<if test="barcode != null and barcode !='' ">
+                AND barcode = #{barcode}
+            </if>
+				<if test="density != null and density !='' ">
+                AND density = #{density}
+            </if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.user.entity.UserMakeTeaEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_user_make_tea
+		(
+			`teaman_id`, 
+			`device_id`, 
+			`chapu_id`, 
+			`chapu_name`, 
+			`max_num`, 
+			`make_index`, 
+			`add_time`, 
+			`last_time`, 
+			`cancel_time`, 
+			`status`, 
+			`temperature`, 
+			`warm`, 
+			`soak`, 
+			`tea_sort_id`, 
+			`tea_sort_name`, 
+			`make_type`, 
+			`barcode`, 
+			`density`
+		)
+		values
+		(
+			#{teamanId}, 
+			#{deviceId}, 
+			#{chapuId}, 
+			#{chapuName}, 
+			#{maxNum}, 
+			#{makeIndex}, 
+			#{addTime}, 
+			#{lastTime}, 
+			#{cancelTime}, 
+			#{status}, 
+			#{temperature}, 
+			#{warm}, 
+			#{soak}, 
+			#{teaSortId}, 
+			#{teaSortName}, 
+			#{makeType}, 
+			#{barcode}, 
+			#{density}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.user.entity.UserMakeTeaEntity">
+		update tb_user_make_tea 
+		<set>
+			<if test="teamanId != null">`teaman_id` = #{teamanId}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="chapuId != null">`chapu_id` = #{chapuId}, </if>
+			<if test="chapuName != null">`chapu_name` = #{chapuName}, </if>
+			<if test="maxNum != null">`max_num` = #{maxNum}, </if>
+			<if test="makeIndex != null">`make_index` = #{makeIndex}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="lastTime != null">`last_time` = #{lastTime}, </if>
+			<if test="cancelTime != null">`cancel_time` = #{cancelTime}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="temperature != null">`temperature` = #{temperature}, </if>
+			<if test="warm != null">`warm` = #{warm}, </if>
+			<if test="soak != null">`soak` = #{soak}, </if>
+			<if test="teaSortId != null">`tea_sort_id` = #{teaSortId}, </if>
+			<if test="teaSortName != null">`tea_sort_name` = #{teaSortName}, </if>
+			<if test="makeType != null">`make_type` = #{makeType}, </if>
+			<if test="barcode != null">`barcode` = #{barcode}, </if>
+			<if test="density != null">`density` = #{density}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_user_make_tea where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_user_make_tea where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="queryMakeTeaRecordsByDeviceId" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
+		SELECT
+			umt.id as makeId,
+			dv.PHONE as phoneNum,
+			dv.VIP_NAME as userName,
+			dv.VIP_HEAD_IMG as userImg,
+			umt.add_time as startTime,
+			umt.last_time as endTime,
+			umt.make_type as makeType,
+			0 as makeMode,
+			umt.chapu_id as chapuId,
+			c.name as chapuName,
+			umt.make_index as chapuIndex,
+			c.image as chapuImage,
+			umt.tea_sort_id as teaSortId,
+			umt.tea_sort_name as teaSortName,
+			umt.temperature as temperature,
+			150 as waterlevel,
+			umt.soak as soak
+		FROM tb_user_make_tea umt
+		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
+		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
+		where umt.device_id = #{deviceId}
+		order by umt.add_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="countMakeTeaRecordsByDeviceId" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM tb_user_make_tea umt
+		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
+		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
+		where umt.device_id = #{deviceId}
+	</select>
+
+</mapper>
