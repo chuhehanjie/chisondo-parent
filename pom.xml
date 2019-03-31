@@ -4,7 +4,7 @@
 	<groupId>com.chisondo</groupId>
 	<artifactId>chisondo-parent</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
