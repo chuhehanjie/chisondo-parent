@@ -1,15 +1,21 @@
 package com.chisondo.server.modules.user.service.impl;
 
+import com.chisondo.server.common.exception.CommonException;
+import com.chisondo.server.common.utils.Constant;
+import com.chisondo.server.common.utils.Keys;
+import com.chisondo.server.common.utils.Query;
+import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-
 import com.chisondo.server.modules.user.dao.UserMakeTeaDao;
 import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
+import com.google.common.collect.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -61,5 +67,26 @@ public class UserMakeTeaServiceImpl implements UserMakeTeaService {
 	@Override
 	public int countMakeTeaRecordsByDeviceId(String deviceId) {
 		return this.userMakeTeaDao.countMakeTeaRecordsByDeviceId(deviceId);
+	}
+
+	@Override
+	public void updateStatus(String deviceId, int status) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put(Keys.DEVICE_ID, deviceId);
+		params.put(Query.SIDX, "add_time");
+		params.put(Query.ORDER, "desc");
+		params.put(Query.OFFSET, 0);
+		params.put(Query.LIMIT, 1);
+		// 首先查询出最近的泡茶记录表
+		List<UserMakeTeaEntity> userMakeTeaList = this.userMakeTeaDao.queryList(params);
+		if (ValidateUtils.isEmptyCollection(userMakeTeaList)) {
+			throw new CommonException("设备沏茶记录不存在");
+		}
+		UserMakeTeaEntity userMakeTea = userMakeTeaList.get(0);
+		userMakeTea.setStatus(status);
+		if (status == Constant.UserMakeTeaStatus.CANCELED) {
+			userMakeTea.setCancelTime(new Date());
+		}
+		this.update(userMakeTea);
 	}
 }

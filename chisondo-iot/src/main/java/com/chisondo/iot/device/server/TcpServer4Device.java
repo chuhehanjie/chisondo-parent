@@ -35,8 +35,8 @@ public class TcpServer4Device {
 
     private Channel serverChannel;
 
-//    @Value("deviceTcpPort")
-    private int deviceTcpPort = 1658;
+    @Value("${chisondo.iot.deviceTcpPort:8998}")
+    private int deviceTcpPort;
 
     /**
      * closeFuture().sync() 阻塞

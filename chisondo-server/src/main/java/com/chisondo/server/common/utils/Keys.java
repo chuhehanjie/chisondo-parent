@@ -42,4 +42,10 @@ public class Keys {
     public static final String SESSION_ID = "sessionId";
 
     public static final String ACTION = "action";
+
+    public static final String CHAPU_ID = "chapuId";
+
+    public static final String USER_MAKTE_TEA_INFO = "userMakeTeaInfo";
+
+    public static final String STATUS = "status";
 }

@@ -69,6 +69,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
                     log.error("发送请求到设备异常", e);
                     FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "发送请求到设备异常"));
                     httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+                    DevHttpChannelManager.removeByChannel(httpChannel);
                 }
             }
         }

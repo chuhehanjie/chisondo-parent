@@ -117,7 +117,7 @@
 		)
 		values
 		(
-			#{deviceId}, 
+			#{deviceId},
 			#{teamanId}, 
 			#{userMobileNo}, 
 			#{operType}, 

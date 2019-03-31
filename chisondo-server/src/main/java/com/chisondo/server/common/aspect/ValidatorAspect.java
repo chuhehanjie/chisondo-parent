@@ -70,7 +70,7 @@ public class ValidatorAspect {
 		if (ValidateUtils.isEmptyString(deviceId)) {
 			throw new CommonException("设备ID为空");
 		}
-		// TODO 老设备规则待定
-		return deviceId.length() == 8;
+		// TODO 老设备规则待定 return deviceId.length() == 8;
+		return false;
 	}
 }

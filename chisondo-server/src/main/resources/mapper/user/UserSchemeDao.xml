@@ -107,7 +107,7 @@
 		)
 		values
 		(
-			#{deviceId}, 
+			#{deviceId},
 			#{schemeNo}, 
 			#{heatTemp}, 
 			#{powerLevel}, 

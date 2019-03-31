@@ -1,21 +1,27 @@
 package com.chisondo.model.http.req;
 
-
-import com.chisondo.model.http.resp.DevParamMsg;
-
 import java.io.Serializable;
 
-public class DeviceHttpReq implements Serializable {
+public class StopWorkHttpReq implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String action;
-    private int actionflag;
-    private String deviceID;
-    private DevParamMsg msg;
 
-    public DeviceHttpReq() {
+    /**
+     * 停止工作/保温
+     * 固定值：stopwork
+     */
+    private String action;
+    /**
+     * 操作标识
+     * 1-停止沏茶 2-停止烧水 3-停止洗茶 4-停止保温
+     */
+    private Integer actionflag;
+    private String deviceID;
+
+    public StopWorkHttpReq() {
     }
 
-    public DeviceHttpReq(String deviceID) {
+    public StopWorkHttpReq(Integer actionflag, String deviceID) {
+        this.actionflag = actionflag;
         this.deviceID = deviceID;
     }
 
@@ -27,11 +33,11 @@ public class DeviceHttpReq implements Serializable {
         this.action = action;
     }
 
-    public int getActionflag() {
+    public Integer getActionflag() {
         return actionflag;
     }
 
-    public void setActionflag(int actionflag) {
+    public void setActionflag(Integer actionflag) {
         this.actionflag = actionflag;
     }
 
@@ -41,13 +47,5 @@ public class DeviceHttpReq implements Serializable {
 
     public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
-    }
-
-    public DevParamMsg getMsg() {
-        return msg;
-    }
-
-    public void setMsg(DevParamMsg msg) {
-        this.msg = msg;
     }
 }

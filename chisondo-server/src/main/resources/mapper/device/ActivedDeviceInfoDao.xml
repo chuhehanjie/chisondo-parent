@@ -156,7 +156,7 @@
 		)
 		values
 		(
-			#{deviceId}, 
+			#{deviceId},
 			#{deviceName}, 
 			#{deviceTypeId}, 
 			#{activedTime}, 

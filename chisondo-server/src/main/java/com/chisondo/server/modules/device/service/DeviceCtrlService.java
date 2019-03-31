@@ -2,7 +2,6 @@ package com.chisondo.server.modules.device.service;
 
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.modules.device.dto.req.*;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ public interface DeviceCtrlService {
 	DeviceBindRespDTO bindDevice(CommonReq devBindReq);
 
 	@Transactional
-    void makeTeaByTeaSpectrum(MakeTeaByTeaSpectrumReqDTO makeTeaReq);
+	CommonResp makeTeaByTeaSpectrum(CommonReq req);
 
 	/**
 	 * 洗茶控制
@@ -37,16 +36,16 @@ public interface DeviceCtrlService {
     CommonResp washTea(CommonReq req);
 
 	@Transactional
-	CommonResp boilWater(BoilWaterReqDTO boilWaterReq);
+	CommonResp boilWater(CommonReq req);
 
 	@Transactional
-	CommonResp stopWorking(StopWorkReqDTO stopWorkReq);
+	CommonResp stopWorking(CommonReq req);
 
 	@Transactional
-	CommonResp cancelTeaSpectrum(String devieId);
+	CommonResp cancelTeaSpectrum(CommonReq req);
 
 	@Transactional
-	CommonResp keepWarmCtrl(DevCommonReqDTO keepWarmCtrlReq);
+	CommonResp keepWarmCtrl(CommonReq req);
 
 	@Transactional
 	void delDevConnectRecord(CommonReq devCommonReq);

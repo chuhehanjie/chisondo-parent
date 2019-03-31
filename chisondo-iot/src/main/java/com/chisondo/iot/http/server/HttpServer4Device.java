@@ -36,8 +36,8 @@ public class HttpServer4Device {
 
     private Channel serverChannel;
 
-//    @Value("netty.deviceHttpPort")
-    private String deviceHttpPort = "8188";
+    @Value("${chisondo.iot.deviceHttpPort:16888}")
+    private String deviceHttpPort;
 
     /**
      * closeFuture().sync() 阻塞

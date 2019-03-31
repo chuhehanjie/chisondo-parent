@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +18,7 @@ public class DevHttpChannelManager {
         log.info("add http channel deviceId = {}, size = {}", deviceId, httpChannelMap.size());
     }
 
-    public static Channel getChannelByDeviceId(String deviceId) {
+    public static Channel getHttpChannelByDeviceId(String deviceId) {
         return httpChannelMap.get(deviceId);
     }
 
@@ -32,5 +33,18 @@ public class DevHttpChannelManager {
             httpChannelMap.remove(deviceId);
             log.info("remove http channel deviceId = {}", deviceId);
         }
+    }
+
+    public static String removeByChannel(Channel channel) {
+        Iterator<Map.Entry<String, Channel>> it = httpChannelMap.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry<String, Channel> entry = it.next();
+            if (ObjectUtils.nullSafeEquals(channel, entry.getValue())) {
+                log.error("移除了 HTTP 通道，设备ID ＝ {}", entry.getKey());
+                it.remove();
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }

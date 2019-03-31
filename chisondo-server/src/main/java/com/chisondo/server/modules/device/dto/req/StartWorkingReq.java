@@ -1,4 +1,4 @@
-package com.chisondo.model.http.req;
+package com.chisondo.server.modules.device.dto.req;
 
 import java.io.Serializable;
 

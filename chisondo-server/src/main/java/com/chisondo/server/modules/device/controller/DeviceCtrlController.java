@@ -9,7 +9,6 @@ import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.modules.device.dto.req.*;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
 import com.chisondo.server.modules.device.validator.*;
@@ -60,26 +59,13 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/washTea")
-	@ParamValidator({UserDevRelaValidator.class})
+	@ParamValidator({UserDevRelaValidator.class, DevCtrlParamValidator.class})
+	@DevOperateLog("洗茶控制")
 	public CommonResp washTea(@RequestBody CommonReq req){
 		if (req.isOldDev()) {
 			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.WASH_TEA);
 			return CommonUtils.buildOldDevResp(result);
 		}
-		/*
-		deviceId	Y	String	设备ID
-		phoneNum	Y	String	手机号码	设备绑定的手机号码
-		isSave	N	int	是否更新液晶屏洗茶按钮参数。	0-执行洗茶功能 1-执行洗茶并修改液晶屏洗茶按钮参数 2-只修改液晶屏洗茶按钮参数，不执行洗茶操作（为空则默认：0）
-		temperature	Y	Integer	设定温度	60~100,0-停止加热
-		soak	Y	Integer	设定时间（根据出汤量不同时间的最小值不同）	0~600秒,0 - 不浸泡，1~600  浸泡时间(单位:秒)
-		waterlevel	Y	Integer	出水量（分8个档次）	 150 200 250 300   350 400  450 550 (单位：毫升ml)
-		teaSortId	N	Integer	茶类ID
-		teaSortName	N	String	茶类名称
-		响应参数
-		输出参数	是否必填	参数类型	说明	备注
-		retn	Y	Integer	返回码
-		Desc	Y	String	返回描述
-		*/
 		return this.deviceCtrlService.washTea(req);
 	}
 
@@ -90,19 +76,15 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/boilWater")
-
+	@ParamValidator({UserDevRelaValidator.class, DevCtrlParamValidator.class})
+	@DevOperateLog("烧水控制")
 	public CommonResp boilWater(@RequestBody CommonReq req){
-		BoilWaterReqDTO boilWaterReq = JSONObject.parseObject(req.getBizBody(), BoilWaterReqDTO.class);
-		/*
-		deviceId	Y	String	设备ID
-		phoneNum	Y	String	手机号码	设备绑定的手机号码
-		isSave	N	int	是否更新液晶屏烧水按钮参数。	0-执行烧水功能 1-执行烧水并修改液晶屏烧水按钮参数 2-只修改液晶屏烧水按钮参数，不执行烧水操作（为空则默认：0）
-		temperature	Y	Integer	设定温度	60~100,0-停止加热
-		soak	N	Integer	设定时间（根据出汤量不同时间的最小值不同）	0~600秒,0-不浸泡（保留参数，可不传，默认为0 直接出水）
-		waterlevel	Y	Integer	出水量（分8个档次）	 150 200 250 300   350 400  450 550 (单位：毫升ml)
-
-		*/
-		return this.deviceCtrlService.boilWater(boilWaterReq);
+		// TODO 老设备未找到烧水控制API 需确认(当前调用开始沏茶接口)
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.START_OR_RESERVE_MAKE_TEA);
+			return CommonUtils.buildOldDevResp(result);
+		}
+		return this.deviceCtrlService.boilWater(req);
 	}
 
 	/**
@@ -111,19 +93,28 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/stopWorking")
+	@ParamValidator({DevExistenceValidator.class, StopWorkValidator.class})
 	@DevOperateLog("停止沏茶/洗茶/烧水操作")
 	public CommonResp stopWorking(@RequestBody CommonReq req){
-		StopWorkReqDTO stopWorkReq = JSONObject.parseObject(req.getBizBody(), StopWorkReqDTO.class);
-		/*
-		deviceId	Y	String	设备ID
-		phoneNum	Y	String	手机号码	设备绑定的手机号码
-		isSave	N	int	是否更新液晶屏烧水按钮参数。	0-执行烧水功能 1-执行烧水并修改液晶屏烧水按钮参数 2-只修改液晶屏烧水按钮参数，不执行烧水操作（为空则默认：0）
-		temperature	Y	Integer	设定温度	60~100,0-停止加热
-		soak	N	Integer	设定时间（根据出汤量不同时间的最小值不同）	0~600秒,0-不浸泡（保留参数，可不传，默认为0 直接出水）
-		waterlevel	Y	Integer	出水量（分8个档次）	 150 200 250 300   350 400  450 550 (单位：毫升ml)
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.STOP_WORK);
+			return CommonUtils.buildOldDevResp(result);
+		}
+		return this.deviceCtrlService.stopWorking(req);
+	}
 
-		*/
-		return this.deviceCtrlService.stopWorking(stopWorkReq);
+	/**
+	 * 使用茶谱沏茶
+	 */
+	@RequestMapping("/api/rest/startByChapu")
+	@ParamValidator({UserDevRelaValidator.class, UseTeaSpectrumValidator.class})
+	@DevOperateLog("使用茶谱沏茶")
+	public CommonResp makeTeaByTeaSpectrum(@RequestBody CommonReq req){
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.USE_TEA_SPECTRUM);
+			return CommonUtils.buildOldDevResp(result);
+		}
+		return this.deviceCtrlService.makeTeaByTeaSpectrum(req);
 	}
 
 	/**
@@ -133,11 +124,14 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/cancelChapu")
+	@ParamValidator({DevExistenceValidator.class, CancelTeaSpectrumValidator.class})
+	@DevOperateLog("取消使用茶谱沏茶")
 	public CommonResp cancelTeaSpectrum(@RequestBody CommonReq req){
-		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
-		String devieId = jsonObj.getString(Keys.DEVICE_ID);
-
-		return this.deviceCtrlService.cancelTeaSpectrum(devieId);
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.CANCEL_TEA_SPECTRUM);
+			return CommonUtils.buildOldDevResp(result);
+		}
+		return this.deviceCtrlService.cancelTeaSpectrum(req);
 	}
 	/**
 	 * 保温控制
@@ -146,19 +140,14 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/setWarmState")
+	@ParamValidator({UserDevRelaValidator.class, KeepWarmCtrlValidator.class})
+	@DevOperateLog("保温控制")
 	public CommonResp keepWarmCtrl(@RequestBody CommonReq req){
-		DevCommonReqDTO devCommonReq = JSONObject.parseObject(req.getBizBody(), DevCommonReqDTO.class);
-		return this.deviceCtrlService.keepWarmCtrl(devCommonReq);
-	}
-
-	/**
-	 * 使用茶谱沏茶
-	 */
-	@RequestMapping("/api/rest/startByChapu")
-	public CommonResp makeTeaByTeaSpectrum(@RequestBody CommonReq req){
-        MakeTeaByTeaSpectrumReqDTO makeTeaReq = JSONObject.parseObject(req.getBizBody(), MakeTeaByTeaSpectrumReqDTO.class);
-        this.deviceCtrlService.makeTeaByTeaSpectrum(makeTeaReq);
-        return CommonResp.ok();
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.WARM_CONTROL);
+			return CommonUtils.buildOldDevResp(result);
+		}
+		return this.deviceCtrlService.keepWarmCtrl(req);
 	}
 
 	/**

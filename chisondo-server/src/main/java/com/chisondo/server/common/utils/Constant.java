@@ -105,6 +105,15 @@ public class Constant {
         int EXPIRED = 3; // 已过期且未成功执行
     }
 
+    /**
+     * 用户泡茶状态
+     */
+    public interface UserMakeTeaStatus {
+        int VALID = 0; // 有效
+        int COMPLETED = 1; // 已完成
+        int CANCELED = 2; // 已取消
+    }
+
 
     public interface TemperatureValue {
         int MIN = 60;
@@ -122,7 +131,7 @@ public class Constant {
     public interface OldDeviceOperType {
         int START_OR_RESERVE_MAKE_TEA = 1;
         int WASH_TEA = 2;
-        int STOP_MAKE_TEA = 3;
+        int STOP_WORK = 3;
         int USE_TEA_SPECTRUM = 4;
         int CANCEL_TEA_SPECTRUM = 5;
         int WARM_CONTROL = 6;
@@ -144,5 +153,17 @@ public class Constant {
     public interface DevVolumeCtrl {
         int OPEN = 1;
         int CLOSE = 2;
+    }
+
+    public interface StopWorkOperFlag {
+        int STOP_MAKE_TEA = 0;
+        int STOP_WASH_TEA = 1;
+        int STOP_BOIL_WATER = 2;
+        int STOP_KEEP_WARM = 3;
+    }
+
+    public interface KeeWarmCtrlOperFalg {
+        int STOP_KEEP_WARM = 0;
+        int START_KEEP_WARM = 1;
     }
 }

@@ -18,7 +18,11 @@ public class DeviceHttpResp extends CommonHttpResp {
         super.setDesc(desc);
     }
 
-
+    @Override
+    public String toString() {
+        return "action = " + this.action + ", deviceId = " + this.deviceID +
+                ", retCode = " + super.getRetn() + ", retMsg = " + super.getDesc();
+    }
 
     public String getAction() {
         return action;

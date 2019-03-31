@@ -5,11 +5,11 @@ public class DevSettingHttpResp extends CommonHttpResp {
     private	String action; //固定：qrydevparmok 	请求传入的action+ok	请求传入的action+ok
     private	String deviceID; // 被操作的设备ID
 
-    private DevParamMsg msg;
+    private DevSettingMsgResp msg;
 
     private DevParamMsg washteamsg;
 
-    private BoilWaterMsgResp boilwatermsg;
+    private DevParamMsg boilwatermsg;
 
     private TeaSpectrumMsgResp chapumsg;
 
@@ -29,11 +29,11 @@ public class DevSettingHttpResp extends CommonHttpResp {
         this.deviceID = deviceID;
     }
 
-    public DevParamMsg getMsg() {
+    public DevSettingMsgResp getMsg() {
         return msg;
     }
 
-    public void setMsg(DevParamMsg msg) {
+    public void setMsg(DevSettingMsgResp msg) {
         this.msg = msg;
     }
 
@@ -45,11 +45,11 @@ public class DevSettingHttpResp extends CommonHttpResp {
         this.washteamsg = washteamsg;
     }
 
-    public BoilWaterMsgResp getBoilwatermsg() {
+    public DevParamMsg getBoilwatermsg() {
         return boilwatermsg;
     }
 
-    public void setBoilwatermsg(BoilWaterMsgResp boilwatermsg) {
+    public void setBoilwatermsg(DevParamMsg boilwatermsg) {
         this.boilwatermsg = boilwatermsg;
     }
 

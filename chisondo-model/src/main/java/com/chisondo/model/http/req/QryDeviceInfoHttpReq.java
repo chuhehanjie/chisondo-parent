@@ -2,16 +2,24 @@ package com.chisondo.model.http.req;
 
 import java.io.Serializable;
 
-public class QryDevSettingHttpReq implements Serializable {
+public class QryDeviceInfoHttpReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String action; // qrydevparm	固定	Y	查询内置参数信息状态
+    /**
+     * 动作
+     * cancelwarm 查询设备状态
+     * qrydevparm 查询设备参数
+     */
+    private String action;
+    /**
+     * 设备ID
+     */
     private String deviceID; // 操作的设备ID
 
-    public QryDevSettingHttpReq() {
+    public QryDeviceInfoHttpReq() {
     }
 
-    public QryDevSettingHttpReq(String deviceID) {
+    public QryDeviceInfoHttpReq(String deviceID) {
         this.deviceID = deviceID;
     }
 

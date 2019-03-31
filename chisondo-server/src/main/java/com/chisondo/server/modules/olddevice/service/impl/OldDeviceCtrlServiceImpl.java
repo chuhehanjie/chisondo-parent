@@ -1,6 +1,5 @@
 package com.chisondo.server.modules.olddevice.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
@@ -9,7 +8,7 @@ import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ParamValidatorUtils;
 import com.chisondo.server.common.utils.RestTemplateUtils;
 import com.chisondo.server.modules.device.dto.req.DeviceCtrlReqDTO;
-import com.chisondo.server.modules.device.dto.req.WashTeaReqDTO;
+import com.chisondo.server.modules.device.dto.req.StopWorkReqDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.olddevice.req.ConnectDevReq;
 import com.chisondo.server.modules.olddevice.req.MakeTeaReq;
@@ -17,6 +16,7 @@ import com.chisondo.server.modules.olddevice.resp.ConnectDevResp;
 import com.chisondo.server.modules.olddevice.service.OldDeviceCtrlService;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     @Autowired
     private RestTemplateUtils restTemplateUtils;
 
-    @Value("chisondo.server.oldDevReqURL")
+    @Value("${chisondo.server.oldDevReqURL}")
     private String oldDevReqURL;
 
     @Override
@@ -83,7 +83,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         } else if (operationType == Constant.OldDeviceOperType.WASH_TEA) {
             action = "washTea";
             result = this.washTea(sessionId, req);
-        } else if (operationType == Constant.OldDeviceOperType.STOP_MAKE_TEA) {
+        } else if (operationType == Constant.OldDeviceOperType.STOP_WORK) {
             action = "stopWorking";
             result = this.stopWorking(sessionId, req);
         } else if (operationType == Constant.OldDeviceOperType.USE_TEA_SPECTRUM) {
@@ -129,7 +129,16 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      * @return
      */
     private JSONObject stopWorking(String sessionId, CommonReq req) {
-        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, "stopHeatEx", 1, "stopWarmEx", 1);
+        StopWorkReqDTO stopWorkReq = JSONObject.parseObject(req.getBizBody(), StopWorkReqDTO.class);
+        Map<String, Object> params = Maps.newHashMap();
+        params.put(Keys.SESSION_ID, sessionId);
+        if (stopWorkReq.getOperFlag() == Constant.StopWorkOperFlag.STOP_KEEP_WARM) {
+            params.put("stopWarm", true);
+            params.put("stopWarmEx", 1);
+        } else {
+            params.put("stopHeat", true);
+            params.put("stopHeatEx", 1);
+        }
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "stopWorking", JSONObject.class, params);
     }
 
@@ -164,7 +173,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject setWarmState(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
-        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, "operType", jsonObj.get("operType"));
+        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.OPER_FLAG, jsonObj.get(Keys.OPER_FLAG));
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "setWarmState", JSONObject.class, params);
     }
 }

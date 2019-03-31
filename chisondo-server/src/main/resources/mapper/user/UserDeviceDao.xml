@@ -92,7 +92,7 @@
 		values
 		(
 			#{teamanId}, 
-			#{deviceId}, 
+			#{deviceId},
 			#{privateTag}, 
 			#{defaultTag}, 
 			#{firstLinkTime}, 

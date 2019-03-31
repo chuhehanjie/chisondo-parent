@@ -1,12 +1,11 @@
 package com.chisondo.server.modules.device.service.impl;
-import com.chisondo.model.http.req.QryDevSettingHttpReq;
+import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.server.modules.device.dto.resp.*;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.http.CommonReq;
@@ -50,7 +49,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	public CommonResp queryDevSettingInfo(CommonReq req) {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 
-		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDevSettingHttpReq(req.getAttrByKey(Keys.DEVICE_ID).toString()));
+		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.DEVICE_ID).toString()));
 
 		DevSettingRespDTO devSettingResp = this.buildDevSettingResp(deviceInfo, httpResp);
 		return CommonResp.ok(devSettingResp);

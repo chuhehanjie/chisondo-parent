@@ -6,7 +6,7 @@ import com.chisondo.model.http.req.DeviceHttpReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Service("busiHandler4startwork")
+@Service("busiHandler4startWork")
 @Slf4j
 public class StartWorkBusiHandler extends DevBusiHandler {
     @Override

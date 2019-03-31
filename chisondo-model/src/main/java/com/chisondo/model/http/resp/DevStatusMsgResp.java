@@ -1,6 +1,6 @@
-package com.chisondo.iot.device.request;
+package com.chisondo.model.http.resp;
 
-public class DevStatusMsg {
+public class DevStatusMsgResp {
     /**
      * 工作状态
      * 0 -空闲 1-沏茶中 2-洗茶中 3-烧水中

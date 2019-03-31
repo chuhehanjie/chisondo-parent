@@ -77,7 +77,7 @@
 		values
 		(
 			#{logId}, 
-			#{deviceId}, 
+			#{deviceId},
 			#{moContent}, 
 			#{moTime}, 
 			#{deviceIp}

@@ -1,4 +1,6 @@
 package com.chisondo.server.modules.device.service.impl;
+import com.chisondo.model.constant.DevConstant;
+import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
 import java.util.Date;
 
@@ -63,8 +65,9 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public CommonResp startOrReserveMakeTea(CommonReq req) {
 		StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = JSONObject.parseObject(req.getBizBody(), StartOrReserveMakeTeaReqDTO.class);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
-		// 是否启动泡茶
-		if (this.isStartTea(startOrReserveTeaReq.getStartTime())) {
+		boolean isReserveMakeTea = (boolean) req.getAttrByKey("isReserveMakeTea");
+		// 是否预约泡茶
+		if (isReserveMakeTea) {
 			UserBookEntity userBook = this.buildUserBook(startOrReserveTeaReq, user);
 			this.userBookService.save(userBook);
 			return CommonResp.ok(ImmutableMap.of(Keys.RESERV_NO, userBook.getReservNo()));
@@ -88,12 +91,15 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
-		devHttpReq.setDeviceId(startOrReserveTeaReq.getDeviceId());
-		DevParamMsg msg = new DevParamMsg();
-		msg.setTemperature(startOrReserveTeaReq.getTemperature());
-		msg.setSoak(startOrReserveTeaReq.getSoak());
-		msg.setWaterlevel(startOrReserveTeaReq.getWaterlevel());
-		devHttpReq.setMsg(msg);
+		devHttpReq.setDeviceID(startOrReserveTeaReq.getDeviceId());
+		devHttpReq.setMsg(new DevParamMsg(startOrReserveTeaReq.getTemperature(), startOrReserveTeaReq.getSoak(), startOrReserveTeaReq.getWaterlevel()));
+		return devHttpReq;
+	}
+
+	private DeviceHttpReq buildDevHttpReq(BoilWaterReqDTO boilWaterReq) {
+		DeviceHttpReq devHttpReq = new DeviceHttpReq();
+		devHttpReq.setDeviceID(boilWaterReq.getDeviceId());
+		devHttpReq.setMsg(new DevParamMsg(boilWaterReq.getTemperature(), boilWaterReq.getSoak(), boilWaterReq.getWaterlevel()));
 		return devHttpReq;
 	}
 
@@ -131,10 +137,6 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		userMakeTea.setBarcode("");
 		userMakeTea.setDensity(0);
 		return userMakeTea;
-	}
-
-	private boolean isStartTea(String startTime) {
-		return null == startTime || DateUtils.parseDate(startTime, DateUtils.DATE_TIME_PATTERN).getTime() <= DateUtils.currentDate().getTime();
 	}
 
 	@Override
@@ -179,52 +181,81 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		return userId;
 	}
 
-	@Override
-	public void makeTeaByTeaSpectrum(MakeTeaByTeaSpectrumReqDTO makeTeaReq) {
-		log.info("makeTeaByTeaSpectrum ok");
-	}
 
 	@Override
 	public CommonResp washTea(CommonReq req) {
 		WashTeaReqDTO washTeaReq = JSONObject.parseObject(req.getBizBody(), WashTeaReqDTO.class);
-		// TODO 直接调用接口服务
-		log.info("washTea ok");
-		return CommonResp.ok();
+		DeviceHttpReq devHttpReq = this.buildWashTeaHttpReq(washTeaReq);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.washTeaCtrl(devHttpReq);
+		log.info("调用洗茶 HTTP 服务响应：{}", devHttpResp);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
 	@Override
-	public CommonResp boilWater(BoilWaterReqDTO boilWaterReq) {
-		// TODO 直接调用接口服务
-		log.info("boilWater ok");
-		return CommonResp.ok();
+	public CommonResp boilWater(CommonReq req) {
+		BoilWaterReqDTO boilWaterReq = JSONObject.parseObject(req.getBizBody(), BoilWaterReqDTO.class);
+		DeviceHttpReq devHttpReq = this.buildDevHttpReq(boilWaterReq);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.boilWaterCtrl(devHttpReq);
+		log.info("调用烧水 HTTP 服务响应：{}", devHttpResp);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
 	@Override
-	public CommonResp stopWorking(StopWorkReqDTO stopWorkReq) {
-		// TODO 直接调用接口服务
+	public CommonResp stopWorking(CommonReq req) {
+		StopWorkReqDTO stopWorkReq = JSONObject.parseObject(req.getBizBody(), StopWorkReqDTO.class);
 		/*老设备调用老流程中接口服务程序，如果是停止沏茶、烧水操作，调用接口4.3.3；停止洗茶调用接口4.3.2；取消使用茶谱沏茶调用接口4.3.5；在调用老接口前先调用4.3.7连接沏茶器接口，获取sessionid，调用完控制接口后再调用4.3.8断开和沏茶器连接；
 ⑥、新设备更新4.5.3用户泡茶表*/
-		log.info("stopWorking ok");
+		StopWorkHttpReq devHttpReq = this.buildStopWorkReq(stopWorkReq);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.stopWork(devHttpReq);
+		// 更新用户泡茶表状态
+		this.userMakeTeaService.updateStatus(stopWorkReq.getDeviceId(), Constant.UserMakeTeaStatus.CANCELED);
+		log.info("调用停止沏茶/洗茶/烧水 HTTP 服务响应：{}", devHttpResp);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	@Override
+	public CommonResp makeTeaByTeaSpectrum(CommonReq req) {
+		UseTeaSpectrumReqDTO useTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), UseTeaSpectrumReqDTO.class);
+		log.info("makeTeaByTeaSpectrum ok");
+		UserMakeTeaEntity useMakeTea = (UserMakeTeaEntity) req.getAttrByKey(Keys.USER_MAKTE_TEA_INFO);
+		useMakeTea.setStatus(Constant.UserMakeTeaStatus.COMPLETED); // TODO 状态值待确认
+		useMakeTea.setMakeIndex(null == useTeaSpectrumReq.getIndex() ? 0 : useTeaSpectrumReq.getIndex());
+		useMakeTea.setLastTime(new Date());
+		this.userMakeTeaService.update(useMakeTea);
+		// TODO 待确认是否调用新设备接口服务 +
+//		this.deviceHttpService.stopWork()
 		return CommonResp.ok();
 	}
 
 	@Override
-	public CommonResp cancelTeaSpectrum(String devieId) {
-		//取消使用茶谱沏茶调用接口服务4.1.2.6；
-		log.info("cancelTeaSpectrum ok");
+	public CommonResp cancelTeaSpectrum(CommonReq req) {
+		/*StopWorkHttpReq devHttpReq = new StopWorkHttpReq(DevConstant.StopWorkActionFlag.STOP_MAKE_TEA, deviceId);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.stopWork(devHttpReq);
+		log.info("调用取消使用茶谱沏茶 HTTP 服务响应：{}", devHttpResp);*/
+		// 更新用户泡茶表状态
+		UserMakeTeaEntity useMakeTea = (UserMakeTeaEntity) req.getAttrByKey(Keys.USER_MAKTE_TEA_INFO);
+		useMakeTea.setStatus(Constant.UserMakeTeaStatus.CANCELED);
+		useMakeTea.setCancelTime(new Date());
+		this.userMakeTeaService.update(useMakeTea);
 		return CommonResp.ok();
 	}
 
 	@Override
-	public CommonResp keepWarmCtrl(DevCommonReqDTO devCommonReq) {
-		/*终端控制指令包括：保温控制；
-		②、保温控制调用接口服务4.1.2.7；
-		③、根据设备ID判断新老设备，具体判断规则待定；
-		④、新设备调用设备控制服务接口4.2.2.4；
-		⑤、老设备调用老流程中接口服务程序，保温控制调用接口4.3.6；在调用老接口前先调用4.3.7连接沏茶器接口，获取sessionid，调用完控制接口后再调用4.3.8断开和沏茶器连接；
-*/
-		log.info("cancelTeaSpectrum ok");
-		return CommonResp.ok();
+	public CommonResp keepWarmCtrl(CommonReq req) {
+		/*
+		  ①、终端控制指令包括：保温控制；
+		  ②、保温控制调用接口服务4.1.2.7；
+		  ③、根据设备ID判断新老设备，具体判断规则待定；
+		  ④、新设备调用设备控制服务接口4.2.2.4；
+		  ⑤、老设备调用老流程中接口服务程序，保温控制调用接口4.3.6；在调用老接口前先调用4.3.7连接沏茶器接口，获取sessionid，调用完控制接口后再调用4.3.8断开和沏茶器连接；
+		  ⑥、新设备更新4.5.3用户泡茶表；（不需要更新）
+		  ⑦、操作信息统一入4.5.6沏茶器操作日志表，该日志表保存近10天的操作日志记录。
+		*/
+		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+		DeviceHttpReq devHttpReq = new DeviceHttpReq(deviceId);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.startKeeWarm(devHttpReq);
+		log.info("调用保温控制 HTTP 服务响应：{}", devHttpResp);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
 	@Override
@@ -263,5 +294,31 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		int operFlag = jsonObj.getIntValue(Keys.OPER_FLAG);
 		this.userDeviceService.setDefaultDevice(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.OPER_FLAG, operFlag));
 		return CommonResp.ok();
+	}
+
+	private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {
+		DeviceHttpReq devHttpReq = new DeviceHttpReq();
+		devHttpReq.setDeviceID(washTeaReq.getDeviceId());
+		devHttpReq.setMsg(new DevParamMsg(washTeaReq.getTemperature(), washTeaReq.getSoak(), washTeaReq.getWaterlevel()));
+		return devHttpReq;
+	}
+
+	private StopWorkHttpReq buildStopWorkReq(StopWorkReqDTO stopWorkReq) {
+		StopWorkHttpReq req = new StopWorkHttpReq();
+		req.setActionflag(this.convertActionFlag(stopWorkReq.getOperFlag()));
+		req.setDeviceID(stopWorkReq.getDeviceId());
+		return req;
+	}
+
+	private Integer convertActionFlag(int operFlag) {
+		if (operFlag == Constant.StopWorkOperFlag.STOP_MAKE_TEA) {
+			return DevConstant.StopWorkActionFlag.STOP_MAKE_TEA;
+		} else if (operFlag == Constant.StopWorkOperFlag.STOP_BOIL_WATER) {
+			return DevConstant.StopWorkActionFlag.STOP_BOIL_WATER;
+		} else if (operFlag == Constant.StopWorkOperFlag.STOP_WASH_TEA) {
+			return DevConstant.StopWorkActionFlag.STOP_WASH_TEA;
+		} else {
+			return DevConstant.StopWorkActionFlag.STOP_WARM;
+		}
 	}
 }

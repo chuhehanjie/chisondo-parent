@@ -65,6 +65,28 @@ public class DateUtils {
     }
 
     /**
+     * 两个日期之间的间隔分钟
+     * @param sDate
+     * @param eDate
+     * @return
+     */
+    public static Integer getBetweenMinutes(Date sDate,Date eDate) {
+        long minute = 60L * 1000L;
+        Integer betweenMinutes = new Integer((int) ((eDate.getTime() - sDate.getTime()) / minute));
+        return Math.abs(betweenMinutes);
+    }
+    /**
+     * 两个日期之间的间隔小时
+     * @param sDate
+     * @param eDate
+     * @return
+     */
+    public static Integer getBetweenHours(Date sDate,Date eDate) {
+        long hour = 60L * 60L * 1000L;
+        Integer betweenHours = new Integer((int) ((eDate.getTime() - sDate.getTime()) / hour));
+        return Math.abs(betweenHours);
+    }
+    /**
      * 两个日期之间的间隔天数
      * @param sDate
      * @param eDate
@@ -131,4 +153,5 @@ public class DateUtils {
         cd.setTime(date);
         return cd.get(Calendar.DAY_OF_WEEK) - 1;
     }
+
 }

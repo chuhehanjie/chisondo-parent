@@ -17,8 +17,10 @@ netty:
     length: 2048
   bi:
     pool: 20
-  deviceHttpPort: 8099
-deviceTcpPort: 1658
+chisondo:
+  iot:
+    deviceHttpPort: 8099
+    deviceTcpPort: 16888
 chris:
   interface:
     url:

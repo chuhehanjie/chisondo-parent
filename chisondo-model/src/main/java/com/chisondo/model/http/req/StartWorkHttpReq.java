@@ -1,15 +1,17 @@
-package com.chisondo.iot.device.request;
+package com.chisondo.model.http.req;
+
+import com.chisondo.model.http.resp.DevParamMsg;
 
 import java.io.Serializable;
 
-public class StartWork4DevReq implements Serializable {
+public class StartWorkHttpReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String action;
 
     private String deviceID;
 
-    private WorkMsg msg;
+    private DevParamMsg msg;
 
     public String getAction() {
         return action;
@@ -27,11 +29,11 @@ public class StartWork4DevReq implements Serializable {
         this.deviceID = deviceID;
     }
 
-    public WorkMsg getMsg() {
+    public DevParamMsg getMsg() {
         return msg;
     }
 
-    public void setMsg(WorkMsg msg) {
+    public void setMsg(DevParamMsg msg) {
         this.msg = msg;
     }
 }

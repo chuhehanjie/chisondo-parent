@@ -32,4 +32,6 @@ public interface UserMakeTeaService {
     List<MakeTeaRowRespDTO> queryMakeTeaRecordsByDeviceId(Map<String, Object> params);
 
     int countMakeTeaRecordsByDeviceId(String deviceId);
+
+	void updateStatus(String deviceId, int status);
 }

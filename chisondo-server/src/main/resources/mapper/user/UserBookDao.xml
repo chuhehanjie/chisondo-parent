@@ -140,7 +140,7 @@
 		values
 		(
 			#{teamanId}, 
-			#{deviceId}, 
+			#{deviceId},
 			#{configCmd}, 
 			#{processTime}, 
 			#{logTime}, 

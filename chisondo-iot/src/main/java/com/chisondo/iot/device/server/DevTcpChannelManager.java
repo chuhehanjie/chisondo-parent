@@ -18,8 +18,8 @@ public class DevTcpChannelManager {
         log.info("add tcp channel deviceId = {}, size = {}", deviceId, deviceChannelMap.size());
     }
 
-    public static Channel getChannelByDevice(String deviceId) {
-        return deviceChannelMap.get(deviceId);
+    public static Channel getChannelByDeviceId(String deviceId) {
+        return deviceChannelMap.containsKey(deviceId) ? deviceChannelMap.get(deviceId) : null;
     }
 
     public static void removeDeviceChannel(String deviceId, Channel channel) {
@@ -41,5 +41,9 @@ public class DevTcpChannelManager {
             }
         }
         return null;
+    }
+
+    public static int count() {
+        return deviceChannelMap.size();
     }
 }

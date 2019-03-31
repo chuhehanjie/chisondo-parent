@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.multipart.MemoryAttribute;
 import io.netty.util.CharsetUtil;
 import org.springframework.http.MediaType;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ public final class IOTUtils {
         reqUriList = new ArrayList<>();
         reqUriList.add(DevReqURIConstant.START_WORK);
         reqUriList.add(DevReqURIConstant.QRY_DEV_PARAM);
+        reqUriList.add(DevReqURIConstant.QRY_DEV_STATUS);
     }
 
     public static List<String> getReqUriList() {

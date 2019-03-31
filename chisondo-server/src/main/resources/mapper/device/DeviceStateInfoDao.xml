@@ -270,7 +270,7 @@
 		)
 		values
 		(
-			#{deviceId}, 
+			#{deviceId},
 			#{onlineState}, 
 			#{deviceStateInfo}, 
 			#{connectState}, 

@@ -3,22 +3,15 @@ package com.chisondo.iot.device.handler;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.common.utils.RestTemplateUtils;
-import com.chisondo.iot.device.request.DevStatusReportReq;
-import com.chisondo.iot.device.request.StartWork4DevReq;
-import com.chisondo.iot.device.request.WorkMsg;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
-import com.chisondo.model.http.req.DeviceHttpReq;
-import com.chisondo.model.http.req.StartWorkingReq;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
+import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,70 +93,67 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
 
         log.info("读取设备[{}]发送的消息:{}", deviceChannel.remoteAddress(), msg);
 
-        if (msg instanceof DeviceHttpReq) {
+        /*if (msg instanceof DeviceHttpReq) {
             DeviceHttpReq req = (DeviceHttpReq) msg;
             // 向设备发送请求
             deviceChannel.writeAndFlush(JSONObject.toJSONString(req));
-//            deviceChannel.writeAndFlush(Unpooled.copiedBuffer(JSONObject.toJSONString(req) + "\n", CharsetUtil.UTF_8));
-        } else if (msg instanceof DeviceHttpResp) {
-            // 接收设备发送的响应，并将响应发到 http server
-            DeviceHttpResp resp = (DeviceHttpResp) msg;
-            if (null == resp.getDeviceID()) {
-                System.out.println("resp = " + JSONObject.toJSONString(resp));
-                return;
-            }
-            Channel httpChannel = DevHttpChannelManager.getChannelByDeviceId(resp.getDeviceID());
-            if (null != httpChannel) {
-                FullHttpResponse response = IOTUtils.buildResponse(resp);
-                httpChannel.writeAndFlush(response).addListener((obj) -> {
-                    ChannelFuture future = (ChannelFuture) obj;
-                    DevHttpChannelManager.removeHttpChannel(resp.getDeviceID(), future.channel());
-                    future.channel().close();
-                });
-            } else {
-                System.out.println("resp = " + JSONObject.toJSONString(resp));
-            }
-
-        } else if (msg instanceof DevStatusReportReq) {
-            // 设备心跳上报请求
-            DevStatusReportReq reportReq = (DevStatusReportReq) msg;
-            log.info("接收设备[{}]心跳上报请求!", reportReq.getDeviceID());
-            String deviceId = reportReq.getDeviceID();
-            if (null == DevTcpChannelManager.getChannelByDevice(deviceId)) {
-                DevTcpChannelManager.addDeviceChannel(deviceId, ctx.channel());
-            }
-            reportReq.setTcpValTime(new Date());
-            // TODO 更新 redis 中设备状态
-            this.redisClient.opsForValue().set(reportReq.getDeviceID(), JSONObject.toJSONString(reportReq), 60*20, TimeUnit.SECONDS);
-            this.reportDevStatus2App(reportReq);
-//            deviceChannel.writeAndFlush("{\"action\":200}\n");
-        } else if (msg instanceof StartWorkingReq) {
-            StartWorkingReq startWorkingReq = (StartWorkingReq) msg;
-            /*下发沏茶，洗茶，烧水指令，设备收到指令后按对应参数开始工作。
-            参数说明：
-            soak（设定沏茶时间） 取值与waterlevel（设定出水量）有关，每一档出水量都会对应一个最小沏茶时间，如果传入的设定沏茶时间soak 小于 设定出水量的最小时间则以最小时间为准，屏幕以最小沏茶时间开始倒计时。
-            如：设置出水量300ml，抽水+出水时间最少需要90秒（不浸泡），传入的设定沏茶时间soak为70秒，则以最小时间90秒为准，设备屏幕从90秒开始倒计时。
-            {"action":"startwork","deviceID":"898398492","msg":{"temperature":100,"soak":120,"waterlevel":200}}
-            响应：
-            {"retn":200,"desc":"REQSUCCESS","action":"startworkok","deviceID":"898398492","msg":{"state":0,"stateinfo":"EXESUCCESS"}}*/
-
-            StartWork4DevReq startWork4DevReq = new StartWork4DevReq();
-            startWork4DevReq.setAction("");
-            startWork4DevReq.setDeviceID(startWorkingReq.getDeviceId());
-            WorkMsg workMsg = new WorkMsg();
-            workMsg.setTemperature(startWorkingReq.getTemperature());
-            workMsg.setSoak(startWorkingReq.getSoak());
-            workMsg.setWaterlevel(startWorkingReq.getWaterlevel());
-            startWork4DevReq.setMsg(workMsg);
-            deviceChannel.writeAndFlush(JSONObject.toJSONString(startWork4DevReq));
-
+        }*/
+        if (msg instanceof DeviceHttpResp) {
+            this.processDevCtrlResp(deviceChannel, msg);
+        } else if (msg instanceof DevStatusReportResp) {
+            this.processDevStatusReport(deviceChannel, (DevStatusReportResp) msg);
         } else if (msg instanceof ByteBuf) {
             System.out.println("this is byteBuf msg.");
             deviceChannel.writeAndFlush(msg);
         }
     }
 
-    private void reportDevStatus2App(DevStatusReportReq reportReq) {
+    /**
+     * 处理设备控制响应
+     * @param deviceChannel
+     * @param msg
+     */
+    private void processDevCtrlResp(Channel deviceChannel, Object msg) {
+        // DeviceHttpResp 包含启动设备沏茶/洗茶/烧水响应
+        // 接收设备发送的响应，并将响应发送到 http server
+        DeviceHttpResp resp = (DeviceHttpResp) msg;
+        if (null == resp.getDeviceID()) {
+            System.out.println("resp = " + JSONObject.toJSONString(resp));
+            return;
+        }
+        Channel httpChannel = DevHttpChannelManager.getHttpChannelByDeviceId(resp.getDeviceID());
+        if (null != httpChannel) {
+            FullHttpResponse response = IOTUtils.buildResponse(resp);
+            httpChannel.writeAndFlush(response).addListener((obj) -> {
+                ChannelFuture future = (ChannelFuture) obj;
+                DevHttpChannelManager.removeHttpChannel(resp.getDeviceID(), future.channel());
+                future.channel().close();
+            });
+        } else {
+            System.out.println("resp = " + JSONObject.toJSONString(resp));
+        }
+    }
+
+    /**
+     * 处理设备状态上报
+     * @param deviceChannel
+     * @param msg
+     */
+    private void processDevStatusReport(Channel deviceChannel, Object msg) {
+        // 设备心跳上报请求
+        DevStatusReportResp reportReq = (DevStatusReportResp) msg;
+        log.info("接收设备[{}]心跳上报请求!", reportReq.getDeviceID());
+        String deviceId = reportReq.getDeviceID();
+        if (null == DevTcpChannelManager.getChannelByDeviceId(deviceId)) {
+            DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);
+        }
+        reportReq.setTcpValTime(new Date());
+        // TODO 更新 redis 中设备状态
+        this.redisClient.opsForValue().set(reportReq.getDeviceID(), JSONObject.toJSONString(reportReq), 60*20, TimeUnit.SECONDS);
+        // this.reportDevStatus2App(reportReq);
+    }
+
+    private void reportDevStatus2App(DevStatusReportResp reportReq) {
         // 发送请求到 HTTP 应用，更新设备状态
         try {
             String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/currentState", String.class, reportReq);
@@ -197,8 +187,11 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception { // (6)
-        Channel incoming = ctx.channel();
-        log.info("SimpleChatClient = " + incoming.remoteAddress() + " 掉线, 总人数 = " + channels.size() + "\n");
+        Channel deviceChannel = ctx.channel();
+        String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
+        // TODO 更新设备状态为离线
+        // TODO 发送请求到 HTTP 服务
+        log.info("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
 //        DeviceChannelManager.removeDeviceChannel();
     }
 
