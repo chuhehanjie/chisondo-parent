@@ -12,6 +12,7 @@ import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.device.validator.DevExistenceValidator;
+import com.chisondo.server.modules.device.validator.QueryParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,7 +84,7 @@ public class DeviceQueryController extends AbstractController {
 		if (ValidateUtils.isEmpty(jsonObj) || ValidateUtils.isEmptyString(jsonObj.getString(Keys.PHONE_NUM))) {
 			throw new CommonException("手机号为空");
 		}
-		return this.deviceInfoService.queryHisConnectDevOfUser(jsonObj.getString(Keys.PHONE_NUM));
+		return this.deviceQueryService.queryHisConnectDevOfUser(jsonObj.getString(Keys.PHONE_NUM));
 	}
 
 	/**
@@ -99,5 +100,16 @@ public class DeviceQueryController extends AbstractController {
 		num	N	int	每页条数
 		page	N	int	页码*/
 		return this.deviceQueryService.queryMakeTeaRecordsOfDev(req);
+	}
+
+	/**
+	 * 查询设备详细信息
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping("/api/rest/qryDeviceInfo")
+	@ParamValidator(value = {QueryParamValidator.class}, isQuery = true)
+	public CommonResp queryDeviceDetail(@RequestBody CommonReq req) {
+		return this.deviceQueryService.queryDeviceDetail(req);
 	}
 }

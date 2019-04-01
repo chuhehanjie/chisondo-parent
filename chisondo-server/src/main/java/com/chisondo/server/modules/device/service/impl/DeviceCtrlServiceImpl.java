@@ -17,6 +17,7 @@ import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
 import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
@@ -296,7 +297,15 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		return CommonResp.ok();
 	}
 
-	private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {
+    @Override
+    public CommonResp changeDevTeaSpectrum(CommonReq req) {
+	    // TODO 待完成
+	    ChgDevTeaSpectrumReqDTO chgDevTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), ChgDevTeaSpectrumReqDTO.class);
+        AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey("teaSpectrumInfo");
+        return CommonResp.ok();
+    }
+
+    private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(washTeaReq.getDeviceId());
 		devHttpReq.setMsg(new DevParamMsg(washTeaReq.getTemperature(), washTeaReq.getSoak(), washTeaReq.getWaterlevel()));

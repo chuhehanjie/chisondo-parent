@@ -61,4 +61,7 @@ public interface DeviceCtrlService {
 
 	@Transactional
 	CommonResp setDefaultDevice(CommonReq req);
+
+
+    CommonResp changeDevTeaSpectrum(CommonReq req);
 }

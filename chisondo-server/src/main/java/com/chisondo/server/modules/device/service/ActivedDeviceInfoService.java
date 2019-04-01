@@ -1,10 +1,9 @@
 package com.chisondo.server.modules.device.service;
 
-import com.chisondo.server.common.http.CommonReq;
-import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.device.dto.req.SetDevNameReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevPwdReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevSoundReqDTO;
+import com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public interface ActivedDeviceInfoService {
 	
 	void deleteBatch(Integer[] deviceIds);
 
-    CommonResp queryHisConnectDevOfUser(String userMobile);
+    List<DeviceInfoRespDTO> queryHisConnectDevOfUser(String userMobile);
 
     ActivedDeviceInfoEntity getDeviceInfoById(String deviceId);
 
@@ -42,4 +41,6 @@ public interface ActivedDeviceInfoService {
     void updateDevNameOrDesc(SetDevNameReqDTO setDevNameReq);
 
     void updateDevSound(SetDevSoundReqDTO setDevSoundReq);
+
+	List<DeviceInfoRespDTO> queryDeviceDetail(Map<String, Object> params);
 }

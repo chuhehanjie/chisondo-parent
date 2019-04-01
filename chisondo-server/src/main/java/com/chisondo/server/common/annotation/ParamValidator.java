@@ -15,5 +15,7 @@ public @interface ParamValidator {
      * 如设置为 false ，则建议校验方法独立调用
      * @return
      */
-    boolean chainCall() default true;
+//    boolean chainCall() default true;
+
+    boolean isQuery() default false;
 }

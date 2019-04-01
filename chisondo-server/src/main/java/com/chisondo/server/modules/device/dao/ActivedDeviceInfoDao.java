@@ -9,6 +9,7 @@ import com.chisondo.server.modules.sys.dao.BaseDao;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -27,4 +28,6 @@ public interface ActivedDeviceInfoDao extends BaseDao<ActivedDeviceInfoEntity> {
     void updateDevNameOrDesc(SetDevNameReqDTO setDevNameReq);
 
     void updateDevSound(SetDevSoundReqDTO setDevSoundReq);
+
+    List<DeviceInfoRespDTO> queryDeviceDetail(Map<String, Object> params);
 }

@@ -18,6 +18,7 @@ import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,10 +81,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 
 	@Override
 	public CommonResp queryHisConnectDevOfUser(String userMobile) {
-		/*List<DeviceInfoRespDTO> devInfoList = this.activedDeviceInfoDao.queryHisConnectDevOfUserByPhone(userMobile);
+		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoService.queryHisConnectDevOfUser(userMobile);
 		DevQueryRespDTO devQueryResp = new DevQueryRespDTO(devInfoList);
-		return CommonResp.ok(devQueryResp);*/
-		return CommonResp.ok();
+		return CommonResp.ok(devQueryResp);
 	}
 
 	@Override
@@ -116,5 +116,13 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 			DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStateInfo);
 			return CommonResp.ok(devStatusResp);
 		}
+	}
+
+	@Override
+	public CommonResp queryDeviceDetail(CommonReq req) {
+		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+		String phoneNum = (String) req.getAttrByKey(Keys.PHONE_NUM);
+		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoService.queryDeviceDetail(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.USER_MOBILE, phoneNum));
+		return CommonResp.ok(devInfoList);
 	}
 }

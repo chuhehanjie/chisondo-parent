@@ -1,10 +1,8 @@
 package com.chisondo.server.modules.device.service.impl;
 
-import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.device.dto.req.SetDevNameReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevPwdReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevSoundReqDTO;
-import com.chisondo.server.modules.device.dto.resp.DevQueryRespDTO;
 import com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,10 +57,9 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	}
 
 	@Override
-	public CommonResp queryHisConnectDevOfUser(String userMobile) {
+	public List<DeviceInfoRespDTO> queryHisConnectDevOfUser(String userMobile) {
 		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoDao.queryHisConnectDevOfUserByPhone(userMobile);
-		DevQueryRespDTO devQueryResp = new DevQueryRespDTO(devInfoList);
-		return CommonResp.ok(devQueryResp);
+		return devInfoList;
 	}
 
 	@Override
@@ -83,5 +80,10 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	@Override
 	public void updateDevSound(SetDevSoundReqDTO setDevSoundReq) {
 		this.deviceInfoDao.updateDevSound(setDevSoundReq);
+	}
+
+	@Override
+	public List<DeviceInfoRespDTO> queryDeviceDetail(Map<String, Object> params) {
+		return this.deviceInfoDao.queryDeviceDetail(params);
 	}
 }

@@ -5,6 +5,8 @@ public class Keys {
 
     public static final String PHONE_NUM = "phoneNum";
 
+    public static final String USER_MOBILE = "userMobile";
+
     public static final String PHONE = "phone";
 
     public static final String CONNECT_STATE = "connectState";

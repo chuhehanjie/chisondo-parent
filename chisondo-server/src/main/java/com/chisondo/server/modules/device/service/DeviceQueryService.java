@@ -22,4 +22,6 @@ public interface DeviceQueryService {
 	 * @return
 	 */
     CommonResp queryDevStateInfo(CommonReq req);
+
+    CommonResp queryDeviceDetail(CommonReq req);
 }

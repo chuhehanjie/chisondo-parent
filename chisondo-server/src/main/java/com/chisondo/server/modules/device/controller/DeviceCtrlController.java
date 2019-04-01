@@ -224,4 +224,17 @@ public class DeviceCtrlController extends AbstractController {
 	public CommonResp setDefaultDevice(@RequestBody CommonReq req) {
 		return this.deviceCtrlService.setDefaultDevice(req);
 	}
+
+
+    /**
+     * 液晶屏茶谱更换
+     * @param req
+     * @return
+     */
+	@RequestMapping("/api/rest/replaceDeviceChapu")
+	@DevOperateLog("液晶屏茶谱更换")
+	@ParamValidator({DevExistenceValidator.class})
+	public CommonResp changeDevTeaSpectrum(@RequestBody CommonReq req) {
+		return this.deviceCtrlService.changeDevTeaSpectrum(req);
+	}
 }
