@@ -6,7 +6,9 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.common.validator.BusiValidator;
+import org.springframework.stereotype.Component;
 
+@Component("queryParamValidator")
 public class QueryParamValidator implements BusiValidator {
     @Override
     public void validate(CommonReq req) {
