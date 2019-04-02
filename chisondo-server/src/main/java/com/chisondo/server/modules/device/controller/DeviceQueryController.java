@@ -93,13 +93,22 @@ public class DeviceQueryController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/qryDeviceTeaRecord")
-	@ParamValidator({DevExistenceValidator.class})
 	public CommonResp queryMakeTeaRecordsOfDev(@RequestBody CommonReq req) {
 		/*输入参数	是否必填	参数类型	说明	备注
 		phoneNum	Y	String	手机号码
 		num	N	int	每页条数
 		page	N	int	页码*/
 		return this.deviceQueryService.queryMakeTeaRecordsOfDev(req);
+	}
+
+	/**
+	 * 查询用户的沏茶记录
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping("/api/rest/qryUserTeaRecord")
+	public CommonResp queryMakeTeaRecordsOfUser(@RequestBody CommonReq req) {
+		return this.deviceQueryService.queryMakeTeaRecordsOfUser(req);
 	}
 
 	/**

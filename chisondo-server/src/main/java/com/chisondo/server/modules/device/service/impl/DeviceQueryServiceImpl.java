@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.device.service.impl;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
+import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.modules.device.dto.resp.*;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
@@ -88,12 +89,39 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 
 	@Override
 	public CommonResp queryMakeTeaRecordsOfDev(CommonReq req) {
-		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+		String deviceId = jsonObj.getString(Keys.DEVICE_ID);
+		if (ValidateUtils.isEmptyString(deviceId)) {
+			throw new CommonException("设备ID为空");
+		}
 		Map<String, Object> params = CommonUtils.getPageParams(jsonObj);
 		params.put(Keys.DEVICE_ID, deviceId);
+		params.put(Query.PAGE, ValidateUtils.isEmpty(jsonObj.get(Query.PAGE)) ? 1 : jsonObj.get(Query.PAGE));
+		params.put(Query.LIMIT, ValidateUtils.isEmpty(jsonObj.get(Query.NUM)) ? 10 : jsonObj.get(Query.NUM));
 		int count = this.userMakeTeaService.countMakeTeaRecordsByDeviceId(deviceId);
 		List<MakeTeaRowRespDTO> rows = this.userMakeTeaService.queryMakeTeaRecordsByDeviceId(new Query(params));
+		MakeTeaRespDTO makeTeaResp = new MakeTeaRespDTO(count, rows);
+		return CommonResp.ok(makeTeaResp);
+	}
+
+	/**
+	 * 查询用户的沏茶记录
+	 * @param req
+	 * @return
+	 */
+	@Override
+	public CommonResp queryMakeTeaRecordsOfUser(CommonReq req) {
+		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+		String phoneNum = jsonObj.getString(Keys.PHONE_NUM);
+		if (ValidateUtils.isEmptyString(phoneNum)) {
+			throw new CommonException("用户手机号为空");
+		}
+		Map<String, Object> params = CommonUtils.getPageParams(jsonObj);
+		params.put(Keys.USER_MOBILE, phoneNum);
+		params.put(Query.PAGE, ValidateUtils.isEmpty(jsonObj.get(Query.PAGE)) ? 1 : jsonObj.get(Query.PAGE));
+		params.put(Query.LIMIT, ValidateUtils.isEmpty(jsonObj.get(Query.NUM)) ? 10 : jsonObj.get(Query.NUM));
+		int count = this.userMakeTeaService.countMakeTeaRecordsByUserMobile(phoneNum);
+		List<MakeTeaRowRespDTO> rows = this.userMakeTeaService.queryMakeTeaRecordsByUserMobile(new Query(params));
 		MakeTeaRespDTO makeTeaResp = new MakeTeaRespDTO(count, rows);
 		return CommonResp.ok(makeTeaResp);
 	}

@@ -1,4 +1,5 @@
 package test.moniTerminal;
+import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
 import com.chisondo.model.http.resp.DeviceMsgResp;
 import com.chisondo.model.http.req.StartWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
@@ -6,7 +7,6 @@ import com.chisondo.model.http.resp.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.iot.common.constant.Constant;
-import com.chisondo.model.http.req.DeviceHttpReq;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -66,6 +66,12 @@ public class MockTerminalHandler extends SimpleChannelInboundHandler<String>{
 				DeviceHttpResp resp = this.buildDevHttpResp(req.getDeviceID());
 				channel.writeAndFlush(Unpooled.copiedBuffer(JSONObject.toJSONString(resp) + "\n", CharsetUtil.UTF_8));
 				log.info("发送设备启动沏茶/洗茶/烧水响应到 TCP 服务");
+			} else if (this.isSetChapuParamReq(json)) {
+				SetDevChapuParamHttpReq req = JSONObject.parseObject(json, SetDevChapuParamHttpReq.class);
+				log.info("获取设置设备茶谱参数请求，设备ID = {}", req.getDeviceID());
+				DeviceHttpResp resp = this.buildDevHttpResp(req.getDeviceID());
+				channel.writeAndFlush(Unpooled.copiedBuffer(JSONObject.toJSONString(resp) + "\n", CharsetUtil.UTF_8));
+				log.info("发送设置设备茶谱参数响应到 TCP 服务");
 			} else {
 				System.out.println("未处理的消息");
 			}
@@ -164,6 +170,10 @@ public class MockTerminalHandler extends SimpleChannelInboundHandler<String>{
 
 	private boolean isStartWorkReq(String json) {
 		return json.contains("\"action\":\"startwork\"");
+	}
+
+	private boolean isSetChapuParamReq(String json) {
+		return json.contains("\"action\":\"setchapuparm\"");
 	}
 
 }

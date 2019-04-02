@@ -26,6 +26,31 @@
         <result property="density" column="density"/>
     </resultMap>
 
+	<sql id="queryMakeTeaRecordsByCondition">
+		SELECT
+			umt.id as makeId,
+			dv.PHONE as phoneNum,
+			dv.VIP_NAME as userName,
+			dv.VIP_HEAD_IMG as userImg,
+			umt.add_time as startTime,
+			umt.last_time as endTime,
+			umt.make_type as makeType,
+			0 as makeMode,
+			umt.chapu_id as chapuId,
+			c.name as chapuName,
+			umt.make_index as chapuIndex,
+			c.image as chapuImage,
+			umt.tea_sort_id as teaSortId,
+			umt.tea_sort_name as teaSortName,
+			umt.temperature as temperature,
+			150 as waterlevel,
+			umt.soak as soak
+		FROM tb_user_make_tea umt
+		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
+		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
+		WHERE 1=1
+	</sql>
+
 	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserMakeTeaEntity">
 		select * from tb_user_make_tea where id = #{value}
 	</select>
@@ -244,35 +269,6 @@
 		</foreach>
 	</delete>
 
-	<select id="queryMakeTeaRecordsByDeviceId" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
-		SELECT
-			umt.id as makeId,
-			dv.PHONE as phoneNum,
-			dv.VIP_NAME as userName,
-			dv.VIP_HEAD_IMG as userImg,
-			umt.add_time as startTime,
-			umt.last_time as endTime,
-			umt.make_type as makeType,
-			0 as makeMode,
-			umt.chapu_id as chapuId,
-			c.name as chapuName,
-			umt.make_index as chapuIndex,
-			c.image as chapuImage,
-			umt.tea_sort_id as teaSortId,
-			umt.tea_sort_name as teaSortName,
-			umt.temperature as temperature,
-			150 as waterlevel,
-			umt.soak as soak
-		FROM tb_user_make_tea umt
-		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
-		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
-		where umt.device_id = #{deviceId}
-		order by umt.add_time desc
-		<if test="offset != null and limit != null">
-			limit #{offset}, #{limit}
-		</if>
-	</select>
-
 	<select id="countMakeTeaRecordsByDeviceId" parameterType="java.lang.String" resultType="java.lang.Integer">
 		SELECT
 			count(1)
@@ -280,6 +276,33 @@
 		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
 		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
 		where umt.device_id = #{deviceId}
+	</select>
+
+	<select id="queryMakeTeaRecordsByDeviceId" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
+		<include refid="queryMakeTeaRecordsByCondition"></include>
+		AND umt.device_id = #{deviceId}
+		ORDER BY umt.add_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="countMakeTeaRecordsByUserMobile" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM tb_user_make_tea umt
+		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
+		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
+		where dv.PHONE = #{userMobile}
+	</select>
+
+	<select id="queryMakeTeaRecordsByUserMobile" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
+		<include refid="queryMakeTeaRecordsByCondition"></include>
+		AND dv.PHONE = #{userMobile}
+		ORDER BY umt.add_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
 	</select>
 
 </mapper>

@@ -62,7 +62,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
                 FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_METHOD_NOT_ALLOWED, "只支持POST请求"));
                 httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             } else {
-                DevBusiHandler devBusiHandler = (DevBusiHandler) SpringContextUtils.getBean("busiHandler4" + uri);
+                DevBusiHandler devBusiHandler = (DevBusiHandler) SpringContextUtils.getBean(DevBusiHandler.REQ_PREFIX + uri);
                 try {
                     devBusiHandler.handle(request, httpChannel);
                 } catch (Exception e) {

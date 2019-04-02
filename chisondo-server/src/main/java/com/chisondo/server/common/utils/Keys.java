@@ -50,4 +50,6 @@ public class Keys {
     public static final String USER_MAKTE_TEA_INFO = "userMakeTeaInfo";
 
     public static final String STATUS = "status";
+
+    public static final String TEA_SPECTRUM_INFO = "teaSpectrumInfo";
 }

@@ -56,9 +56,8 @@ public class MockTerminal {
 				while (channelFuture.channel().isActive()) {
 				    // 只要与服务端连接，就上报设备信息
                     String msg = getDevStatusInfo(deviceId);
-//                    channelFuture.channel().writeAndFlush(Unpooled.copiedBuffer("{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"7788520\"}\n", CharsetUtil.UTF_8));
                     channelFuture.channel().writeAndFlush(Unpooled.copiedBuffer(msg + "\n", CharsetUtil.UTF_8));
-                    Thread.sleep(5000);
+                    Thread.sleep(8000);
                     /*if (++count > 0) {
                         break;
                     }*/

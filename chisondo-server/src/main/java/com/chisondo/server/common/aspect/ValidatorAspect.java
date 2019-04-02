@@ -5,6 +5,7 @@ import com.chisondo.server.common.annotation.ParamValidator;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
+import com.chisondo.server.common.utils.CacheDataUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.SpringContextUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
@@ -39,8 +40,6 @@ public class ValidatorAspect {
 
 	@Before("validatePointCut()")
 	public void before(JoinPoint point) throws Throwable {
-		long beginTime = System.currentTimeMillis();
-
 		MethodSignature methodSignature = (MethodSignature) point.getSignature();
 		Method method = methodSignature.getMethod();
 		CommonReq commonReq = (CommonReq) point.getArgs()[0];
@@ -67,7 +66,9 @@ public class ValidatorAspect {
 		if (ValidateUtils.isEmptyString(deviceId)) {
 			throw new CommonException("设备ID为空");
 		}
+		boolean isOldDev = Boolean.valueOf(CacheDataUtils.getConfigValueByKey("OLD_DEV_FLAG"));
 		// TODO 老设备规则待定 return deviceId.length() == 8;
-		return deviceId.length() <= 8;
+//		return deviceId.length() <= 8;
+		return isOldDev;
 	}
 }

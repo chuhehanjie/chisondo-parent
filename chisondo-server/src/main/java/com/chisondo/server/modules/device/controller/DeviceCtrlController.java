@@ -233,7 +233,7 @@ public class DeviceCtrlController extends AbstractController {
      */
 	@RequestMapping("/api/rest/replaceDeviceChapu")
 	@DevOperateLog("液晶屏茶谱更换")
-	@ParamValidator({DevExistenceValidator.class})
+	@ParamValidator({DevExistenceValidator.class, TeaSpectrumExistenceValidator.class})
 	public CommonResp changeDevTeaSpectrum(@RequestBody CommonReq req) {
 		return this.deviceCtrlService.changeDevTeaSpectrum(req);
 	}

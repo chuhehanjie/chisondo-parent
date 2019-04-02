@@ -22,6 +22,8 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public abstract class DevBusiHandler {
 
+    public static final String REQ_PREFIX = "busiHandler4";
+
     public void handle(FullHttpRequest request, Channel httpChannel) {
         try {
             DevBusiModel devBusiModel = this.validate(request);

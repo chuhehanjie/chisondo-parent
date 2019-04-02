@@ -1,5 +1,8 @@
 package com.chisondo.server.modules.tea.service.impl;
 
+import com.chisondo.server.datasources.DataSourceNames;
+import com.chisondo.server.datasources.DynamicDataSource;
+import com.chisondo.server.datasources.annotation.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,13 @@ public class AppChapuServiceImpl implements AppChapuService {
 	
 	@Override
 	public AppChapuEntity queryObject(Integer chapuId){
+		DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		return appChapuDao.queryObject(chapuId);
 	}
 	
 	@Override
 	public List<AppChapuEntity> queryList(Map<String, Object> map){
+		DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		return appChapuDao.queryList(map);
 	}
 	
@@ -54,6 +59,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 
 	@Override
 	public AppChapuEntity queryTeaSpectrumById(Integer id) {
+		DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		return this.appChapuDao.queryTeaSpectrumById(id);
 	}
 }

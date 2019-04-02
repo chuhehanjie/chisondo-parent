@@ -20,9 +20,14 @@ import java.util.Map;
 @Mapper
 public interface UserMakeTeaDao extends BaseDao<UserMakeTeaEntity> {
 
+    int countMakeTeaRecordsByDeviceId(String deviceId);
+
     List<MakeTeaRowRespDTO> queryMakeTeaRecordsByDeviceId(Map<String, Object> params);
 
-    int countMakeTeaRecordsByDeviceId(String deviceId);
+    int countMakeTeaRecordsByUserMobile(String userMobile);
+
+    List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserMobile(Map<String, Object> params);
+
 
     void updateStatus(Map<String, Object> params);
 }

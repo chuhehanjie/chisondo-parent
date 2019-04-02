@@ -25,6 +25,8 @@ public class Query extends LinkedHashMap<String, Object> {
     public static final String OFFSET = "offset";
 
     public static final String LIMIT = "limit";
+
+    public static final String NUM = "num";
 	//当前页码
     private int page;
     //每页条数

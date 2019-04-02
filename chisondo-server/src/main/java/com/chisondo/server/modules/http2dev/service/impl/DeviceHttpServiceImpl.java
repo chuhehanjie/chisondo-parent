@@ -1,7 +1,9 @@
 package com.chisondo.server.modules.http2dev.service.impl;
 
+import com.chisondo.model.constant.DevReqURIConstant;
 import com.chisondo.model.http.req.DeviceHttpReq;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
+import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
 import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusReportResp;
@@ -50,7 +52,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     public DeviceHttpResp makeTea(DeviceHttpReq req) {
         req.setAction("startwork");
         req.setActionflag(Constant.DevStartWorkAction.MAKE_TEA);
-        return this.deviceControl(this.http2DevURL + "startWork", req);
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.START_WORK, req);
     }
 
     /**
@@ -62,7 +64,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     public DeviceHttpResp washTeaCtrl(DeviceHttpReq req) {
         req.setAction("setdevparm");
         req.setActionflag(1); // 洗茶按键
-        return this.deviceControl(this.http2DevURL + "startWork", req);
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.START_WORK, req);
     }
 
     /**
@@ -74,7 +76,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     public DeviceHttpResp boilWaterCtrl(DeviceHttpReq req) {
         req.setAction("setdevparm");
         req.setActionflag(2); // 烧水按键
-        return this.deviceControl(this.http2DevURL + "startWork", req);
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.START_WORK, req);
     }
 
     /**
@@ -86,7 +88,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     @Override
     public DeviceHttpResp stopWork(StopWorkHttpReq req) {
         req.setAction("stopwork");
-        return this.deviceControl(this.http2DevURL + "stopWork", req);
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.STOP_WORK, req);
     }
 
     /**
@@ -97,13 +99,24 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     @Override
     public DeviceHttpResp startKeeWarm(DeviceHttpReq req) {
         req.setAction("keepwarm");
-        return this.deviceControl(this.http2DevURL + "startKeepWarm", req);
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.START_KEEP_WARM, req);
+    }
+
+    /**
+     * 设置内置茶谱参数
+     * @param req
+     * @return
+     */
+    @Override
+    public DeviceHttpResp setDevChapuParam(SetDevChapuParamHttpReq req) {
+        req.setAction("setchapuparm");
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.SET_DEV_CHAPU_PARAM, req);
     }
 
     @Override
     public DevSettingHttpResp queryDevSettingInfo(QryDeviceInfoHttpReq req) {
         req.setAction("qrydevparm");
-        DevSettingHttpResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + "qryDevSetting", DevSettingHttpResp.class, req);
+        DevSettingHttpResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + DevReqURIConstant.QRY_DEV_PARAM, DevSettingHttpResp.class, req);
         return resp;
     }
 
@@ -115,7 +128,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     @Override
     public DevStatusReportResp queryDevStateInfo(QryDeviceInfoHttpReq req) {
         req.setAction("qrydevicestate");
-        DevStatusReportResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + "qryDevStatus", DevStatusReportResp.class, req);
+        DevStatusReportResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + DevReqURIConstant.QRY_DEV_STATUS, DevStatusReportResp.class, req);
         return resp;
     }
 

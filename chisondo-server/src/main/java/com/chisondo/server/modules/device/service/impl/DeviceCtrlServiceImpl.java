@@ -1,5 +1,6 @@
 package com.chisondo.server.modules.device.service.impl;
 import com.chisondo.model.constant.DevConstant;
+import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
 import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.Date;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.DeviceHttpReq;
 import com.chisondo.model.http.resp.DeviceHttpResp;
+import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.*;
@@ -18,6 +20,8 @@ import com.chisondo.server.modules.device.service.DeviceCtrlService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
+import com.chisondo.server.modules.tea.service.AppChapuParaService;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
 import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
@@ -61,6 +65,9 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Autowired
 	private DeviceHttpService deviceHttpService;
+
+	@Autowired
+	private AppChapuParaService appChapuParaService;
 
 	@Override
 	public CommonResp startOrReserveMakeTea(CommonReq req) {
@@ -297,12 +304,30 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		return CommonResp.ok();
 	}
 
+	/**
+	 * 更换液晶屏茶谱
+	 * @param req
+	 * @return
+	 */
     @Override
     public CommonResp changeDevTeaSpectrum(CommonReq req) {
-	    // TODO 待完成
 	    ChgDevTeaSpectrumReqDTO chgDevTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), ChgDevTeaSpectrumReqDTO.class);
-        AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey("teaSpectrumInfo");
-        return CommonResp.ok();
+        AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
+		AppChapuParaEntity teaSpectrumParam = this.appChapuParaService.queryObject(teaSpectrum.getChapuId());
+		if (ValidateUtils.isEmpty(teaSpectrumParam)) {
+			throw new CommonException("茶谱参数未设置");
+		}
+		SetDevChapuParamHttpReq devHttpReq = new SetDevChapuParamHttpReq();
+		devHttpReq.setDeviceID(chgDevTeaSpectrumReq.getDeviceId());
+		devHttpReq.setIndex(chgDevTeaSpectrumReq.getIndex());
+		devHttpReq.setMaketimes(teaSpectrum.getMakeTimes());
+		DevParamMsg teaparam = new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), 200); // TODO 待确认 出水量怎么传
+		devHttpReq.setTeaparm(teaparam);
+		devHttpReq.setChapuid(teaSpectrum.getChapuId());
+		devHttpReq.setChapuname(teaSpectrum.getName());
+		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevChapuParam(devHttpReq);
+		log.info("调用更换液晶屏茶谱 HTTP 服务响应：{}", devHttpResp);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
     }
 
     private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {

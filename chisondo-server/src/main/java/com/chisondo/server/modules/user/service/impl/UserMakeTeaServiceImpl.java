@@ -60,14 +60,25 @@ public class UserMakeTeaServiceImpl implements UserMakeTeaService {
 	}
 
 	@Override
+	public int countMakeTeaRecordsByDeviceId(String deviceId) {
+		return this.userMakeTeaDao.countMakeTeaRecordsByDeviceId(deviceId);
+	}
+
+	@Override
 	public List<MakeTeaRowRespDTO> queryMakeTeaRecordsByDeviceId(Map<String, Object> params) {
 		return this.userMakeTeaDao.queryMakeTeaRecordsByDeviceId(params);
 	}
 
 	@Override
-	public int countMakeTeaRecordsByDeviceId(String deviceId) {
-		return this.userMakeTeaDao.countMakeTeaRecordsByDeviceId(deviceId);
+	public int countMakeTeaRecordsByUserMobile(String userMobile) {
+		return this.userMakeTeaDao.countMakeTeaRecordsByUserMobile(userMobile);
 	}
+
+	@Override
+	public List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserMobile(Map<String, Object> params) {
+		return this.userMakeTeaDao.queryMakeTeaRecordsByUserMobile(params);
+	}
+
 
 	@Override
 	public void updateStatus(String deviceId, int status) {
