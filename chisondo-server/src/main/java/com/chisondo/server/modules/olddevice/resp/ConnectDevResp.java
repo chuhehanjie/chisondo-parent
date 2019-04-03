@@ -145,7 +145,7 @@ public class ConnectDevResp implements Serializable {
         } else if (5 == this.errCode) {
             return "密码错误";
         } else {
-            return "";
+            return "连接设备异常";
         }
     }
 }

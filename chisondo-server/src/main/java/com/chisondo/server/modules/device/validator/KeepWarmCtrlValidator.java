@@ -20,7 +20,7 @@ public class KeepWarmCtrlValidator implements BusiValidator {
             throw new CommonException("操作类型为空");
         }
         int operFlag = jsonObj.getIntValue(Keys.OPER_FLAG);
-        if (Constant.KeeWarmCtrlOperFalg.START_KEEP_WARM != operFlag || Constant.KeeWarmCtrlOperFalg.STOP_KEEP_WARM != operFlag) {
+        if (Constant.KeeWarmCtrlOperFalg.START_KEEP_WARM != operFlag && Constant.KeeWarmCtrlOperFalg.STOP_KEEP_WARM != operFlag) {
             throw new CommonException("操作类型无效");
         }
     }
