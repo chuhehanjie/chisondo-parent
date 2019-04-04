@@ -1,13 +1,18 @@
 package com.chisondo.server.modules.tea.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
+import com.chisondo.server.common.utils.Keys;
+import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
+import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortQryDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortRowDTO;
+import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.chisondo.server.modules.tea.service.AppTeaSortService;
-import com.chisondo.server.modules.tea.service.TeamanUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +30,12 @@ import java.util.List;
  */
 @RestController
 public class TeaQueryController {
-	@Autowired
-	private TeamanUserService teamanUserService;
 
 	@Autowired
 	private AppTeaSortService appTeaSortService;
+
+	@Autowired
+	private AppChapuService appChapuService;
 	/**
 	 * 查询所有茶类信息
 	 */
@@ -43,6 +49,21 @@ public class TeaQueryController {
 			teaSortQryDTO.setRows(teaSorts);
 		}
 		return CommonResp.ok(teaSortQryDTO);
+	}
+
+	/**
+	 * 查询茶谱详情
+	 */
+	@PostMapping("/api/rest/chapu/detail")
+	@DataSource(name = DataSourceNames.SECOND)
+	public CommonResp queryTeaSpectrumDetail(@RequestBody CommonReq req){
+		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+		Integer chapuId = jsonObj.getInteger(Keys.CHAPU_ID);
+		if (ValidateUtils.isEmpty(chapuId)) {
+			throw new CommonException("茶谱ID为空");
+		}
+		QryTeaSpectrumDetailDTO teaSpectrumDetail = this.appChapuService.queryTeaSpectrumDetailById(chapuId);
+		return CommonResp.ok(teaSpectrumDetail);
 	}
 
 }

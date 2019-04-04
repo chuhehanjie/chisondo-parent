@@ -1,9 +1,6 @@
 package com.chisondo.server.modules.http2dev.service;
 
-import com.chisondo.model.http.req.DeviceHttpReq;
-import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
-import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
-import com.chisondo.model.http.req.StopWorkHttpReq;
+import com.chisondo.model.http.req.*;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
@@ -24,4 +21,8 @@ public interface DeviceHttpService {
     DevStatusReportResp queryDevStateInfo(QryDeviceInfoHttpReq req);
 
     DeviceHttpResp setDevChapuParam(SetDevChapuParamHttpReq setDevChapuParamHttpReq);
+
+    DeviceHttpResp lockOrUnlockDev(LockOrUnlockDevHttpReq req);
+
+    DeviceHttpResp setDevSoundOrNetwork(SetDevOtherParamHttpReq req);
 }

@@ -1,5 +1,6 @@
 package com.chisondo.server.modules.tea.service;
 
+import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 
 import java.util.List;
@@ -29,4 +30,6 @@ public interface AppChapuService {
 	void deleteBatch(Integer[] chapuIds);
 
 	AppChapuEntity queryTeaSpectrumById(Integer id);
+
+    QryTeaSpectrumDetailDTO queryTeaSpectrumDetailById(Integer chapuId);
 }

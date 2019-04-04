@@ -12,4 +12,8 @@ public interface DevReqURIConstant {
     String SET_DEV_CHAPU_PARAM = "setDevChapuParam";
 
     String START_KEEP_WARM = "startKeepWarm";
+
+    String LOCK_OR_UNLOCK_DEV = "lockOrUnlockDev";
+
+    String SET_DEV_OTHER_PARAM = "setDevOtherParam";
 }

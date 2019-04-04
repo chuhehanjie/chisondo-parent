@@ -46,7 +46,12 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 
 	@Autowired
 	private AppChapuService appChapuService;
-	
+
+	/**
+	 * 查询设置内置参数信息
+	 * @param req
+	 * @return
+	 */
 	@Override
 	public CommonResp queryDevSettingInfo(CommonReq req) {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);

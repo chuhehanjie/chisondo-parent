@@ -2,6 +2,9 @@ package com.chisondo.server.modules.user.service.impl;
 
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.datasources.DataSourceNames;
+import com.chisondo.server.datasources.DynamicDataSource;
+import com.chisondo.server.datasources.aspect.DataSourceAspect;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,5 +63,10 @@ public class UserVipServiceImpl implements UserVipService {
 	public void deleteBatch(Long[] memberIds){
 		userVipDao.deleteBatch(memberIds);
 	}
-	
+
+	@Override
+	public UserVipEntity queryUserByMemberId(Long memberId) {
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+		return this.userVipDao.queryObject(memberId);
+	}
 }

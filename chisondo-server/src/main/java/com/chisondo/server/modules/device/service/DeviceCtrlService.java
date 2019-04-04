@@ -64,4 +64,7 @@ public interface DeviceCtrlService {
 
 
     CommonResp changeDevTeaSpectrum(CommonReq req);
+
+    @Transactional
+    CommonResp cancelReservation(CommonReq req);
 }

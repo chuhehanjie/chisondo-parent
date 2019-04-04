@@ -51,5 +51,9 @@ public class Keys {
 
     public static final String STATUS = "status";
 
+    public static final String VALID_FLAG = "validFlag";
+
     public static final String TEA_SPECTRUM_INFO = "teaSpectrumInfo";
+
+    public static final String USER_BOOK_INFO = "userBookInfo";
 }

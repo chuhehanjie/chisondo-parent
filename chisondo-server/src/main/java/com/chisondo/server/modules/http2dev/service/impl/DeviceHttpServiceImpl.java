@@ -1,10 +1,7 @@
 package com.chisondo.server.modules.http2dev.service.impl;
 
 import com.chisondo.model.constant.DevReqURIConstant;
-import com.chisondo.model.http.req.DeviceHttpReq;
-import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
-import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
-import com.chisondo.model.http.req.StopWorkHttpReq;
+import com.chisondo.model.http.req.*;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
@@ -27,8 +24,6 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
 
     @Value("${chisondo.server.http2DevURL}")
     private String http2DevURL;
-
-
 
     private DeviceHttpResp deviceControl(String url, Object req) {
         try {
@@ -113,6 +108,11 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
         return this.deviceControl(this.http2DevURL + DevReqURIConstant.SET_DEV_CHAPU_PARAM, req);
     }
 
+    /**
+     * 查询设备参数设置信息
+     * @param req
+     * @return
+     */
     @Override
     public DevSettingHttpResp queryDevSettingInfo(QryDeviceInfoHttpReq req) {
         req.setAction("qrydevparm");
@@ -130,6 +130,28 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
         req.setAction("qrydevicestate");
         DevStatusReportResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + DevReqURIConstant.QRY_DEV_STATUS, DevStatusReportResp.class, req);
         return resp;
+    }
+
+    /**
+     * 锁定或解锁设备
+     * @param req
+     * @return
+     */
+    @Override
+    public DeviceHttpResp lockOrUnlockDev(LockOrUnlockDevHttpReq req) {
+        req.setAction("devicelock");
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.LOCK_OR_UNLOCK_DEV, req);
+    }
+
+    /**
+     * 设置设备声音或网络
+     * @param req
+     * @return
+     */
+    @Override
+    public DeviceHttpResp setDevSoundOrNetwork(SetDevOtherParamHttpReq req) {
+        req.setAction("setotherparm");
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.SET_DEV_OTHER_PARAM, req);
     }
 
 }

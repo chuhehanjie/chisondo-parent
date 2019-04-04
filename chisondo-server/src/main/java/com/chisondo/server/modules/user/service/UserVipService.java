@@ -29,4 +29,6 @@ public interface UserVipService {
 	void delete(Long memberId);
 	
 	void deleteBatch(Long[] memberIds);
+
+    UserVipEntity queryUserByMemberId(Long userId);
 }

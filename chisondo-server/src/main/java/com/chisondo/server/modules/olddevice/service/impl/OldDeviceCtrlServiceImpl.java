@@ -57,7 +57,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         ConnectDevReq connectDevReq = this.buildConnectDevReq(req);
         ConnectDevResp connectDevResp = this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "connectDevice", ConnectDevResp.class, connectDevReq);
         if (!connectDevResp.isOK()) {
-            throw new CommonException(connectDevResp.getErrorInfo());
+            throw new CommonException(connectDevResp.getSTATE_INFO());
         }
         return connectDevResp;
     }
@@ -175,5 +175,16 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.OPER_FLAG, jsonObj.get(Keys.OPER_FLAG));
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "setWarmState", JSONObject.class, params);
+    }
+
+    /**
+     * 查询设备状态
+     * @param deviceId
+     * @return
+     */
+    @Override
+    public JSONObject queryDevStatus(String deviceId) {
+        Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, deviceId);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "qryDevStatus", JSONObject.class, params);
     }
 }

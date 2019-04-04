@@ -5,4 +5,6 @@ import com.chisondo.server.common.http.CommonReq;
 
 public interface OldDeviceCtrlService {
     JSONObject service(CommonReq req, int operationType);
+
+    JSONObject queryDevStatus(String deviceId);
 }

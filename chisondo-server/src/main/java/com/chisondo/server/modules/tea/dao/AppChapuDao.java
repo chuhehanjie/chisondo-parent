@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.tea.dao;
 
 import com.chisondo.server.modules.sys.dao.BaseDao;
+import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,4 +16,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AppChapuDao extends BaseDao<AppChapuEntity> {
 
     AppChapuEntity queryTeaSpectrumById(Integer id);
+
+    QryTeaSpectrumDetailDTO queryTeaSpectrumDetailById(Integer chapuId);
 }

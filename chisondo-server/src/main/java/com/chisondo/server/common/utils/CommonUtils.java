@@ -152,6 +152,6 @@ public final class CommonUtils {
     }
 
     public static CommonResp buildOldDevResp(JSONObject result) {
-        return new CommonResp(result.getIntValue("retn"), result.getString("desc"));
+        return new CommonResp(result.getIntValue("STATE"), result.getString("STATE_INFO"));
     }
 }

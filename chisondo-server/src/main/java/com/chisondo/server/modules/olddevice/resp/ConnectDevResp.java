@@ -7,38 +7,29 @@ import java.io.Serializable;
 public class ConnectDevResp implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int retn;
-    private String desc;
+    private int STATE;
     /**
      * 连接失败原因
      * 1-设备不存在；2-设备为其他用户私有；3-设备离线；4-设备已被其他用户占用；5-密码错误
      */
-    private int errCode;
+    private String STATE_INFO;
     private int deviceType;
     private String  deviceIp;
     private int port;
     private String ip;
     private String deviceTypeName;
-    private int STATE;
     private String sessionId;
     private Integer deviceId;
     private String deviceName;
     private String deviceDesc;
+    private int errCode;
 
-    public int getRetn() {
-        return retn;
+    public String getSTATE_INFO() {
+        return STATE_INFO;
     }
 
-    public void setRetn(int retn) {
-        this.retn = retn;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setSTATE_INFO(String STATE_INFO) {
+        this.STATE_INFO = STATE_INFO;
     }
 
     public int getErrCode() {
@@ -130,7 +121,7 @@ public class ConnectDevResp implements Serializable {
     }
 
     public boolean isOK() {
-        return HttpStatus.SC_OK == this.retn;
+        return HttpStatus.SC_OK == this.STATE;
     }
 
     public String getErrorInfo() {

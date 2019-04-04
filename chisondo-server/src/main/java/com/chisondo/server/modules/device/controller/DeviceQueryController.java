@@ -6,6 +6,7 @@ import com.chisondo.server.common.core.AbstractController;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
+import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
@@ -13,6 +14,7 @@ import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.device.validator.DevExistenceValidator;
 import com.chisondo.server.modules.device.validator.QueryParamValidator;
+import com.chisondo.server.modules.olddevice.service.OldDeviceCtrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,12 +36,20 @@ public class DeviceQueryController extends AbstractController {
 	@Autowired
 	private DeviceQueryService deviceQueryService;
 
+	@Autowired
+	private OldDeviceCtrlService oldDeviceCtrlService;
+
 	/**
 	 * 查询设备实时状态
 	 */
 	@RequestMapping("/api/rest/qryDevStatus")
 	@ParamValidator({DevExistenceValidator.class})
 	public CommonResp queryDeviceStatus(@RequestBody CommonReq req) {
+		if (req.isOldDev()) {
+			String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+			JSONObject result = this.oldDeviceCtrlService.queryDevStatus(deviceId);
+			return CommonUtils.buildOldDevResp(result);
+		}
 		return this.deviceQueryService.queryDevStateInfo(req);
 	}
 

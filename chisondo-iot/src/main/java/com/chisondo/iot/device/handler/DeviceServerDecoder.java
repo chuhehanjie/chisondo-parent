@@ -30,7 +30,7 @@ public class DeviceServerDecoder extends StringDecoder {
             // 查询设备设置参数响应
             DevSettingHttpResp devSettingResp = JSONObject.parseObject(json, DevSettingHttpResp.class);
             out.add(devSettingResp);
-        } else if (this.isStartWorkResp(json) || this.isErrorResp(json)) {
+        } else if (this.isStartWorkResp(json) || this.isLockOrUnlockDevResp(json) || this.isErrorResp(json)) {
             DeviceHttpResp deviceResp = JSONObject.parseObject(json, DeviceHttpResp.class);
             out.add(deviceResp);
         } else {
@@ -78,6 +78,15 @@ public class DeviceServerDecoder extends StringDecoder {
      */
     private boolean isQueryDevSettingResp(String json) {
         return json.contains("\"action\":\"qrydevparmok\"");
+    }
+
+    /**
+     * 是否锁定或解锁设备响应
+     * @param json
+     * @return
+     */
+    private boolean isLockOrUnlockDevResp(String json) {
+        return json.contains("\"action\":\"devicelockok\"");
     }
 
     private boolean isErrorResp(String json) {

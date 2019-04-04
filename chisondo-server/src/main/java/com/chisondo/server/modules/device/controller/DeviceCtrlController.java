@@ -237,4 +237,16 @@ public class DeviceCtrlController extends AbstractController {
 	public CommonResp changeDevTeaSpectrum(@RequestBody CommonReq req) {
 		return this.deviceCtrlService.changeDevTeaSpectrum(req);
 	}
+
+	/**
+     * 取消预约
+     * @param req
+     * @return
+     */
+	@RequestMapping("/api/rest/cancelReservation")
+	@DevOperateLog("取消预约")
+	@ParamValidator({UserDevRelaValidator.class, CancelReservationValidator.class})
+	public CommonResp cancelReservation(@RequestBody CommonReq req) {
+		return this.deviceCtrlService.cancelReservation(req);
+	}
 }

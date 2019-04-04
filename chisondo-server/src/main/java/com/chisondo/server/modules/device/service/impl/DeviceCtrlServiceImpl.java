@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.device.service.impl;
 import com.chisondo.model.constant.DevConstant;
 import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
+import com.chisondo.model.http.req.SetDevOtherParamHttpReq;
 import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
 import java.util.Date;
@@ -31,6 +32,7 @@ import com.chisondo.server.modules.user.service.UserVipService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +125,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		userBook.setInformFlag(0);
 		userBook.setTeaSortId(startOrReserveTeaReq.getTeaSortId());
 		userBook.setTeaSortName(startOrReserveTeaReq.getTeaSortName());
-		userBook.setReservNo("MT" + DateUtils.currentDateStr(DateUtils.DATE_TIME_PATTERN2));
+		userBook.setReservNo(DateUtils.currentDateStr(DateUtils.DATE_TIME_PATTERN2));
 		return userBook;
 	}
 
@@ -289,10 +291,16 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Override
 	public CommonResp setDeviceSound(CommonReq req) {
-		SetDevSoundReqDTO setDevSoundeq = JSONObject.parseObject(req.getBizBody(), SetDevSoundReqDTO.class);
-		// TODO 调用设备接口服务
-		this.deviceInfoService.updateDevSound(setDevSoundeq);
-		return CommonResp.ok();
+		SetDevSoundReqDTO setDevSoundReq = JSONObject.parseObject(req.getBizBody(), SetDevSoundReqDTO.class);
+		SetDevOtherParamHttpReq devHttpReq = new SetDevOtherParamHttpReq();
+		devHttpReq.setDeviceID(setDevSoundReq.getDeviceId());
+		devHttpReq.setVolflag(setDevSoundReq.getOperFlag() == 0 ? Constant.DevVolumeCtrl.OPEN : Constant.DevVolumeCtrl.CLOSE);
+		devHttpReq.setGmsflag(setDevSoundReq.getGmsflag());
+		devHttpReq.setMsg(new DevParamMsg()); // TODO 待确认 设置声音和网络不应该传MSG
+		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevSoundOrNetwork(devHttpReq);
+		log.info("调用设置设备声音或网络 HTTP 服务响应：{}", devHttpResp);
+		this.deviceInfoService.updateDevSound(setDevSoundReq);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
 	@Override
@@ -330,7 +338,16 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
     }
 
-    private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {
+	@Override
+	public CommonResp cancelReservation(CommonReq req) {
+    	UserBookEntity userBook = (UserBookEntity) req.getAttrByKey(Keys.USER_BOOK_INFO);
+    	// 设置状态为取消
+    	userBook.setValidFlag(Constant.UserBookStatus.CANCELED);
+    	this.userBookService.update(userBook);
+		return CommonResp.ok();
+	}
+
+	private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(washTeaReq.getDeviceId());
 		devHttpReq.setMsg(new DevParamMsg(washTeaReq.getTemperature(), washTeaReq.getSoak(), washTeaReq.getWaterlevel()));
