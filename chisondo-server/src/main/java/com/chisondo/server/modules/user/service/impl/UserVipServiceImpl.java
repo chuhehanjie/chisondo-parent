@@ -69,4 +69,10 @@ public class UserVipServiceImpl implements UserVipService {
 		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 		return this.userVipDao.queryObject(memberId);
 	}
+
+	@Override
+	public List<UserVipEntity> queryUserListByUserIds(List<Long> userIds) {
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+		return this.userVipDao.queryUserListByUserIds(userIds);
+	}
 }

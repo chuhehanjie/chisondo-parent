@@ -424,4 +424,11 @@
 		</foreach>
 	</delete>
 
+	<select id="queryUserListByUserIds" parameterType="java.util.ArrayList" resultMap="dataVipMap">
+		SELECT t.* FROM  t_data_vip t where t.MEMBER_ID in
+		<foreach item="memberId" collection="list" open="(" separator="," close=")">
+			#{memberId}
+		</foreach>
+	</select>
+
 </mapper>

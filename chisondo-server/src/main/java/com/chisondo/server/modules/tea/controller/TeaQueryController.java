@@ -13,6 +13,7 @@ import com.chisondo.server.modules.tea.dto.TeaSortQryDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortRowDTO;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.chisondo.server.modules.tea.service.AppTeaSortService;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +65,16 @@ public class TeaQueryController {
 		}
 		QryTeaSpectrumDetailDTO teaSpectrumDetail = this.appChapuService.queryTeaSpectrumDetailById(chapuId);
 		return CommonResp.ok(teaSpectrumDetail);
+	}
+
+	/**
+	 * 根据条件查询茶谱列表
+	 */
+	@PostMapping("/api/rest/chapu/list")
+	@DataSource(name = DataSourceNames.SECOND)
+	public CommonResp queryTeaSpectrumListByCondition(@RequestBody CommonReq req){
+		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.queryTeaSpectrumListByCondition(req);
+		return CommonResp.ok(ImmutableMap.of("rows", teaSpectrumDetails));
 	}
 
 }

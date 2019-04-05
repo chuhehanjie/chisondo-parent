@@ -31,4 +31,6 @@ public interface UserVipService {
 	void deleteBatch(Long[] memberIds);
 
     UserVipEntity queryUserByMemberId(Long userId);
+
+    List<UserVipEntity> queryUserListByUserIds(List<Long> userIds);
 }

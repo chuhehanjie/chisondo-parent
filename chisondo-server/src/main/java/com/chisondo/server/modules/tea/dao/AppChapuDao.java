@@ -5,6 +5,9 @@ import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 
  * 
@@ -18,4 +21,6 @@ public interface AppChapuDao extends BaseDao<AppChapuEntity> {
     AppChapuEntity queryTeaSpectrumById(Integer id);
 
     QryTeaSpectrumDetailDTO queryTeaSpectrumDetailById(Integer chapuId);
+
+    List<QryTeaSpectrumDetailDTO> queryTeaSpectrumListByCondition(Map<String, Object> params);
 }
