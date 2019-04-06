@@ -17,7 +17,7 @@ public class DeviceOperateLogEntity  implements Serializable {
 	//设备ID
 	private Long id;
 	//ID
-	private Integer deviceId;
+	private String deviceId;
 	//用户唯一编号
 	private String teamanId;
 	//用户手机号
@@ -44,11 +44,11 @@ public class DeviceOperateLogEntity  implements Serializable {
 	public Long getId() {
 		return id;
 	}
-	public void setDeviceId(Integer deviceId) {
+	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
 
-	public Integer getDeviceId() {
+	public String getDeviceId() {
 		return deviceId;
 	}
 	public void setTeamanId(String teamanId) {

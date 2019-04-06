@@ -18,6 +18,7 @@
         <result property="teaSortId" column="tea_sort_id"/>
         <result property="teaSortName" column="tea_sort_name"/>
         <result property="reservNo" column="reserv_no"/>
+        <result property="reserveParam" column="reserve_param"/>
     </resultMap>
 
 	<select id="queryObject" resultType="com.chisondo.server.modules.user.entity.UserBookEntity">
@@ -29,41 +30,46 @@
 			<if test="id != null and id !='' ">
 				AND id = #{id}
 			</if>
-				<if test="teamanId != null and teamanId !='' ">
+			<if test="teamanId != null and teamanId !='' ">
 				AND teaman_id = #{teamanId}
 			</if>
-				<if test="deviceId != null and deviceId !='' ">
+			<if test="deviceId != null and deviceId !='' ">
 				AND device_id = #{deviceId}
 			</if>
-				<if test="configCmd != null and configCmd !='' ">
+			<if test="configCmd != null and configCmd !='' ">
 				AND config_cmd = #{configCmd}
 			</if>
-				<if test="processTime != null and processTime !='' ">
+			<if test="processTime != null and processTime !='' ">
 				AND process_time = #{processTime}
 			</if>
-				<if test="logTime != null and logTime !='' ">
+			<if test="logTime != null and logTime !='' ">
 				AND log_time = #{logTime}
 			</if>
-				<if test="validFlag != null and validFlag !='' ">
+			<if test="validFlag != null and validFlag !='' ">
 				AND valid_flag = #{validFlag}
 			</if>
-				<if test="chapuId != null and chapuId !='' ">
+			<if test="chapuId != null and chapuId !='' ">
 				AND chapu_id = #{chapuId}
 			</if>
-				<if test="chapuName != null and chapuName !='' ">
+			<if test="chapuName != null and chapuName !='' ">
 				AND chapu_name = #{chapuName}
 			</if>
-				<if test="informFlag != null and informFlag !='' ">
+			<if test="informFlag != null and informFlag !='' ">
 				AND inform_flag = #{informFlag}
 			</if>
-				<if test="teaSortId != null and teaSortId !='' ">
+			<if test="teaSortId != null and teaSortId !='' ">
 				AND tea_sort_id = #{teaSortId}
 			</if>
-				<if test="teaSortName != null and teaSortName !='' ">
+			<if test="teaSortName != null and teaSortName !='' ">
 				AND tea_sort_name = #{teaSortName}
 			</if>
-				<if test="reservNo != null and reservNo !='' ">
+			<if test="reservNo != null and reservNo !='' ">
 				AND reserv_no = #{reservNo}
+			</if>
+			<if test="notNull4ReservNo == true">
+				AND reserv_no is not null
+				AND process_time &lt;= DATE_ADD(now(),INTERVAL  10 SECOND)
+				AND process_time &gt;= DATE_SUB(now(),INTERVAL  10 SECOND)
 			</if>
 		        <choose>
             <when test="sidx != null and sidx.trim() != ''">
@@ -135,7 +141,8 @@
 			`inform_flag`, 
 			`tea_sort_id`, 
 			`tea_sort_name`, 
-			`reserv_no`
+			`reserv_no`,
+			`reserve_param`
 		)
 		values
 		(
@@ -150,7 +157,8 @@
 			#{informFlag}, 
 			#{teaSortId}, 
 			#{teaSortName}, 
-			#{reservNo}
+			#{reservNo},
+			#{reserveParam}
 		)
 	</insert>
 	 

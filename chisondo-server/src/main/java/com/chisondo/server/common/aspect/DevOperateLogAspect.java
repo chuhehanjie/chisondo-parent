@@ -90,7 +90,7 @@ public class DevOperateLogAspect {
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 		DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
-		devOperateLog.setDeviceId(deviceInfo.getDeviceId());
+		devOperateLog.setDeviceId(deviceInfo.getDeviceId().toString());
 		devOperateLog.setTeamanId(user.getMemberId() + "");
 		devOperateLog.setUserMobileNo(user.getPhone());
 		devOperateLog.setOperType(0); // TODO 操作类型未定义

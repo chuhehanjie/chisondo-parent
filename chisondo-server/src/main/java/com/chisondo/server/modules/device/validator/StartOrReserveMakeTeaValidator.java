@@ -41,6 +41,7 @@ public class StartOrReserveMakeTeaValidator implements BusiValidator {
             isReserveMakeTea = true;
         }
         ParamValidatorUtils.validateByBeanId("devCtrlParamValidator", req);
+        req.addAttr(Keys.REQ, startOrReserveTeaReq);
         req.addAttr("isReserveMakeTea", isReserveMakeTea);
 
     }

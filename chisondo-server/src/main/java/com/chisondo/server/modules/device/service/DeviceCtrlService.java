@@ -3,7 +3,10 @@ package com.chisondo.server.modules.device.service;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
+import com.chisondo.server.modules.user.entity.UserBookEntity;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 设备控制服务接口
@@ -67,4 +70,7 @@ public interface DeviceCtrlService {
 
     @Transactional
     CommonResp cancelReservation(CommonReq req);
+
+    @Transactional
+    void processReverseMakeTea(List<UserBookEntity> userBookList);
 }

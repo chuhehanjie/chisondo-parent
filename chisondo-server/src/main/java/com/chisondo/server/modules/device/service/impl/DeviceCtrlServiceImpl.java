@@ -5,6 +5,8 @@ import com.chisondo.model.http.req.SetDevOtherParamHttpReq;
 import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.DeviceHttpReq;
@@ -16,8 +18,10 @@ import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.req.*;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
+import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
+import com.chisondo.server.modules.device.service.DeviceOperateLogService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
@@ -32,7 +36,7 @@ import com.chisondo.server.modules.user.service.UserVipService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,9 +75,12 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	@Autowired
 	private AppChapuParaService appChapuParaService;
 
+	@Autowired
+	private DeviceOperateLogService devOperateLogService;
+
 	@Override
 	public CommonResp startOrReserveMakeTea(CommonReq req) {
-		StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = JSONObject.parseObject(req.getBizBody(), StartOrReserveMakeTeaReqDTO.class);
+		StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = (StartOrReserveMakeTeaReqDTO) req.getAttrByKey(Keys.REQ);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		boolean isReserveMakeTea = (boolean) req.getAttrByKey("isReserveMakeTea");
 		// 是否预约泡茶
@@ -89,7 +96,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 			DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
 			if (devHttpResp.isOK()) {
-				UserMakeTeaEntity userMakeTea = this.buildUserMakeTea(startOrReserveTeaReq, user, devHttpResp);
+				UserMakeTeaEntity userMakeTea = this.buildUserMakeTea(startOrReserveTeaReq, user.getMemberId().toString(), devHttpResp);
 				this.userMakeTeaService.save(userMakeTea);
 				return CommonResp.ok();
 			} else {
@@ -118,20 +125,21 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		userBook.setTeamanId(user.getMemberId().toString());
 		userBook.setDeviceId(Integer.valueOf(startOrReserveTeaReq.getDeviceId()));
 		userBook.setConfigCmd("AA0B012C0F89025A023CCC"); // TODO 需要确定这个值怎么取
-		userBook.setProcessTime(new Date());
+		userBook.setProcessTime(DateUtils.parseDate(startOrReserveTeaReq.getStartTime(), DateUtils.DATE_TIME_PATTERN3));
 		userBook.setLogTime(new Date());
 		userBook.setValidFlag(Constant.UserBookStatus.VALID);
 		userBook.setChapuId(0);
 		userBook.setInformFlag(0);
 		userBook.setTeaSortId(startOrReserveTeaReq.getTeaSortId());
 		userBook.setTeaSortName(startOrReserveTeaReq.getTeaSortName());
-		userBook.setReservNo(DateUtils.currentDateStr(DateUtils.DATE_TIME_PATTERN2));
+		userBook.setReservNo(UUID.randomUUID().toString());
+		userBook.setReserveParam(JSONObject.toJSONString(startOrReserveTeaReq));
 		return userBook;
 	}
 
-	private UserMakeTeaEntity buildUserMakeTea(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, UserVipEntity user, DeviceHttpResp devHttpResp) {
+	private UserMakeTeaEntity buildUserMakeTea(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String userId, DeviceHttpResp devHttpResp) {
 		UserMakeTeaEntity userMakeTea = new UserMakeTeaEntity();
-		userMakeTea.setTeamanId(user.getMemberId().toString());
+		userMakeTea.setTeamanId(userId);
 		userMakeTea.setDeviceId(Integer.valueOf(startOrReserveTeaReq.getDeviceId()));
 		userMakeTea.setChapuId(0);
 		userMakeTea.setMaxNum(0);
@@ -370,6 +378,38 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			return DevConstant.StopWorkActionFlag.STOP_WASH_TEA;
 		} else {
 			return DevConstant.StopWorkActionFlag.STOP_WARM;
+		}
+	}
+
+	/**
+	 * 处理预约沏茶
+	 * @param userBookList
+	 */
+	@Override
+	public void processReverseMakeTea(List<UserBookEntity> userBookList) {
+		for (UserBookEntity userBook : userBookList) {
+			StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = JSONObject.parseObject(userBook.getReserveParam(), StartOrReserveMakeTeaReqDTO.class);
+			DeviceHttpReq devHttpReq = this.buildDevHttpReq(startOrReserveTeaReq);
+			DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
+			long startTime = System.currentTimeMillis();
+			if (devHttpResp.isOK()) {
+				UserMakeTeaEntity userMakeTea = this.buildUserMakeTea(startOrReserveTeaReq, userBook.getTeamanId(), devHttpResp);
+				this.userMakeTeaService.save(userMakeTea);
+			} else {
+				log.error("发送沏茶请求到设备失败，原因：{}", devHttpResp.getDesc());
+			}
+			long endTime = System.currentTimeMillis();
+			DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
+			devOperateLog.setDeviceId(userBook.getDeviceId().toString());
+			devOperateLog.setTeamanId(userBook.getTeamanId());
+			devOperateLog.setUserMobileNo(startOrReserveTeaReq.getPhoneNum());
+			devOperateLog.setOperType(0);
+			devOperateLog.setReqContent(JSONObject.toJSONString(devHttpReq));
+			devOperateLog.setResContent(JSONObject.toJSONString(devHttpResp));
+			devOperateLog.setStartTime(new Date(startTime));
+			devOperateLog.setEndTime(new Date(endTime));
+			devOperateLog.setOperResult(devHttpResp.isOK() ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
+			devOperateLog.setDesc("处理用户预约沏茶");
 		}
 	}
 }

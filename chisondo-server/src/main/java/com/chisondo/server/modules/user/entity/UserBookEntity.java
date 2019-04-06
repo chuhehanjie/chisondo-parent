@@ -43,6 +43,8 @@ public class UserBookEntity  implements Serializable {
 	//预约号
 	private String reservNo;
 
+	private String reserveParam;
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -133,5 +135,13 @@ public class UserBookEntity  implements Serializable {
 
 	public String getReservNo() {
 		return reservNo;
+	}
+
+	public String getReserveParam() {
+		return reserveParam;
+	}
+
+	public void setReserveParam(String reserveParam) {
+		this.reserveParam = reserveParam;
 	}
 }

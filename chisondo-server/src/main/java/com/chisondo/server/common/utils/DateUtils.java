@@ -21,6 +21,8 @@ public class DateUtils {
 
 	public final static String DATE_TIME_PATTERN2 = "yyyyMMddHHmmss";
 
+	public final static String DATE_TIME_PATTERN3 = "yyyy-MM-dd HH:mm";
+
 	public static String format(Date date) {
         return format(date, DATE_PATTERN);
     }

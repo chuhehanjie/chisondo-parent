@@ -1,5 +1,11 @@
 package com.chisondo.server.modules.user.service.impl;
 
+import com.chisondo.model.http.req.DeviceHttpReq;
+import com.chisondo.model.http.resp.DeviceHttpResp;
+import com.chisondo.server.common.http.CommonResp;
+import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
+import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
+import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +22,7 @@ import com.chisondo.server.modules.user.service.UserBookService;
 public class UserBookServiceImpl implements UserBookService {
 	@Autowired
 	private UserBookDao userBookDao;
-	
+
 	@Override
 	public UserBookEntity queryObject(Integer id){
 		return userBookDao.queryObject(id);
@@ -51,5 +57,5 @@ public class UserBookServiceImpl implements UserBookService {
 	public void deleteBatch(Integer[] ids){
 		userBookDao.deleteBatch(ids);
 	}
-	
+
 }
