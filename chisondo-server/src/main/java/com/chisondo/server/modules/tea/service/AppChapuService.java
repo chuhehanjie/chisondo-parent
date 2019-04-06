@@ -35,4 +35,8 @@ public interface AppChapuService {
     QryTeaSpectrumDetailDTO queryTeaSpectrumDetailById(Integer chapuId);
 
 	List<QryTeaSpectrumDetailDTO> queryTeaSpectrumListByCondition(CommonReq req);
+
+    List<QryTeaSpectrumDetailDTO> searchTeaSpectrum(CommonReq req);
+
+    List<QryTeaSpectrumDetailDTO> queryMyTeaSpectrum(CommonReq req);
 }

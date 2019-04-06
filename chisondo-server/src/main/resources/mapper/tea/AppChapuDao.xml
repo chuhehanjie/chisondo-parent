@@ -460,9 +460,15 @@
 			t.make_times AS makeTimes
 		FROM t_app_chapu t
 		INNER JOIN t_app_tea_sort ts ON ts.sort_id = t.sort
+		<if test="qryMyChapuFlag == true">
+			INNER JOIN t_app_chapu_mine m ON m.chapu_id = t.chapu_id
+		</if>
 		where 1=1
 		<if test="sortId != null">
 			AND t.sort = #{sortId}
+		</if>
+		<if test="userId != null">
+			AND t.user_id = #{userId}
 		</if>
 		<if test="standard != null and standard == 1">
 			AND t.standard > 0
@@ -475,6 +481,16 @@
 		</if>
 		<if test="auth != null and auth == 2">
 			AND t.official_chked = 0
+		</if>
+		<if test="keyword != null and keyword != ''">
+			AND (INSTR(t.name,#{keyword}) > 0 or INSTR(ts.name,#{keyword}) > 0
+				or INSTR(t.brand,#{keyword}))
+		</if>
+		<if test="types != null">
+			AND m.flag in
+			<foreach item="type" collection="list" open="(" separator="," close=")">
+				#{type}
+			</foreach>
 		</if>
 		<if test="sidx != null and sidx.trim() != ''">
 			order by ${sidx} ${order}

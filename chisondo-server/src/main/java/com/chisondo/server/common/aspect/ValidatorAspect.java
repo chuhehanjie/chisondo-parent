@@ -42,12 +42,12 @@ public class ValidatorAspect {
 	public void before(JoinPoint point) throws Throwable {
 		MethodSignature methodSignature = (MethodSignature) point.getSignature();
 		Method method = methodSignature.getMethod();
+		ParamValidator validatorAnnotation = method.getAnnotation(ParamValidator.class);
 		CommonReq commonReq = (CommonReq) point.getArgs()[0];
 		// 取出设备ID 判断是否老设备，则不需要校验
-		if (this.isOldDev(commonReq.getBizBody())) {
+		if (!validatorAnnotation.isQuery() && this.isOldDev(commonReq.getBizBody())) {
 			commonReq.setOldDev(true);
 		}
-		ParamValidator validatorAnnotation = method.getAnnotation(ParamValidator.class);
 		if (ValidateUtils.isNotEmpty(validatorAnnotation)) {
 			Class<? extends BusiValidator>[] validators = validatorAnnotation.value();
 			for (Class<? extends BusiValidator> validator : validators) {

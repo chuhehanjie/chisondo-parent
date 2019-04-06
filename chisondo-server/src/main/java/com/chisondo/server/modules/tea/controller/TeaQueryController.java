@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.tea.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.server.common.annotation.ParamValidator;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
@@ -8,6 +9,7 @@ import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
+import com.chisondo.server.modules.device.validator.QryMyTeaSpectrumValidator;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortQryDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortRowDTO;
@@ -74,6 +76,27 @@ public class TeaQueryController {
 	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp queryTeaSpectrumListByCondition(@RequestBody CommonReq req){
 		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.queryTeaSpectrumListByCondition(req);
+		return CommonResp.ok(ImmutableMap.of("rows", teaSpectrumDetails));
+	}
+
+	/**
+	 * 搜索茶谱
+	 */
+	@PostMapping("/api/rest/chapu/search")
+	@DataSource(name = DataSourceNames.SECOND)
+	public CommonResp searchTeaSpectrum(@RequestBody CommonReq req){
+		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.searchTeaSpectrum(req);
+		return CommonResp.ok(ImmutableMap.of("rows", teaSpectrumDetails));
+	}
+
+	/**
+	 * 我的茶谱
+	 */
+	@PostMapping("/api/rest/chapu/mine")
+	@DataSource(name = DataSourceNames.SECOND)
+	@ParamValidator(value = {QryMyTeaSpectrumValidator.class}, isQuery = true)
+	public CommonResp queryMyTeaSpectrum(@RequestBody CommonReq req){
+		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.queryMyTeaSpectrum(req);
 		return CommonResp.ok(ImmutableMap.of("rows", teaSpectrumDetails));
 	}
 

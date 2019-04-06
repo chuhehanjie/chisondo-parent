@@ -19,4 +19,20 @@ public class TeaSpectrumConstant {
         int MAKE_TEA_TIMES = 1;
         int PUBLISH_TIME = 2;
     }
+
+    public interface MyChapuType {
+        int CREATED = 0;
+        int SAVED = 1;
+        int USED = 2;
+    }
+
+    public interface MyChapuFlag {
+        // 0-创建的；1-收藏的；2-我编辑的；4-我点赞的；5-我评论的；6-我使用过的
+        int CREATED = 0;
+        int FAVORITE = 1;
+        int EDITED = 2;
+        int LIKED = 4;
+        int COMMENTED = 5;
+        int USED = 6;
+    }
 }

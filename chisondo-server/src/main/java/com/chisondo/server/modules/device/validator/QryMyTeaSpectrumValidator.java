@@ -7,34 +7,39 @@ import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.RegexUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.common.validator.BusiValidator;
+import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
+import com.chisondo.server.modules.tea.dto.QryMyTeaSpectrumReqDTO;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.user.service.UserVipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 校验用户是否存在
+ * 查询我的茶谱校验器
  */
-@Component("userExistenceValidator")
-public class UserExistenceValidator implements BusiValidator {
+@Component("qryMyTeaSpectrumValidator")
+public class QryMyTeaSpectrumValidator implements BusiValidator {
 
     @Autowired
     private UserVipService userVipService;
 
     @Override
     public void validate(CommonReq req) {
-        JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
-        String phoneNum = jsonObj.getString(Keys.PHONE_NUM);
+        QryMyTeaSpectrumReqDTO qryMyTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), QryMyTeaSpectrumReqDTO.class);
+        String phoneNum = qryMyTeaSpectrumReq.getPhoneNum();
         if (ValidateUtils.isEmptyString(phoneNum)) {
             throw new CommonException("用户号码为空");
         }
         if (!RegexUtils.isMobile(phoneNum)) {
             throw new CommonException("用户号码格式不正确");
         }
-        UserVipEntity user = this.userVipService.getUserByMobile(phoneNum);
-        if (ValidateUtils.isEmpty(user)) {
-            throw new CommonException("用户不存在");
+        if (ValidateUtils.isNotEmpty(qryMyTeaSpectrumReq.getType())) {
+            if (ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuType.CREATED, qryMyTeaSpectrumReq.getType()) &&
+                    ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuType.SAVED, qryMyTeaSpectrumReq.getType()) &&
+                    ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuType.USED, qryMyTeaSpectrumReq.getType())) {
+                throw new CommonException("无效的类型参数，只能是[0、1、2]");
+            }
         }
-        req.addAttr(Keys.USER_INFO, user);
+        req.addAttr(Keys.REQ, qryMyTeaSpectrumReq);
     }
 }

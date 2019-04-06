@@ -56,4 +56,8 @@ public class Keys {
     public static final String TEA_SPECTRUM_INFO = "teaSpectrumInfo";
 
     public static final String USER_BOOK_INFO = "userBookInfo";
+
+    public static final String REQ = "req";
+
+
 }
