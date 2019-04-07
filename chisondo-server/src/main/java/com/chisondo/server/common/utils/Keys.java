@@ -59,5 +59,7 @@ public class Keys {
 
     public static final String REQ = "req";
 
+    public static final String COUNT = "count";
 
+    public static final String RESERV_INFO = "reservInfo";
 }

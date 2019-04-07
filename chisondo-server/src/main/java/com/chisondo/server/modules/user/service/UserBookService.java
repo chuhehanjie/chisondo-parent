@@ -27,4 +27,6 @@ public interface UserBookService {
 	void delete(Integer id);
 	
 	void deleteBatch(Integer[] ids);
+
+    Map<String,Object> queryUserReservation(Map<String, Object> params);
 }
