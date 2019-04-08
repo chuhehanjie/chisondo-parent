@@ -41,7 +41,7 @@ public class UserBookMakeTeaJob {
             this.deviceCtrlService.processReverseMakeTea(userBookList);
         }
         if (log.isDebugEnabled()) {
-            log.debug("查询用户沏茶预约记录结束，共处理{}记录", userBookList.size());
+            log.debug("查询用户沏茶预约记录结束，共处理[{}]条记录", userBookList.size());
         }
 
     }

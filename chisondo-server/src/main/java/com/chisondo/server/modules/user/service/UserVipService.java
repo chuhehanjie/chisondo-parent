@@ -33,4 +33,6 @@ public interface UserVipService {
     UserVipEntity queryUserByMemberId(Long userId);
 
     List<UserVipEntity> queryUserListByUserIds(List<Long> userIds);
+
+    Map<String,Object> queryAllUsersOfDevice(String string);
 }

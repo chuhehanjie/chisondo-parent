@@ -12,6 +12,7 @@ import com.chisondo.server.datasources.annotation.DataSource;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
 import com.chisondo.server.modules.user.service.UserBookService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
+import com.chisondo.server.modules.user.service.UserVipService;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,9 @@ public class UserQueryController {
 	@Autowired
 	private UserBookService userBookService;
 
+	@Autowired
+	private UserVipService userVipService;
+
 	/**
 	 * 查询用户预约信息
 	 */
@@ -42,6 +46,17 @@ public class UserQueryController {
 		this.validate(jsonObj);
 		Map<String, Object> params = this.buildQryParams(jsonObj);
 		Map<String, Object> resultMap = this.userBookService.queryUserReservation(params);
+		return CommonResp.ok(resultMap);
+	}
+
+	/**
+	 * 查询使用过该设备的所有用户
+	 */
+	@PostMapping("/api/rest/getDeviceConnectedUser")
+	public CommonResp queryAllUsersOfDevice(@RequestBody CommonReq req){
+		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+		this.validate(jsonObj);
+		Map<String, Object> resultMap = this.userVipService.queryAllUsersOfDevice(jsonObj.getString(Keys.DEVICE_ID));
 		return CommonResp.ok(resultMap);
 	}
 

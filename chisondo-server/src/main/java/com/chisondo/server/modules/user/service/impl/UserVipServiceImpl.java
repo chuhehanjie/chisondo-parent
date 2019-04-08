@@ -4,8 +4,9 @@ import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.DynamicDataSource;
-import com.chisondo.server.datasources.aspect.DataSourceAspect;
+import com.chisondo.server.modules.user.dto.UsedDeviceUserDTO;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,5 +75,14 @@ public class UserVipServiceImpl implements UserVipService {
 	public List<UserVipEntity> queryUserListByUserIds(List<Long> userIds) {
 		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 		return this.userVipDao.queryUserListByUserIds(userIds);
+	}
+
+	@Override
+	public Map<String, Object> queryAllUsersOfDevice(String deviceId) {
+		Map<String, Object> resultMap = Maps.newHashMap();
+		List<UsedDeviceUserDTO> usedDeviceUsers = this.userVipDao.queryAllUsersOfDevice(deviceId);
+		resultMap.put(Keys.COUNT, ValidateUtils.isEmptyCollection(usedDeviceUsers) ? 0 : usedDeviceUsers.size());
+		resultMap.put(Keys.USER_INFO, usedDeviceUsers);
+		return resultMap;
 	}
 }

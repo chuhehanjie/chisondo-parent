@@ -4,6 +4,8 @@ import com.chisondo.server.modules.sys.entity.CompanyEntity;
 import com.chisondo.server.modules.sys.entity.SysConfigEntity;
 import com.chisondo.server.modules.sys.service.CompanyService;
 import com.chisondo.server.modules.sys.service.SysConfigService;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -23,11 +26,16 @@ public class CacheDataUtils {
     @Autowired
     private SysConfigService sysConfigService;
 
+    @Autowired
+    private AppChapuService appChapuService;
+
     private static List<CompanyEntity> companyList;
 
     private static List<SysConfigEntity> configList;
 
     private static List<Integer> waterLevels;
+
+    private static List<AppChapuEntity> allChapuList;
 
     @PostConstruct
     public void init() {
@@ -36,6 +44,7 @@ public class CacheDataUtils {
         configList = this.sysConfigService.queryAll();
         log.info("init query configList size = {} ", configList.size());
         waterLevels = ImmutableList.of(150, 200, 250, 300, 350, 400, 450, 550);
+        allChapuList = this.appChapuService.queryList(new HashMap<>());
     }
 
     public static List<CompanyEntity> getCompanyList() {
@@ -44,6 +53,10 @@ public class CacheDataUtils {
 
     public static List<SysConfigEntity> getConfigList() {
         return configList;
+    }
+
+    public static List<AppChapuEntity> getAllChapuList() {
+        return allChapuList;
     }
 
     public static String getConfigValueByKey(String key) {
