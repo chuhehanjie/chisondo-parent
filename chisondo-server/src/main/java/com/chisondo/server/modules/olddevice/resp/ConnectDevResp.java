@@ -1,5 +1,6 @@
 package com.chisondo.server.modules.olddevice.resp;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpStatus;
 
 import java.io.Serializable;
@@ -138,5 +139,11 @@ public class ConnectDevResp implements Serializable {
         } else {
             return "连接设备异常";
         }
+    }
+
+    public static void main(String[] args) {
+        String json = "{\"deviceType\":0,\"errCode\":0,\"errorInfo\":\"连接设备异常\",\"oK\":false,\"port\":0,\"sTATE\":0} ";
+        ConnectDevResp resp = JSONObject.parseObject(json, ConnectDevResp.class);
+        System.out.println("result = " + JSONObject.toJSONString(resp));
     }
 }

@@ -3,10 +3,7 @@ package com.chisondo.server.modules.olddevice.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
-import com.chisondo.server.common.utils.Constant;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.ParamValidatorUtils;
-import com.chisondo.server.common.utils.RestTemplateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.req.DeviceCtrlReqDTO;
 import com.chisondo.server.modules.device.dto.req.StopWorkReqDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
@@ -57,7 +54,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         ConnectDevReq connectDevReq = this.buildConnectDevReq(req);
         ConnectDevResp connectDevResp = this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "connectDevice", ConnectDevResp.class, connectDevReq);
         if (!connectDevResp.isOK()) {
-            throw new CommonException(connectDevResp.getSTATE_INFO());
+            throw new CommonException(ValidateUtils.isNotEmptyString(connectDevResp.getSTATE_INFO()) ? connectDevResp.getSTATE_INFO() : connectDevResp.getErrorInfo());
         }
         return connectDevResp;
     }

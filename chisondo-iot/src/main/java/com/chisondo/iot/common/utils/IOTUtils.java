@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.multipart.MemoryAttribute;
 import io.netty.util.CharsetUtil;
 import org.springframework.http.MediaType;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,11 @@ public final class IOTUtils {
             str = new String(bytes, 0, buf.readableBytes());
         }
         return str;
+    }
+
+    public static ByteBuf convertString2ByteBuf(String str) {
+        ByteBuf byteBuf = Unpooled.copiedBuffer(str, CharsetUtil.UTF_8);
+        return byteBuf;
     }
 
     public static FullHttpResponse buildResponse(Object obj) {
@@ -126,5 +132,11 @@ public final class IOTUtils {
         content.readBytes(reqContent);
         String json = new String(reqContent, CharsetUtil.UTF_8);
         return json;
+    }
+
+    public static void main(String[] args) {
+        String json = "{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"7788520\",\"msg\":\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}" + "\n";
+        System.out.println(HexUtils.str2HexStr(json));
+        System.out.println(ByteBuffer.wrap(json.getBytes()).toString());
     }
 }

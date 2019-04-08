@@ -81,7 +81,7 @@ public class DeviceChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new HeartbeatServerHandler());
 
         // Add the text line codec combination first,
-        pipeline.addLast(new DelimiterBasedFrameDecoder(msglength, Delimiters.lineDelimiter()));//tcp 分包,定义分隔符号// TODO: 16/5/9
+        //pipeline.addLast(new DelimiterBasedFrameDecoder(msglength, Delimiters.lineDelimiter()));//tcp 分包,定义分隔符号// TODO: 16/5/9
         // the encoder and decoder are static as these are sharable
         pipeline.addLast(DECODER);
         pipeline.addLast(ENCODER);
