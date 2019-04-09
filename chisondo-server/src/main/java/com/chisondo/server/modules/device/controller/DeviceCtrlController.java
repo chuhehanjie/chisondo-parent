@@ -46,7 +46,9 @@ public class DeviceCtrlController extends AbstractController {
 			// TODO 走老设备流程
 			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.START_OR_RESERVE_MAKE_TEA);
 			CommonResp resp = CommonUtils.buildOldDevResp(result);
-			resp.setBizBody(JSONObject.toJSONString(ImmutableMap.of("bizBody", result.get(Keys.RESERV_NO))));
+			if (result.containsKey(Keys.RESERV_NO)) {
+				resp.setBizBody(JSONObject.toJSONString(ImmutableMap.of(Keys.RESERV_NO, result.get(Keys.RESERV_NO))));
+			}
 			return resp;
 		}
         return this.deviceCtrlService.startOrReserveMakeTea(req);

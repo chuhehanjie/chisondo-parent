@@ -122,11 +122,13 @@ public class ConnectDevResp implements Serializable {
     }
 
     public boolean isOK() {
-        return HttpStatus.SC_OK == this.STATE;
+        return 0 == this.STATE;
     }
 
     public String getErrorInfo() {
-        if (1 == this.errCode) {
+        if (0 == this.errCode) {
+            return "操作成功";
+        } else if (1 == this.errCode) {
             return "设备不存在";
         } else if (2 == this.errCode) {
             return "设备为其他用户私有";
@@ -142,7 +144,7 @@ public class ConnectDevResp implements Serializable {
     }
 
     public static void main(String[] args) {
-        String json = "{\"deviceType\":0,\"errCode\":0,\"errorInfo\":\"连接设备异常\",\"oK\":false,\"port\":0,\"sTATE\":0} ";
+        String json = "{\"deviceType\":1,\"deviceIp\":\"118.249.101.63\",\"port\":9130,\"ip\":\"120.25.210.78\",\"deviceTypeName\":\"MT123\",\"STATE\":0,\"sessionId\":\"ba5be3c6-b445-4f7a-b6fb-908dd5a857d9\",\"STATE_INFO\":\"操作成功\",\"deviceId\":18170964,\"deviceName\":\"龙小平办公桌旁\",\"deviceDesc\":\"智能泡让您的生活更美好！\"}";
         ConnectDevResp resp = JSONObject.parseObject(json, ConnectDevResp.class);
         System.out.println("result = " + JSONObject.toJSONString(resp));
     }

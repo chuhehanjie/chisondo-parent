@@ -9,7 +9,7 @@ public class ConnectDevReq implements Serializable {
 
     private String phoneNum;
 
-    private String deviceId;
+    private Integer deviceId;
 
     private String passwd;
 
@@ -31,11 +31,11 @@ public class ConnectDevReq implements Serializable {
         this.phoneNum = phoneNum;
     }
 
-    public String getDeviceId() {
+    public Integer getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(String deviceId) {
+    public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
 

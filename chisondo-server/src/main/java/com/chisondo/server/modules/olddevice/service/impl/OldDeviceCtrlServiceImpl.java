@@ -65,7 +65,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         ConnectDevReq connectDevReq = new ConnectDevReq();
         connectDevReq.setUserId(user.getMemberId().toString());
         connectDevReq.setPhoneNum(user.getPhone());
-        connectDevReq.setDeviceId(deviceInfo.getDeviceId() + "");
+        connectDevReq.setDeviceId(deviceInfo.getDeviceId());
         connectDevReq.setPasswd(deviceInfo.getPassword());
         connectDevReq.setNeedValidate(0);
         return connectDevReq;
@@ -181,7 +181,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     @Override
     public JSONObject queryDevStatus(String deviceId) {
-        Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, deviceId);
+        Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, Integer.valueOf(deviceId));
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "qryDevStatus", JSONObject.class, params);
     }
 }
