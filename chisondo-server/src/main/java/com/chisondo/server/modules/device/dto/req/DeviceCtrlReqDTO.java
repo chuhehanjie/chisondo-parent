@@ -15,6 +15,7 @@ public class DeviceCtrlReqDTO implements Serializable {
     private int waterlevel; // 出水量（分8个档次）	 150 200 250 300   350 400  450 550 (单位：毫升ml)
     private Integer teaSortId; // 茶类ID
     private String teaSortName; // 茶类名称
+    private Integer warm;
 
     public String getDeviceId() {
         return deviceId;
@@ -70,5 +71,13 @@ public class DeviceCtrlReqDTO implements Serializable {
 
     public void setTeaSortName(String teaSortName) {
         this.teaSortName = teaSortName;
+    }
+
+    public Integer getWarm() {
+        return warm;
+    }
+
+    public void setWarm(Integer warm) {
+        this.warm = warm;
     }
 }

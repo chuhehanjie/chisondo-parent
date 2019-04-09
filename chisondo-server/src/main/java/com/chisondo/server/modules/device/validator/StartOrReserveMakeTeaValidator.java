@@ -40,6 +40,9 @@ public class StartOrReserveMakeTeaValidator implements BusiValidator {
             }
             isReserveMakeTea = true;
         }
+        if (ValidateUtils.isEmpty(startOrReserveTeaReq.getWarm())) {
+            throw new CommonException("温度值为空");
+        }
         ParamValidatorUtils.validateByBeanId("devCtrlParamValidator", req);
         req.addAttr(Keys.REQ, startOrReserveTeaReq);
         req.addAttr("isReserveMakeTea", isReserveMakeTea);

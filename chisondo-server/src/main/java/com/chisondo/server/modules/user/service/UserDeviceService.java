@@ -36,4 +36,6 @@ public interface UserDeviceService {
 	void delUserDeviceByParams(Map<String, Object> params);
 
     void setDefaultDevice(Map<String, Object> params);
+
+    void setNoneDefaultDev(Long userId);
 }

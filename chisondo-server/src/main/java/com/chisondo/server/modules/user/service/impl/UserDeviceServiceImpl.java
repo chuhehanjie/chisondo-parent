@@ -73,4 +73,9 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 	public void setDefaultDevice(Map<String, Object> params) {
 		this.userDeviceDao.setDefaultDevice(params);
 	}
+
+	@Override
+	public void setNoneDefaultDev(Long userId) {
+		this.userDeviceDao.setNoneDefaultDev(userId.toString());
+	}
 }

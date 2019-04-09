@@ -1,23 +1,25 @@
 package com.chisondo.server.modules.device.dto.resp;
 
 public class DeviceInfoRespDTO {
-    private Integer	deviceId	; // 	设备ID
-    private String	deviceName	; // 	设备名称
-    private String	deviceDesc	; // 	设备描述
-    private Integer	connStatus	; // 	连接状态	0:未连接, 非0:已有用户连接上
-    private Integer	onlineStatus	; // 	在线状态	0不在线，1在线
-    private Integer	defaultFlag	; // 	是否默认设备	0不是，1是
-    private Integer	reserveNum	; // 	有效预约个数
-    private String	ipAddress	; // 	设备IP
-    private String	deviceImg	; // 	设备图片
-    private String	province	; // 	省
-    private String	city	; // 	市
-    private String	district	; // 	县/区
-    private String	address	; // 	详细地址
-    private int	companyId	; // 	所属企业id
-    private String	companyName	; // 	所属企业名称	0-泉笙道，1-湘丰集团，2-静硒园,345….,默认 0泉笙道
-    private String	longitude	; // 	GPS经度	设备 经度
-    private String	latitude	; // 	GPS纬度	设备 纬度
+    private Integer	deviceId; // 	设备ID
+    private String	deviceName; // 	设备名称
+    private String	deviceDesc; // 	设备描述
+    private Integer	connStatus; // 	连接状态	0:未连接, 非0:已有用户连接上
+    private Integer	onlineStatus; // 	在线状态	0不在线，1在线
+    private Integer	defaultFlag; // 	是否默认设备	0不是，1是
+    private Integer	reserveNum; // 	有效预约个数
+    private String	ipAddress; // 	设备IP
+    private String	deviceImg; // 	设备图片
+    private String	province; // 	省
+    private String	city; // 	市
+    private String	district; // 	县/区
+    private String	address; // 	详细地址
+    private int	companyId; // 	所属企业id
+    private String	companyName; // 	所属企业名称	0-泉笙道，1-湘丰集团，2-静硒园,345….,默认 0泉笙道
+    private String	longitude; // 	GPS经度	设备 经度
+    private String	latitude; // 	GPS纬度	设备 纬度
+    private Integer deviceType; // 0，Wi-Fi版设备；1，2G版设备；
+    private String WiFiSSID; // 当Wi-Fi在线时 返回
 
     public Integer getDeviceId() {
         return deviceId;
@@ -153,5 +155,21 @@ public class DeviceInfoRespDTO {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public Integer getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Integer deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getWiFiSSID() {
+        return WiFiSSID;
+    }
+
+    public void setWiFiSSID(String wiFiSSID) {
+        WiFiSSID = wiFiSSID;
     }
 }

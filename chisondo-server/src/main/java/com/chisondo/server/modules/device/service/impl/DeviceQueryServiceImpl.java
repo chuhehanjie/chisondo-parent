@@ -20,11 +20,13 @@ import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service("deviceQueryService")
@@ -156,6 +158,6 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 		String phoneNum = (String) req.getAttrByKey(Keys.PHONE_NUM);
 		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoService.queryDeviceDetail(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.USER_MOBILE, phoneNum));
-		return CommonResp.ok(devInfoList);
+		return ValidateUtils.isNotEmptyCollection(devInfoList) ? CommonResp.ok(devInfoList.get(0)) : CommonResp.ok();
 	}
 }

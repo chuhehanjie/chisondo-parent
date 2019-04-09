@@ -24,23 +24,24 @@
 
 	<sql id="queryDevInfoOfUser">
 		SELECT
-		a.device_id AS deviceId,
-		dev.device_name AS deviceName,
-		dev.dev_desc AS deviceDesc,
-		a.connect_state AS connStatus,
-		a.online_state AS onlinStatus,
-		b.default_tag AS defaultFlag,
-		IFNULL(d.validTeaCount,0) AS reserveNum,
-		a.client_ip_address AS ipAddress,
-		dc.image_large AS deviceImg,
-		a.province,
-		a.city,
-		a.district,
-		a.address,
-		dev.company_id AS companyId,
-		cmp.company_name AS companyName,
-		a.longitude,
-		a.latitude
+			a.device_id AS deviceId,
+			dev.device_name AS deviceName,
+			dev.dev_desc AS deviceDesc,
+			a.connect_state AS connStatus,
+			a.online_state AS onlinStatus,
+			b.default_tag AS defaultFlag,
+			IFNULL(d.validTeaCount,0) AS reserveNum,
+			a.client_ip_address AS ipAddress,
+			dc.image_large AS deviceImg,
+			a.province,
+			a.city,
+			a.district,
+			a.address,
+			dev.company_id AS companyId,
+			cmp.company_name AS companyName,
+			a.longitude,
+			a.latitude,
+			dev.device_type_id AS deviceType
 		FROM tb_device_state_info a
 		INNER JOIN tb_user_device b ON a.device_id = b.device_id
 		INNER JOIN tb_actived_device_info dev ON dev.device_id = a.device_id

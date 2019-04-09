@@ -13,4 +13,5 @@ public class StartOrReserveMakeTeaReqDTO extends DeviceCtrlReqDTO {
     public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
+
 }

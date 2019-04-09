@@ -130,6 +130,11 @@
 
 	<update id="setDefaultDevice">
 		update tb_user_device set default_tag = #{operFlag} where device_id = #{deviceId}
+		AND teaman_id = #{teamanId}
+	</update>
+
+	<update id="setNoneDefaultDev" parameterType="java.lang.String">
+		update tb_user_device set default_tag = 0 where teaman_id = #{userId}
 	</update>
 
 </mapper>

@@ -16,7 +16,7 @@ public class MakeTeaReq implements Serializable {
         this.sessionId = sessionId;
         this.ver = "1.0.0";
         this.temperature = devCtrlReqDTO.getTemperature();
-        this.warm = devCtrlReqDTO.getWaterlevel(); // TODO 此值待确定
+        this.warm = devCtrlReqDTO.getWarm();
         this.soak = devCtrlReqDTO.getSoak();
     }
 

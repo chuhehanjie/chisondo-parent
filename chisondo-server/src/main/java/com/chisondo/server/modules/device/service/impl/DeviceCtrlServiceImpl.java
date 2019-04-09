@@ -147,7 +147,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		userMakeTea.setAddTime(new Date());
 		userMakeTea.setStatus(devHttpResp.getMsg().getState()); // TODO 先使用接口返回的状态值
 		userMakeTea.setTemperature(startOrReserveTeaReq.getTemperature());
-		userMakeTea.setWarm(0);
+		userMakeTea.setWarm(startOrReserveTeaReq.getWarm());
 		userMakeTea.setSoak(startOrReserveTeaReq.getSoak());
 		userMakeTea.setTeaSortId(startOrReserveTeaReq.getTeaSortId());
 		userMakeTea.setTeaSortName(startOrReserveTeaReq.getTeaSortName());
@@ -315,8 +315,11 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public CommonResp setDefaultDevice(CommonReq req) {
 		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		int operFlag = jsonObj.getIntValue(Keys.OPER_FLAG);
-		this.userDeviceService.setDefaultDevice(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.OPER_FLAG, operFlag));
+		// 先设置对应用户关联的其他设备为非默认
+		this.userDeviceService.setNoneDefaultDev(user.getMemberId());
+		this.userDeviceService.setDefaultDevice(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.OPER_FLAG, operFlag, Keys.TEAMAN_ID, user.getMemberId()));
 		return CommonResp.ok();
 	}
 
