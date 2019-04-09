@@ -9,6 +9,7 @@ import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
@@ -48,9 +49,36 @@ public class DeviceQueryController extends AbstractController {
 		if (req.isOldDev()) {
 			String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 			JSONObject result = this.oldDeviceCtrlService.queryDevStatus(deviceId);
-			return CommonUtils.buildOldDevResp(result);
+			DevStatusRespDTO devStatusResp = this.buildDevStatusResp(result);
+			CommonResp resp = new CommonResp(result.getInteger("STATE"), result.getString("STATE_INFO"), JSONObject.toJSONString(devStatusResp));
+			return resp;
 		}
 		return this.deviceQueryService.queryDevStateInfo(req);
+	}
+
+	private DevStatusRespDTO buildDevStatusResp(JSONObject result) {
+		DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
+		devStatusResp.setConnStatus(result.getInteger("connStatus"));
+		devStatusResp.setOnlineStatus(result.getInteger("onlineStatus"));
+		devStatusResp.setMakeTemp(result.getInteger("makeTemp"));
+		devStatusResp.setTemp(result.getInteger("temp"));
+		devStatusResp.setWarm(result.getInteger("warm"));
+		devStatusResp.setDensity(result.getInteger("density"));
+		devStatusResp.setWaterlv(0);
+		devStatusResp.setMakeDura(result.getInteger("makeDura"));
+		devStatusResp.setReamin(result.getInteger("reamin"));
+		devStatusResp.setTea(result.getInteger("tea"));
+		devStatusResp.setWater(result.getInteger("water"));
+		devStatusResp.setWork(result.getInteger("work"));
+		devStatusResp.setMakeType(result.getInteger("makeType"));
+		devStatusResp.setTeaSortId(result.getInteger("teaSortId"));
+		devStatusResp.setTeaSortName(result.getString("teaSortName"));
+		devStatusResp.setChapuId(result.getInteger("chapuId"));
+		devStatusResp.setChapuName(result.getString("chapuName"));
+		devStatusResp.setChapuImage("");
+		devStatusResp.setChapuMakeTimes(0);
+		devStatusResp.setIndex(0);
+		return devStatusResp;
 	}
 
 	/**
