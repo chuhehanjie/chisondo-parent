@@ -47,7 +47,7 @@
 		INNER JOIN tb_actived_device_info dev ON dev.device_id = a.device_id
 		INNER JOIN tb_company cmp ON cmp.id = dev.company_id
 		INNER JOIN t_data_vip c ON b.teaman_id = c.MEMBER_ID
-		INNER JOIN tb_device_color dc ON dev.device_type_id = dc.device_type_id
+		LEFT JOIN tb_device_color dc ON dev.dev_color = dc.color_id
 		LEFT JOIN (select count(1) validTeaCount,device_id FROM tb_user_book where valid_flag in (0,1) group by device_id) d ON d.device_id = a.device_id
 	</sql>
 
