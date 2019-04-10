@@ -7,6 +7,7 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.Keys;
+import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
 import com.chisondo.server.modules.device.service.DeviceOperateLogService;
@@ -90,7 +91,7 @@ public class DevOperateLogAspect {
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 		DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
-		devOperateLog.setDeviceId(deviceInfo.getDeviceId().toString());
+		devOperateLog.setDeviceId(ValidateUtils.isEmpty(deviceInfo) ? "" : deviceInfo.getDeviceId().toString());
 		devOperateLog.setTeamanId(user.getMemberId() + "");
 		devOperateLog.setUserMobileNo(user.getPhone());
 		devOperateLog.setOperType(0); // TODO 操作类型未定义

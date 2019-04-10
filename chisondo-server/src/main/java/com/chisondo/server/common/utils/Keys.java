@@ -7,6 +7,8 @@ public class Keys {
 
     public static final String USER_MOBILE = "userMobile";
 
+    public static final String USER_ID = "userId";
+
     public static final String PHONE = "phone";
 
     public static final String CONNECT_STATE = "connectState";
@@ -62,4 +64,9 @@ public class Keys {
     public static final String COUNT = "count";
 
     public static final String RESERV_INFO = "reservInfo";
+
+    public static final String SET_COOKIE = "Set-Cookie";
+
+    public static final String COOKIE = "Cookie";
+
 }

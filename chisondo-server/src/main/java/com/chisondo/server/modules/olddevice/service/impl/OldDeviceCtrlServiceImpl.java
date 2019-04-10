@@ -17,8 +17,12 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.xml.ws.Response;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Service("oldDeviceCtrlService")
@@ -52,11 +56,20 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
 
     private ConnectDevResp connectDevice(CommonReq req) {
         ConnectDevReq connectDevReq = this.buildConnectDevReq(req);
-        ConnectDevResp connectDevResp = this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "connectDevice", ConnectDevResp.class, connectDevReq);
-        if (!connectDevResp.isOK()) {
+        ResponseEntity<ConnectDevResp> result = this.restTemplateUtils.postForEntity(this.oldDevReqURL + "connectDevice", ConnectDevResp.class, connectDevReq);
+        if (result.getHeaders().containsKey(Keys.SET_COOKIE)) {
+            String cookie = this.parseCookie(result.getHeaders().get(Keys.SET_COOKIE).get(0));
+            req.addAttr(Keys.COOKIE, cookie);
+        }
+        /*if (!connectDevResp.isOK()) {
             throw new CommonException(ValidateUtils.isNotEmptyString(connectDevResp.getSTATE_INFO()) ? connectDevResp.getSTATE_INFO() : connectDevResp.getErrorInfo());
         }
-        return connectDevResp;
+        return connectDevResp;*/
+        return result.getBody();
+    }
+
+    private String parseCookie(String header) {
+        return header.split(";")[0].replace("JSESSIONID=","");
     }
 
     private ConnectDevReq buildConnectDevReq(CommonReq req) {
@@ -105,7 +118,15 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject startWorking(String sessionId, CommonReq req) {
         MakeTeaReq makeTeaReq = new MakeTeaReq(sessionId, JSONObject.parseObject(req.getBizBody(), DeviceCtrlReqDTO.class));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "startWorking", JSONObject.class, makeTeaReq);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "startWorking", JSONObject.class, makeTeaReq, this.buildHeaderMap(req));
+    }
+
+    private Map<String, String> buildHeaderMap(CommonReq req) {
+        if (ValidateUtils.isNotEmpty(req.getAttrByKey(Keys.COOKIE))) {
+            log.error("cookie = {}", req.getAttrByKey(Keys.COOKIE));
+            return ImmutableMap.of(Keys.COOKIE, req.getAttrByKey(Keys.COOKIE).toString());
+        }
+        return Collections.EMPTY_MAP;
     }
 
     /**
@@ -116,7 +137,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject washTea(String sessionId, CommonReq req) {
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.ACTION, 1);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "washTea", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "washTea", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -136,7 +157,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
             params.put("stopHeat", true);
             params.put("stopHeatEx", 1);
         }
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "stopWorking", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "stopWorking", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -147,8 +168,8 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject startByChapu(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
-        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, "chapuId", jsonObj.get("chapuId"), "index", jsonObj.get("index"));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "startByChapu", JSONObject.class, params);
+        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.CHAPU_ID, jsonObj.get(Keys.CHAPU_ID), "index", jsonObj.get("index"));
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "startByChapu", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -159,7 +180,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject cancelChapu(String sessionId, CommonReq req) {
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "cancelChapu", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "cancelChapu", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -171,7 +192,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     private JSONObject setWarmState(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.OPER_FLAG, jsonObj.get(Keys.OPER_FLAG));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "setWarmState", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "setWarmState", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**

@@ -38,4 +38,5 @@ public interface DeviceStateInfoService {
     @Transactional
     void updateDevStatus(DevStatusReportReq devStatusReportReq);
 
+    void setDevChapu2Finish(Map<String, Object> params);
 }

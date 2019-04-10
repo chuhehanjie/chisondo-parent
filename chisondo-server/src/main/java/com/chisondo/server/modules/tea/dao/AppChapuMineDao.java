@@ -4,6 +4,8 @@ import com.chisondo.server.modules.sys.dao.BaseDao;
 import com.chisondo.server.modules.tea.entity.AppChapuMineEntity;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Map;
+
 /**
  * 
  * 
@@ -13,5 +15,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface AppChapuMineDao extends BaseDao<AppChapuMineEntity> {
-	
+
+    void deleteByCondition(Map<String, Object> params);
 }

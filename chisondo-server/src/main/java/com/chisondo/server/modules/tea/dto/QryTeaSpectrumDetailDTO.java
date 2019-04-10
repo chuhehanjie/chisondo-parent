@@ -9,6 +9,7 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
     private	String	phoneNum; // 创建人手机号码
     private	String	nickname; // 创建人昵称
     private	String	avatar; // 创建人图像
+    private Integer chapuId;
     private	String	chapuName; // 茶谱名称
     private	String	chapuImg; // 茶谱图标
     private	Integer	sortId; // 茶类ID
@@ -22,6 +23,8 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
     private	String	brandName; // 茶品牌名称
     private	Integer	amount; // 投茶量
     private	Integer	awake; // 是否醒茶
+    private String desc;
+    private Integer makeTimes;
 
     private List<QryTeaSpectrumParamDTO> parameter;
 
@@ -167,5 +170,29 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public Integer getMakeTimes() {
+        return makeTimes;
+    }
+
+    public void setMakeTimes(Integer makeTimes) {
+        this.makeTimes = makeTimes;
+    }
+
+    public Integer getChapuId() {
+        return chapuId;
+    }
+
+    public void setChapuId(Integer chapuId) {
+        this.chapuId = chapuId;
     }
 }

@@ -4,6 +4,8 @@ import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.sys.dao.BaseDao;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Map;
+
 /**
  * 
  * 
@@ -13,5 +15,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface DeviceStateInfoDao extends BaseDao<DeviceStateInfoEntity> {
-	
+
+    void setDevChapu2Finish(Map<String, Object> params);
 }

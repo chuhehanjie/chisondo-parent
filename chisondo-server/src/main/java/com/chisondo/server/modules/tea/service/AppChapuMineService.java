@@ -27,4 +27,6 @@ public interface AppChapuMineService {
 	void delete(Integer userId);
 	
 	void deleteBatch(Integer[] userIds);
+
+    void deleteByCondition(Map<String, Object> params);
 }

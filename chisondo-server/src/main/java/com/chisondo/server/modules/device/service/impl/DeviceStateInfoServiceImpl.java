@@ -120,4 +120,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		return devStateInfo;
 	}
 
+	@Override
+	public void setDevChapu2Finish(Map<String, Object> params) {
+		this.deviceStateInfoDao.setDevChapu2Finish(params);
+	}
 }

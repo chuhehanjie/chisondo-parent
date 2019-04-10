@@ -35,4 +35,9 @@ public class TeaSpectrumConstant {
         int COMMENTED = 5;
         int USED = 6;
     }
+
+    public interface MyChapuOperFlag {
+        int DELETE = 0;
+        int FINISH = 1;
+    }
 }

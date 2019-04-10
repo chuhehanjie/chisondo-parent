@@ -48,7 +48,8 @@ public class TeaQueryController {
 		List<TeaSortRowDTO> teaSorts = this.appTeaSortService.queryAllTeaSorts();
 		TeaSortQryDTO teaSortQryDTO = new TeaSortQryDTO();
 		if (!CollectionUtils.isEmpty(teaSorts)) {
-			teaSortQryDTO.setDefaultSortId(teaSorts.get(0).getSortId()); // TODO 设置默认茶类为第1个
+			TeaSortRowDTO defTeaSort = teaSorts.stream().filter(teaSort -> ValidateUtils.equals(1, teaSort.getIsDefault())).findFirst().orElse(teaSorts.get(0));
+			teaSortQryDTO.setDefaultSortId(defTeaSort.getSortId());
 			teaSortQryDTO.setRows(teaSorts);
 		}
 		return CommonResp.ok(teaSortQryDTO);

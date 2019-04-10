@@ -116,4 +116,8 @@
 		</foreach>
 	</delete>
 
+	<delete id="deleteByCondition" parameterType="java.util.HashMap">
+		delete from t_app_chapu_mine where user_id = #{userId} and chapu_id = #{chapuId}
+	</delete>
+
 </mapper>

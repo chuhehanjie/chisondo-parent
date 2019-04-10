@@ -442,6 +442,7 @@
 
 	<select id="queryTeaSpectrumListByCondition" parameterType="java.util.HashMap" resultType="com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO">
 		select
+			t.chapu_id AS chapuId,
 			t.user_id AS userId,
 			t.name AS chapuName,
 			t.image AS chapuImg,

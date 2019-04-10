@@ -350,4 +350,12 @@
 		</foreach>
 	</delete>
 
+	<update id="setDevChapu2Finish" parameterType="java.util.HashMap">
+		update tb_device_state_info set `index` = 999 where chapu_id = #{chapuId}
+		AND device_id in
+		<foreach item="deviceId"  collection="deviceIds" open="(" separator="," close=")">
+			#{deviceId}
+		</foreach>
+	</update>
+
 </mapper>

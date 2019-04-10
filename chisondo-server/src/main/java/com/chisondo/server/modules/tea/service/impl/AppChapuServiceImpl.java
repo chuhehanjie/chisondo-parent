@@ -3,20 +3,22 @@ package com.chisondo.server.modules.tea.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
+import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.Query;
 import com.chisondo.server.common.utils.RegexUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.DynamicDataSource;
+import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
-import com.chisondo.server.modules.tea.dto.QryMyTeaSpectrumReqDTO;
-import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
-import com.chisondo.server.modules.tea.dto.QryTeaSpectrumParamDTO;
-import com.chisondo.server.modules.tea.dto.QryTeaSpectrumReqDTO;
+import com.chisondo.server.modules.tea.dto.*;
 import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
+import com.chisondo.server.modules.tea.service.AppChapuMineService;
 import com.chisondo.server.modules.tea.service.AppChapuParaService;
+import com.chisondo.server.modules.user.entity.UserDeviceEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
+import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.chisondo.server.modules.user.service.UserVipService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -45,6 +47,15 @@ public class AppChapuServiceImpl implements AppChapuService {
 
 	@Autowired
 	private AppChapuParaService appChapuParaService;
+
+	@Autowired
+	private AppChapuMineService appChapuMineService;
+
+	@Autowired
+	private DeviceStateInfoService deviceStateInfoService;
+
+	@Autowired
+	private UserDeviceService userDeviceService;
 	
 	@Override
 	public AppChapuEntity queryObject(Integer chapuId){
@@ -153,7 +164,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 			DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 			UserVipEntity user = this.userVipService.getUserByMobile(jsonObj.getString("keyword"));
 			if (ValidateUtils.isNotEmpty(user)) {
-				params.put("userId", user.getMemberId());
+				params.put(Keys.USER_ID, user.getMemberId());
 				params.remove("keyword");
 			}
 			DynamicDataSource.setDataSource(DataSourceNames.SECOND);
@@ -272,7 +283,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put(Query.LIMIT, ValidateUtils.isEmpty(qryMyTeaSpectrumReq.getNum()) ? 10 : qryMyTeaSpectrumReq.getNum());
 		params.put(Query.PAGE, ValidateUtils.isEmpty(qryMyTeaSpectrumReq.getPage()) ? 1 : qryMyTeaSpectrumReq.getPage());
-		params.put("userId", qryMyTeaSpectrumReq.getUserId());
+		params.put(Keys.USER_ID, qryMyTeaSpectrumReq.getUserId());
 		params.put("qryMyChapuFlag", true);
 		if (ValidateUtils.isNotEmpty(qryMyTeaSpectrumReq.getType())) {
 			List<Integer> types = Lists.newArrayList();
@@ -290,5 +301,37 @@ public class AppChapuServiceImpl implements AppChapuService {
 			params.put("types", types);
 		}
 		return params;
+	}
+
+	@Override
+	public CommonResp delOrFinishTeaSpectrum(CommonReq req) {
+		/*
+		 删除我的茶谱、结束茶谱泡茶调用接口服务程序4.1.3.2，
+		 如果是删除我的茶谱，根据手机号码获取用户id，根据茶谱id和用户id信息删除4.5.12我的茶谱表中用户和茶谱的绑定关系；
+ 		 如果是结束泡茶，根据手机号码获取用户id，根据用户id获取用户绑定的所有设备id，更新4.5.5沏茶器运行状态信息表中，
+ 		 对应当前用户的所有设备，并且茶谱id为需要结束的茶谱的记录，将index字段设置为999；
+		 操作信息统一入4.5.6沏茶器操作日志表，该日志表保存近10天的操作日志记录。
+		*/
+		DelOrFinishTeaSpectrumReqDTO delOrFinishTeaSpectrumReq = (DelOrFinishTeaSpectrumReqDTO) req.getAttrByKey(Keys.REQ);
+		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+		if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuOperFlag.DELETE, delOrFinishTeaSpectrumReq.getOperFlag())) {
+			// 删除我的茶谱
+			Map<String, Object> params = ImmutableMap.of(Keys.CHAPU_ID, delOrFinishTeaSpectrumReq.getChapuId(), Keys.USER_ID, user.getMemberId());
+			this.appChapuMineService.deleteByCondition(params);
+		} else {
+			// 结束我的茶谱
+			this.doFinishTeaSpectrum(user.getMemberId(), delOrFinishTeaSpectrumReq.getChapuId());
+		}
+		return CommonResp.ok();
+	}
+
+	private void doFinishTeaSpectrum(Long memberId, Integer chapuId) {
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+		List<UserDeviceEntity> userDeviceRelas = this.userDeviceService.queryList(ImmutableMap.of(Keys.TEAMAN_ID, memberId));
+		if (ValidateUtils.isNotEmptyCollection(userDeviceRelas)) {
+			List<Integer> deviceIds = userDeviceRelas.stream().map(item -> item.getDeviceId()).collect(Collectors.toList());
+			Map<String, Object> params = ImmutableMap.of(Keys.CHAPU_ID, chapuId, "deviceIds", deviceIds);
+			this.deviceStateInfoService.setDevChapu2Finish(params);
+		}
 	}
 }

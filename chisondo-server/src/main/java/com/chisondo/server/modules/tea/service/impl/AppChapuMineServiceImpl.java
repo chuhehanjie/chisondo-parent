@@ -51,5 +51,9 @@ public class AppChapuMineServiceImpl implements AppChapuMineService {
 	public void deleteBatch(Integer[] userIds){
 		appChapuMineDao.deleteBatch(userIds);
 	}
-	
+
+	@Override
+	public void deleteByCondition(Map<String, Object> params) {
+		this.appChapuMineDao.deleteByCondition(params);
+	}
 }

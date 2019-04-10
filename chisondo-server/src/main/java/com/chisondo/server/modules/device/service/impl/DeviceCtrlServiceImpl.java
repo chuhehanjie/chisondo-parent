@@ -28,6 +28,7 @@ import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
 import com.chisondo.server.modules.tea.service.AppChapuParaService;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
+import com.chisondo.server.modules.user.entity.UserDeviceEntity;
 import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.user.service.UserBookService;
@@ -160,9 +161,10 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	@Override
 	public DeviceBindRespDTO bindDevice(CommonReq req) {
 		DeviceBindReqDTO devBindReq = (DeviceBindReqDTO) req.getAttrByKey("devBindReq");
-		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey("devBindReq");
+		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 		Long userId = this.getUserId(devBindReq);
 
+		this.checkedHasBinded(devBindReq.getDeviceId(), userId);
 		// 保存用户与设备之间的关系
 		this.userDeviceService.save(devBindReq, userId);
 
@@ -178,7 +180,20 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		return devBindResp;
 	}
 
-	private Long getUserId(DeviceBindReqDTO devBindReq) {
+    /**
+     * 验证是否已经绑定
+     * @param deviceId
+     * @param userId
+     * @return
+     */
+    private void checkedHasBinded(String deviceId, Long userId) {
+        List<UserDeviceEntity> userDeviceRelas = this.userDeviceService.queryList(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.TEAMAN_ID, userId));
+        if (ValidateUtils.isNotEmptyCollection(userDeviceRelas)) {
+            throw new CommonException("用户已绑定了该设备");
+        }
+    }
+
+    private Long getUserId(DeviceBindReqDTO devBindReq) {
 		Long userId = null;
 		UserVipEntity user = this.userVipService.getUserByMobile(devBindReq.getPhoneNum());
 		// 校验手机号是否存在

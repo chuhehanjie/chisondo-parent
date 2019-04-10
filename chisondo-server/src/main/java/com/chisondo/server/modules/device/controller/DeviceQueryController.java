@@ -73,7 +73,7 @@ public class DeviceQueryController extends AbstractController {
 		devStatusResp.setMakeType(result.getInteger("makeType"));
 		devStatusResp.setTeaSortId(result.getInteger("teaSortId"));
 		devStatusResp.setTeaSortName(result.getString("teaSortName"));
-		devStatusResp.setChapuId(result.getInteger("chapuId"));
+		devStatusResp.setChapuId(result.getInteger(Keys.CHAPU_ID));
 		devStatusResp.setChapuName(result.getString("chapuName"));
 		devStatusResp.setChapuImage("");
 		devStatusResp.setChapuMakeTimes(0);

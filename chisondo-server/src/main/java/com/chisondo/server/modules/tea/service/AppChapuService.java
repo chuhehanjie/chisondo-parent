@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.tea.service;
 
 import com.chisondo.server.common.http.CommonReq;
+import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 
@@ -39,4 +40,6 @@ public interface AppChapuService {
     List<QryTeaSpectrumDetailDTO> searchTeaSpectrum(CommonReq req);
 
     List<QryTeaSpectrumDetailDTO> queryMyTeaSpectrum(CommonReq req);
+
+    CommonResp delOrFinishTeaSpectrum(CommonReq req);
 }
