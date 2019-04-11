@@ -40,12 +40,12 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         this.validate(req);
         ConnectDevResp connectDevResp = this.connectDevice(req);
         JSONObject result = this.dispatch(connectDevResp.getSessionId(), req, operationType);
-        this.disconnectDevice(connectDevResp.getSessionId());
+        this.disconnectDevice(connectDevResp.getSessionId(), req);
         return result;
     }
 
-    private void disconnectDevice(String sessionId) {
-        JSONObject result = this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "disconnectDevice", JSONObject.class, ImmutableMap.of(Keys.SESSION_ID, sessionId));
+    private void disconnectDevice(String sessionId, CommonReq req) {
+        JSONObject result = this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "disconnectDevice", JSONObject.class, ImmutableMap.of(Keys.SESSION_ID, sessionId), this.buildHeaderMap(req));
         log.info("disconnectDevice result = {}", result);
     }
 
@@ -69,7 +69,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     }
 
     private String parseCookie(String header) {
-        return header.split(";")[0].replace("JSESSIONID=","");
+        return header.split(";")[0];
     }
 
     private ConnectDevReq buildConnectDevReq(CommonReq req) {

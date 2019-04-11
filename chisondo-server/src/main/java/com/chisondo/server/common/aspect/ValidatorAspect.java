@@ -66,9 +66,8 @@ public class ValidatorAspect {
 		if (ValidateUtils.isEmptyString(deviceId)) {
 			throw new CommonException("设备ID为空");
 		}
-		boolean isOldDev = Boolean.valueOf(CacheDataUtils.getConfigValueByKey("OLD_DEV_FLAG"));
+//		boolean isOldDev = Boolean.valueOf(CacheDataUtils.getConfigValueByKey("OLD_DEV_FLAG"));
 		// TODO 老设备规则待定 return deviceId.length() == 8;
-//		return deviceId.length() <= 8;
-		return isOldDev;
+		return deviceId.length() <= 8;
 	}
 }
