@@ -27,6 +27,5 @@ public class CommonUtil {
 			eventLoopGroup.shutdownGracefully();
 		}
 	}
-	
 
 }

@@ -37,6 +37,8 @@ public class CacheDataUtils {
 
     private static List<AppChapuEntity> allChapuList;
 
+    private static String imgPathPrefix;
+
     @PostConstruct
     public void init() {
         companyList = this.companyService.queryList(Collections.EMPTY_MAP);
@@ -45,6 +47,7 @@ public class CacheDataUtils {
         log.info("init query configList size = {} ", configList.size());
         waterLevels = ImmutableList.of(150, 200, 250, 300, 350, 400, 450, 550);
         allChapuList = this.appChapuService.queryList(new HashMap<>());
+        imgPathPrefix = getConfigValueByKey("IMG_PREFIX");
     }
 
     public static List<CompanyEntity> getCompanyList() {
@@ -57,6 +60,10 @@ public class CacheDataUtils {
 
     public static List<AppChapuEntity> getAllChapuList() {
         return allChapuList;
+    }
+
+    public static String getImgPathPrefix() {
+        return imgPathPrefix;
     }
 
     public static String getConfigValueByKey(String key) {

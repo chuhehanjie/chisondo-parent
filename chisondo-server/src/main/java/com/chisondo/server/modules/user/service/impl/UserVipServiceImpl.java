@@ -1,5 +1,6 @@
 package com.chisondo.server.modules.user.service.impl;
 
+import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
@@ -81,6 +82,11 @@ public class UserVipServiceImpl implements UserVipService {
 	public Map<String, Object> queryAllUsersOfDevice(String deviceId) {
 		Map<String, Object> resultMap = Maps.newHashMap();
 		List<UsedDeviceUserDTO> usedDeviceUsers = this.userVipDao.queryAllUsersOfDevice(deviceId);
+		if (ValidateUtils.isNotEmptyCollection(usedDeviceUsers)) {
+			for (UsedDeviceUserDTO usedDeviceUser : usedDeviceUsers) {
+				usedDeviceUser.setUserImg(CommonUtils.plusFullImgPath(usedDeviceUser.getUserImg()));
+			}
+		}
 		resultMap.put(Keys.COUNT, ValidateUtils.isEmptyCollection(usedDeviceUsers) ? 0 : usedDeviceUsers.size());
 		resultMap.put(Keys.USER_INFO, usedDeviceUsers);
 		return resultMap;

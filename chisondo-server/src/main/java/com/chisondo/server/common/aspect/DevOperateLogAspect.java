@@ -8,6 +8,8 @@ import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.datasources.DataSourceNames;
+import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
 import com.chisondo.server.modules.device.service.DeviceOperateLogService;
@@ -101,6 +103,7 @@ public class DevOperateLogAspect {
 		devOperateLog.setEndTime(new Date(endTime));
 		devOperateLog.setDesc(methodDesc);
 		devOperateLog.setOperResult(resp.getRetn() == HttpStatus.SC_OK ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 		this.devOperateLogService.save(devOperateLog);
 	}
 }

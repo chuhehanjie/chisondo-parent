@@ -5,11 +5,13 @@ import com.chisondo.server.common.annotation.ParamValidator;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
+import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
 import com.chisondo.server.modules.device.validator.QryMyTeaSpectrumValidator;
+import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortQryDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortRowDTO;
@@ -48,8 +50,14 @@ public class TeaQueryController {
 		List<TeaSortRowDTO> teaSorts = this.appTeaSortService.queryAllTeaSorts();
 		TeaSortQryDTO teaSortQryDTO = new TeaSortQryDTO();
 		if (!CollectionUtils.isEmpty(teaSorts)) {
-			TeaSortRowDTO defTeaSort = teaSorts.stream().filter(teaSort -> ValidateUtils.equals(1, teaSort.getIsDefault())).findFirst().orElse(teaSorts.get(0));
-			teaSortQryDTO.setDefaultSortId(defTeaSort.getSortId());
+			Integer defaultSortId = teaSorts.get(0).getSortId();
+			for (TeaSortRowDTO teaSort : teaSorts) {
+				teaSort.setImgUrl(CommonUtils.plusFullImgPath(teaSort.getImgUrl()));
+				if (ValidateUtils.equals(1, teaSort.getIsDefault())) {
+					defaultSortId = teaSort.getSortId();
+				}
+			}
+			teaSortQryDTO.setDefaultSortId(defaultSortId);
 			teaSortQryDTO.setRows(teaSorts);
 		}
 		return CommonResp.ok(teaSortQryDTO);

@@ -454,7 +454,7 @@
 			t.standard,
 			t.public_time AS createTime,
 			t.use_times AS useNum,
-			t.brand AS branName,
+			t.brand,
 			t.amount,
 			t.awake,
 			t.desc,
@@ -489,7 +489,7 @@
 		</if>
 		<if test="types != null">
 			AND m.flag in
-			<foreach item="type" collection="list" open="(" separator="," close=")">
+			<foreach item="type" collection="types" open="(" separator="," close=")">
 				#{type}
 			</foreach>
 		</if>

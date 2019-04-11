@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.Query;
-import com.chisondo.server.common.utils.RegexUtils;
-import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
@@ -27,6 +24,7 @@ import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +104,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		if (ValidateUtils.isNotEmpty(teaSpectrumDetail)) {
 			List<AppChapuParaEntity> teaSpectrumParams = this.appChapuParaService.queryList(ImmutableMap.of(Keys.CHAPU_ID, chapuId));
 			teaSpectrumDetail.setParameter(this.convertEntities2DTOs(teaSpectrumParams));
+			teaSpectrumDetail.setChapuImg(CommonUtils.plusFullImgPath(teaSpectrumDetail.getChapuImg()));
 			UserVipEntity user = this.userVipService.queryUserByMemberId(teaSpectrumDetail.getUserId());
 			if (ValidateUtils.isNotEmpty(user)) {
 				this.doSetUserRelaAttrs(teaSpectrumDetail, user);
@@ -123,7 +122,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 	 */
 	private void doSetUserRelaAttrs(QryTeaSpectrumDetailDTO teaSpectrumDetail, UserVipEntity user) {
 		teaSpectrumDetail.setPhoneNum(user.getPhone());
-		teaSpectrumDetail.setAvatar(user.getVipHeadImg());
+		teaSpectrumDetail.setAvatar(CommonUtils.plusFullImgPath(user.getVipHeadImg()));
 		teaSpectrumDetail.setNickname(user.getVipNickname());
 	}
 
@@ -199,7 +198,18 @@ public class AppChapuServiceImpl implements AppChapuService {
 	private void setUserRelaAttrs(List<QryTeaSpectrumDetailDTO> detailList, UserVipEntity userParam) {
 		if (ValidateUtils.isNotEmptyCollection(detailList)) {
 			// 按 userId 分组
-			Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap = detailList.stream().collect(Collectors.groupingBy(QryTeaSpectrumDetailDTO::getUserId));
+			Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap = Maps.newHashMap();
+            for (QryTeaSpectrumDetailDTO detailItem : detailList) {
+                detailItem.setAvatar(CommonUtils.plusFullImgPath(detailItem.getAvatar()));
+                detailItem.setChapuImg(CommonUtils.plusFullImgPath(detailItem.getChapuImg()));
+                if (groupMap.containsKey(detailItem.getUserId())) {
+                    groupMap.get(detailItem.getUserId()).add(detailItem);
+                } else {
+                    List<QryTeaSpectrumDetailDTO> values = new ArrayList<>();
+                    values.add(detailItem);
+                    groupMap.put(detailItem.getUserId(), values);
+                }
+            }
 			List<Long> userIds = ValidateUtils.isEmpty(userParam) ? this.getUserIds(groupMap) : ImmutableList.of(userParam.getMemberId());
 			final List<UserVipEntity> userList = ValidateUtils.isEmpty(userParam) ? this.userVipService.queryUserListByUserIds(userIds) : ImmutableList.of(userParam);
 			if (ValidateUtils.isNotEmptyCollection(userList)) {
@@ -215,8 +225,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		}
 	}
 
-
-	private List<Long> getUserIds(Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap) {
+    private List<Long> getUserIds(Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap) {
 		List<Long> userIds = Lists.newArrayList();
 		groupMap.forEach((k, v) -> {
             userIds.add(k);

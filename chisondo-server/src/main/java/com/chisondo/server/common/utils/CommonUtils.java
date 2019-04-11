@@ -154,4 +154,12 @@ public final class CommonUtils {
     public static CommonResp buildOldDevResp(JSONObject result) {
         return new CommonResp(result.getIntValue("STATE"), result.getString("STATE_INFO"));
     }
+
+    public static String plusFullImgPath(String srcImg) {
+        String imgPrefix = CacheDataUtils.getImgPathPrefix();
+        if (ValidateUtils.isNotEmptyString(srcImg) && !srcImg.startsWith(imgPrefix)) {
+            return imgPrefix + srcImg;
+        }
+        return srcImg;
+    }
 }

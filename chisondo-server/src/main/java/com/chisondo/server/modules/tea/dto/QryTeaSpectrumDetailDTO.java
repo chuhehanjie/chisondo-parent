@@ -20,7 +20,7 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
     private	Integer	standard; // 是否标准茶谱
     private	String	createTime; // 茶谱创建时间
     private	Integer	useNum; // 沏茶使用次数
-    private	String	brandName; // 茶品牌名称
+    private	String brand; // 茶品牌名称
     private	Integer	amount; // 投茶量
     private	Integer	awake; // 是否醒茶
     private String desc;
@@ -132,12 +132,12 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
         this.useNum = useNum;
     }
 
-    public String getBrandName() {
-        return brandName;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setBrandName(String brandName) {
-        this.brandName = brandName;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public Integer getAmount() {
