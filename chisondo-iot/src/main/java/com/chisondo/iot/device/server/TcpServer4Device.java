@@ -65,7 +65,7 @@ public class TcpServer4Device {
         if (this.closed) {
             return;
         }
-        this.deviceBootstrap.bind(new InetSocketAddress("", this.deviceTcpPort)).addListener((f) -> {
+        this.deviceBootstrap.bind(new InetSocketAddress("0.0.0.0", this.deviceTcpPort)).addListener((f) -> {
             ChannelFuture future = (ChannelFuture) f;
             if (future.isSuccess()) {
                 log.info("bind tcp port {} successfully.", deviceTcpPort);
