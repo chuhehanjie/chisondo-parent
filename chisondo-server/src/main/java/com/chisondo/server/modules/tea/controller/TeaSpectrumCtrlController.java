@@ -10,10 +10,7 @@ import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
-import com.chisondo.server.modules.device.validator.DelOrFinishTeaSpectrumValidator;
-import com.chisondo.server.modules.device.validator.QryMyTeaSpectrumValidator;
-import com.chisondo.server.modules.device.validator.TeaSpectrumExistenceValidator;
-import com.chisondo.server.modules.device.validator.UserExistenceValidator;
+import com.chisondo.server.modules.device.validator.*;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortQryDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortRowDTO;
@@ -52,6 +49,16 @@ public class TeaSpectrumCtrlController {
 	@DevOperateLog("删除我的茶谱/结束茶谱泡茶")
 	public CommonResp delOrFinishTeaSpectrum(@RequestBody CommonReq req){
 		return this.appChapuService.delOrFinishTeaSpectrum(req);
+	}
+
+	/**
+	 * 创建/修改/保存茶谱
+	 */
+	@PostMapping("/api/rest/chapu/create")
+	@ParamValidator(value = {UserExistenceValidator.class, SaveTeaSpectrumValidator.class},isQuery = true)
+	@DevOperateLog("创建/修改/保存茶谱")
+	public CommonResp saveTeaSpectrum(@RequestBody CommonReq req){
+		return this.appChapuService.saveTeaSpectrum(req);
 	}
 
 

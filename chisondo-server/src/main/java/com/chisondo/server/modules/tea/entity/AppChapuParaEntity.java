@@ -22,6 +22,16 @@ public class AppChapuParaEntity  implements Serializable {
 	//
 	private Integer dura;
 
+	public AppChapuParaEntity() {
+	}
+
+	public AppChapuParaEntity(Integer chapuId, Integer number, Integer temp, Integer dura) {
+		this.chapuId = chapuId;
+		this.number = number;
+		this.temp = temp;
+		this.dura = dura;
+	}
+
 	public void setChapuId(Integer chapuId) {
 		this.chapuId = chapuId;
 	}

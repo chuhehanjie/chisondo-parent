@@ -1,4 +1,5 @@
 package com.chisondo.server.modules.tea.service.impl;
+import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
@@ -343,4 +344,77 @@ public class AppChapuServiceImpl implements AppChapuService {
 			this.deviceStateInfoService.setDevChapu2Finish(params);
 		}
 	}
+
+    @Override
+    public CommonResp saveTeaSpectrum(CommonReq req) {
+        /*
+          创建、修改、保存茶谱调用接口服务程序4.1.3.3，将茶谱信息保存至4.5.9茶谱表和4.5.10茶谱参数表中，
+          保存茶谱后茶谱表中temp字段为1（临时茶谱），茶谱信息可以修改，
+          创建茶谱后，茶谱表中temp字段为0（标准茶谱），茶谱信息不允许修改；
+          操作信息统一入4.5.6沏茶器操作日志表，该日志表保存近10天的操作日志记录
+        */
+        SaveTeaSpectrumReqDTO saveTeaSpectrumReq = (SaveTeaSpectrumReqDTO) req.getAttrByKey(Keys.REQ);
+        UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+        Integer chapuId;
+        if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuOperFlag.MODIFY, saveTeaSpectrumReq.getOperFlag())) {
+            chapuId = this.modifyTeaSpectrum(req, saveTeaSpectrumReq, user);
+        } else {
+            chapuId = this.createOrSaveTeaSpectrum(saveTeaSpectrumReq, user);
+        }
+        return CommonResp.ok(ImmutableMap.of(Keys.CHAPU_ID, chapuId));
+    }
+
+    private Integer modifyTeaSpectrum(CommonReq req, SaveTeaSpectrumReqDTO saveTeaSpectrumReq, UserVipEntity user) {
+        AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
+        teaSpectrum.setUserId(Integer.valueOf(user.getMemberId().toString()));
+        teaSpectrum.setName(saveTeaSpectrumReq.getChapuName());
+        teaSpectrum.setImage(saveTeaSpectrumReq.getChapuImg());
+        teaSpectrum.setSort(saveTeaSpectrumReq.getSortId());
+        teaSpectrum.setBrand(saveTeaSpectrumReq.getBrandName());
+        teaSpectrum.setAmount(saveTeaSpectrumReq.getAmount());
+        teaSpectrum.setAwake(saveTeaSpectrumReq.getAwake());
+        teaSpectrum.setMakeTimes(saveTeaSpectrumReq.getMakeTimes());
+        teaSpectrum.setDesc(saveTeaSpectrumReq.getDesc());
+        this.update(teaSpectrum);
+        this.appChapuParaService.delete(teaSpectrum.getChapuId());
+        this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum);
+        return teaSpectrum.getChapuId();
+    }
+
+    private Integer createOrSaveTeaSpectrum(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, UserVipEntity user) {
+        // 创建茶谱操作
+        AppChapuEntity teaSpectrum = new AppChapuEntity();
+        teaSpectrum.setUserId(Integer.valueOf(user.getMemberId().toString()));
+        teaSpectrum.setName(saveTeaSpectrumReq.getChapuName());
+        teaSpectrum.setImage(saveTeaSpectrumReq.getChapuImg());
+        teaSpectrum.setSort(saveTeaSpectrumReq.getSortId());
+        teaSpectrum.setBrand(saveTeaSpectrumReq.getBrandName());
+        teaSpectrum.setAmount(saveTeaSpectrumReq.getAmount());
+        teaSpectrum.setAwake(saveTeaSpectrumReq.getAwake());
+        teaSpectrum.setMakeTimes(saveTeaSpectrumReq.getMakeTimes());
+        teaSpectrum.setDesc(saveTeaSpectrumReq.getDesc());
+        teaSpectrum.setPublicTime(new Date());
+        teaSpectrum.setTemp(ValidateUtils.equals(TeaSpectrumConstant.MyChapuOperFlag.CREATE, saveTeaSpectrumReq.getOperFlag()) ? 0 : 1);
+        teaSpectrum.setStandard(0);
+        teaSpectrum.setStatus(0);
+        teaSpectrum.setShape(0);
+        teaSpectrum.setCommentTimes(0);
+        teaSpectrum.setBelikeTimes(0);
+        teaSpectrum.setUseTimes(0);
+        teaSpectrum.setDislikeTimes(0);
+        this.save(teaSpectrum);
+        this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum);
+        return teaSpectrum.getChapuId();
+    }
+
+    private void saveTeaSpectrumParams(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, AppChapuEntity teaSpectrum) {
+	    int index = 1;
+        // 保存茶谱参数
+        for (QryTeaSpectrumParamDTO item : saveTeaSpectrumReq.getParameter()) {
+            // TODO 待确认 number 值暂时写死
+            AppChapuParaEntity teaSpectrumParam = new AppChapuParaEntity(teaSpectrum.getChapuId(), index, item.getTemp(), item.getDura());
+            this.appChapuParaService.save(teaSpectrumParam);
+            index++;
+        }
+    }
 }

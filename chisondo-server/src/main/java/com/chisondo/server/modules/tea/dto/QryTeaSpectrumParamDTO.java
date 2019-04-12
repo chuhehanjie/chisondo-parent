@@ -9,6 +9,15 @@ public class QryTeaSpectrumParamDTO implements Serializable{
     private Integer temp;
     private Integer dura;
 
+    public QryTeaSpectrumParamDTO() {
+    }
+
+    public QryTeaSpectrumParamDTO(Integer water, Integer temp, Integer dura) {
+        this.water = water;
+        this.temp = temp;
+        this.dura = dura;
+    }
+
     public Integer getWater() {
         return water;
     }

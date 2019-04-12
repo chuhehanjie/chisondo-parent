@@ -1,5 +1,7 @@
 package com.chisondo.server.modules.user.service;
 
+import com.chisondo.server.common.http.CommonReq;
+import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 
 import java.util.List;
@@ -35,4 +37,6 @@ public interface UserVipService {
     List<UserVipEntity> queryUserListByUserIds(List<Long> userIds);
 
     Map<String,Object> queryAllUsersOfDevice(String string);
+
+    CommonResp queryMakeTeaRecordsOfUser(CommonReq req);
 }

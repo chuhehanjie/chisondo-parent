@@ -4,6 +4,7 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -42,4 +43,7 @@ public interface AppChapuService {
     List<QryTeaSpectrumDetailDTO> queryMyTeaSpectrum(CommonReq req);
 
     CommonResp delOrFinishTeaSpectrum(CommonReq req);
+
+    @Transactional
+    CommonResp saveTeaSpectrum(CommonReq req);
 }

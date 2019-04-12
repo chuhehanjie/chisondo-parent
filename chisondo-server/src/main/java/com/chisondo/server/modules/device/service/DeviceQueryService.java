@@ -16,8 +16,6 @@ public interface DeviceQueryService {
 	 */
 	CommonResp queryMakeTeaRecordsOfDev(CommonReq req);
 
-	CommonResp queryMakeTeaRecordsOfUser(CommonReq req);
-
 	/**
 	 * 查询设备状态信息
 	 * @param req

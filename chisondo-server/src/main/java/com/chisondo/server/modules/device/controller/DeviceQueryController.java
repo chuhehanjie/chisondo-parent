@@ -140,16 +140,6 @@ public class DeviceQueryController extends AbstractController {
 	}
 
 	/**
-	 * 查询用户的沏茶记录
-	 * @param req
-	 * @return
-	 */
-	@RequestMapping("/api/rest/qryUserTeaRecord")
-	public CommonResp queryMakeTeaRecordsOfUser(@RequestBody CommonReq req) {
-		return this.deviceQueryService.queryMakeTeaRecordsOfUser(req);
-	}
-
-	/**
 	 * 查询设备详细信息
 	 * @param req
 	 * @return

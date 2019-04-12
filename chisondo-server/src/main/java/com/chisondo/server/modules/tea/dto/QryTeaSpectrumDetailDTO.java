@@ -27,6 +27,7 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
     private Integer makeTimes;
 
     private List<QryTeaSpectrumParamDTO> parameter;
+    private int flag;
 
     public String getPhoneNum() {
         return phoneNum;
@@ -194,5 +195,16 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
 
     public void setChapuId(Integer chapuId) {
         this.chapuId = chapuId;
+    }
+
+    public String getPublicTime() {
+        return this.createTime;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
+    }
+    public int getFlag() {
+        return this.flag;
     }
 }
