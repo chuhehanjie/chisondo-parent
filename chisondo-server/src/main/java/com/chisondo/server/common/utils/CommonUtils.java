@@ -8,6 +8,7 @@ import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -162,4 +163,5 @@ public final class CommonUtils {
         }
         return srcImg;
     }
+
 }

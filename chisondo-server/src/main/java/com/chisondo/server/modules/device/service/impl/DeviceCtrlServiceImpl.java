@@ -37,7 +37,6 @@ import com.chisondo.server.modules.user.service.UserVipService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -162,11 +161,13 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public DeviceBindRespDTO bindDevice(CommonReq req) {
 		DeviceBindReqDTO devBindReq = (DeviceBindReqDTO) req.getAttrByKey("devBindReq");
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
-		Long userId = this.getUserId(devBindReq);
+		UserVipEntity user = this.getUser(devBindReq);
 
-		this.checkedHasBinded(devBindReq.getDeviceId(), userId);
+		req.addAttr(Keys.USER_INFO, user);
+
+		this.checkedHasBinded(devBindReq.getDeviceId(), user.getMemberId());
 		// 保存用户与设备之间的关系
-		this.userDeviceService.save(devBindReq, userId);
+		this.userDeviceService.save(devBindReq, user.getMemberId());
 
 		// 更新设备状态信息
 		this.deviceStateInfoService.saveOrUpdate(devBindReq);
@@ -193,8 +194,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
         }
     }
 
-    private Long getUserId(DeviceBindReqDTO devBindReq) {
-		Long userId = null;
+    private UserVipEntity getUser(DeviceBindReqDTO devBindReq) {
 		UserVipEntity user = this.userVipService.getUserByMobile(devBindReq.getPhoneNum());
 		// 校验手机号是否存在
 		if (ValidateUtils.isEmpty(user)) {
@@ -207,11 +207,10 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			userVip.setUseTag(0); // 可用标识 0：可用 1：不可用
 			userVip.setIsTalent(0);
 			this.userVipService.save(userVip);
-			userId = userVip.getMemberId();
+			return userVip;
 		} else {
-			userId = user.getMemberId();
+			return user;
 		}
-		return userId;
 	}
 
 

@@ -2,12 +2,11 @@ package com.chisondo.server.modules.device.service.impl;
 import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.server.common.utils.CommonUtils;
-import com.chisondo.server.common.utils.Constant;
-import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.req.DevStatusReportReq;
 import com.chisondo.server.modules.device.dto.req.DeviceBindReqDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,7 +75,11 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 
 	private void setDevStateAttrs(DeviceBindReqDTO devBindReq, DeviceStateInfoEntity devStateInfo) {
 		devStateInfo.setDeviceId(Integer.valueOf(devBindReq.getDeviceId()));
-		devStateInfo.setUpdateTime(new Date());
+		devStateInfo.setDeviceStateInfo("DEV" + devBindReq.getDeviceId());
+		devStateInfo.setOnlineState(Constant.OnlineState.NO);
+		devStateInfo.setConnectState(Constant.ConnectState.NOT_CONNECTED);
+		devStateInfo.setClientIpAddress(HttpContextUtils.getHttpServletRequest().getRemoteAddr());
+		devStateInfo.setUpdateTime(DateUtils.currentDate());
 		devStateInfo.setLongitude(Double.valueOf(devBindReq.getLongitude()));
 		devStateInfo.setLatitude(Double.valueOf(devBindReq.getLatitude()));
 		devStateInfo.setProvince(devBindReq.getProvince());
