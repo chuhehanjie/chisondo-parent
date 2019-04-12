@@ -35,9 +35,13 @@ public class StartOrReserveMakeTeaValidator implements BusiValidator {
                 throw new CommonException("开始时间小于当前时间");
             }
             // 校验启动时间
-            if (DateUtils.getBetweenMinutes(startTime, currentDate) < 5) {
-                throw new CommonException("开始时间必须大于当前时间 5 分钟");
+            if (DateUtils.getBetweenMinutes(startTime, currentDate) < 10) {
+                throw new CommonException("开始时间必须大于当前时间 10 分钟");
             }
+            if (DateUtils.getBetweenHours(startTime, currentDate) > 24) {
+                throw new CommonException("开始时间必须在 24 小时内");
+            }
+
             isReserveMakeTea = true;
         }
         if (ValidateUtils.isEmpty(startOrReserveTeaReq.getWarm())) {

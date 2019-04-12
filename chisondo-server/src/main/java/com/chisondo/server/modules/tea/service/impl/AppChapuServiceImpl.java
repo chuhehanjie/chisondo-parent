@@ -1,5 +1,5 @@
 package com.chisondo.server.modules.tea.service.impl;
-import java.util.Date;
+import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
@@ -25,10 +25,6 @@ import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.chisondo.server.modules.tea.dao.AppChapuDao;
@@ -376,9 +372,28 @@ public class AppChapuServiceImpl implements AppChapuService {
         teaSpectrum.setMakeTimes(saveTeaSpectrumReq.getMakeTimes());
         teaSpectrum.setDesc(saveTeaSpectrumReq.getDesc());
         this.update(teaSpectrum);
-        this.appChapuParaService.delete(teaSpectrum.getChapuId());
-        this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum);
+        List<AppChapuParaEntity> teaSpectrumParams = this.appChapuParaService.queryList(ImmutableMap.of(Keys.CHAPU_ID, teaSpectrum.getChapuId()));
+        if (ValidateUtils.isNotEmptyCollection(teaSpectrumParams)) {
+            Iterator<QryTeaSpectrumParamDTO> it = saveTeaSpectrumReq.getParameter().iterator();
+            while (it.hasNext()) {
+                QryTeaSpectrumParamDTO item = it.next();
+                if (this.containsItem(teaSpectrumParams, item)) {
+                    it.remove();
+                }
+            }
+        }
+        this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum, teaSpectrumParams.size() + 1);
         return teaSpectrum.getChapuId();
+    }
+
+    private boolean containsItem(List<AppChapuParaEntity> teaSpectrumParams, QryTeaSpectrumParamDTO item) {
+        for (AppChapuParaEntity teaSpectrumParam : teaSpectrumParams) {
+            if (ValidateUtils.equals(teaSpectrumParam.getDura(), item.getDura()) && ValidateUtils.equals(teaSpectrumParam.getWater(), item.getWater())
+                    && ValidateUtils.equals(teaSpectrumParam.getTemp(), item.getTemp())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Integer createOrSaveTeaSpectrum(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, UserVipEntity user) {
@@ -403,16 +418,14 @@ public class AppChapuServiceImpl implements AppChapuService {
         teaSpectrum.setUseTimes(0);
         teaSpectrum.setDislikeTimes(0);
         this.save(teaSpectrum);
-        this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum);
+        this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum, 1);
         return teaSpectrum.getChapuId();
     }
 
-    private void saveTeaSpectrumParams(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, AppChapuEntity teaSpectrum) {
-	    int index = 1;
+    private void saveTeaSpectrumParams(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, AppChapuEntity teaSpectrum, int index) {
         // 保存茶谱参数
         for (QryTeaSpectrumParamDTO item : saveTeaSpectrumReq.getParameter()) {
-            // TODO 待确认 number 值暂时写死
-            AppChapuParaEntity teaSpectrumParam = new AppChapuParaEntity(teaSpectrum.getChapuId(), index, item.getTemp(), item.getDura());
+            AppChapuParaEntity teaSpectrumParam = new AppChapuParaEntity(teaSpectrum.getChapuId(), index, item.getTemp(), item.getDura(), item.getWater());
             this.appChapuParaService.save(teaSpectrumParam);
             index++;
         }

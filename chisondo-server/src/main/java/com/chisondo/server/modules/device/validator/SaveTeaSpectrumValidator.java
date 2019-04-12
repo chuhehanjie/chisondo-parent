@@ -97,6 +97,9 @@ public class SaveTeaSpectrumValidator implements BusiValidator {
         if (ValidateUtils.isEmptyCollection(saveTeaSpectrumReq.getParameter())) {
             throw new CommonException("沏茶参数为空");
         }
+        if (ValidateUtils.notEquals(saveTeaSpectrumReq.getMakeTimes(), saveTeaSpectrumReq.getParameter().size())) {
+            throw new CommonException("茶谱总泡数与沏茶参数数量不一致");
+        }
         for (QryTeaSpectrumParamDTO makeTeaParam : saveTeaSpectrumReq.getParameter()) {
             if (ValidateUtils.isEmpty(makeTeaParam.getWater())) {
                 throw new CommonException("出水量为空");

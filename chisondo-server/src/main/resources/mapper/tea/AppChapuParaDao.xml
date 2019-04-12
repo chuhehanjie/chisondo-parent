@@ -9,6 +9,7 @@
         <result property="number" column="number"/>
         <result property="temp" column="temp"/>
         <result property="dura" column="dura"/>
+        <result property="water" column="water"/>
     </resultMap>
 
 	<select id="queryObject" resultType="com.chisondo.server.modules.tea.entity.AppChapuParaEntity">
@@ -28,6 +29,9 @@
 			</if>
 				<if test="dura != null and dura !='' ">
 				AND dura = #{dura}
+			</if>
+			<if test="water != null and water !='' ">
+				AND water = #{water}
 			</if>
 		        <choose>
             <when test="sidx != null and sidx.trim() != ''">
@@ -56,6 +60,9 @@
 				<if test="dura != null and dura !='' ">
                 AND dura = #{dura}
             </if>
+			<if test="water != null and water !='' ">
+                AND water = #{water}
+            </if>
 			</select>
 	 
 	<insert id="save" parameterType="com.chisondo.server.modules.tea.entity.AppChapuParaEntity">
@@ -64,14 +71,16 @@
 			`chapu_id`, 
 			`number`, 
 			`temp`, 
-			`dura`
+			`dura`,
+			`water`
 		)
 		values
 		(
 			#{chapuId}, 
 			#{number}, 
 			#{temp}, 
-			#{dura}
+			#{dura},
+			#{water}
 		)
 	</insert>
 	 
@@ -80,7 +89,8 @@
 		<set>
 			<if test="number != null">`number` = #{number}, </if>
 			<if test="temp != null">`temp` = #{temp}, </if>
-			<if test="dura != null">`dura` = #{dura}</if>
+			<if test="dura != null">`dura` = #{dura},</if>
+			<if test="water != null">`water` = #{water}</if>
 		</set>
 		where chapu_id = #{chapuId}
 	</update>

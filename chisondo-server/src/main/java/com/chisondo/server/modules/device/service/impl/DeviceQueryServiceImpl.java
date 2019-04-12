@@ -107,6 +107,12 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		params.put(Query.LIMIT, ValidateUtils.isEmpty(jsonObj.get(Query.NUM)) ? 10 : jsonObj.get(Query.NUM));
 		int count = this.userMakeTeaService.countMakeTeaRecordsByDeviceId(deviceId);
 		List<MakeTeaRowRespDTO> rows = this.userMakeTeaService.queryMakeTeaRecordsByDeviceId(new Query(params));
+		if (ValidateUtils.isNotEmptyCollection(rows)) {
+			for (MakeTeaRowRespDTO makeTeaRow : rows) {
+				makeTeaRow.setUserImg(CommonUtils.plusFullImgPath(makeTeaRow.getUserImg()));
+				makeTeaRow.setChapuImage(CommonUtils.plusFullImgPath(makeTeaRow.getChapuImage()));
+			}
+		}
 		MakeTeaRespDTO makeTeaResp = new MakeTeaRespDTO(count, rows);
 		return CommonResp.ok(makeTeaResp);
 	}

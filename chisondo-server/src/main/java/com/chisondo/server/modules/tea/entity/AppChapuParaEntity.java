@@ -22,14 +22,17 @@ public class AppChapuParaEntity  implements Serializable {
 	//
 	private Integer dura;
 
+	private Integer water;
+
 	public AppChapuParaEntity() {
 	}
 
-	public AppChapuParaEntity(Integer chapuId, Integer number, Integer temp, Integer dura) {
+	public AppChapuParaEntity(Integer chapuId, Integer number, Integer temp, Integer dura, Integer water) {
 		this.chapuId = chapuId;
 		this.number = number;
 		this.temp = temp;
 		this.dura = dura;
+		this.water = water;
 	}
 
 	public void setChapuId(Integer chapuId) {
@@ -59,5 +62,13 @@ public class AppChapuParaEntity  implements Serializable {
 
 	public Integer getDura() {
 		return dura;
+	}
+
+	public Integer getWater() {
+		return water;
+	}
+
+	public void setWater(Integer water) {
+		this.water = water;
 	}
 }
