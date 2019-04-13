@@ -1,14 +1,13 @@
 package com.chisondo.server.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.modules.device.dto.req.DevStatusReportReq;
 import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -104,17 +103,17 @@ public final class CommonUtils {
         return params;
     }
 
-    public static DevStatusRespDTO convert2DevStatusInfo(DevStatusReportReq devStatusReportReq, DeviceStateInfoEntity devStateInfo) {
+    public static DevStatusRespDTO convert2DevStatusInfo(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
         DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
-        devStatusResp.setTemp(devStatusReportReq.getMsg().getTemperature());
-        devStatusResp.setWarm(devStatusReportReq.getMsg().getWarmstatus());
-        devStatusResp.setDensity(devStatusReportReq.getMsg().getTaststatus());
-        devStatusResp.setWaterlv(devStatusReportReq.getMsg().getWaterlevel());
-        devStatusResp.setMakeDura(devStatusReportReq.getMsg().getSoak());
-        devStatusResp.setReamin(Integer.valueOf(devStatusReportReq.getMsg().getRemaintime()));
-        devStatusResp.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportReq.getMsg().getErrorstatus() ? 1 : 0);
-        devStatusResp.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportReq.getMsg().getErrorstatus() ? 1 : 0);
-        devStatusResp.setWork(devStatusReportReq.getMsg().getWorkstatus());
+        devStatusResp.setTemp(devStatusReportResp.getMsg().getTemperature());
+        devStatusResp.setWarm(devStatusReportResp.getMsg().getWarmstatus());
+        devStatusResp.setDensity(devStatusReportResp.getMsg().getTaststatus());
+        devStatusResp.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
+        devStatusResp.setMakeDura(devStatusReportResp.getMsg().getSoak());
+        devStatusResp.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
+        devStatusResp.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+        devStatusResp.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+        devStatusResp.setWork(devStatusReportResp.getMsg().getWorkstatus());
         devStatusResp.setMakeTemp(devStateInfo.getMakeTemp());
         devStatusResp.setChapuId(devStateInfo.getChapuId());
         devStatusResp.setChapuName(devStateInfo.getChapuName());

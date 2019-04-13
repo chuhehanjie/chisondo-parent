@@ -15,7 +15,7 @@ public class DeviceStateInfoEntity  implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
-	private Integer deviceId;
+	private String deviceId;
 	//
 	private Integer onlineState;
 	//
@@ -79,11 +79,11 @@ public class DeviceStateInfoEntity  implements Serializable {
 	// 使用的茶谱ID	没有在使用茶谱返回0
 	private Integer chapuId;
 
-	public void setDeviceId(Integer deviceId) {
+	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
 
-	public Integer getDeviceId() {
+	public String getDeviceId() {
 		return deviceId;
 	}
 	public void setOnlineState(Integer onlineState) {

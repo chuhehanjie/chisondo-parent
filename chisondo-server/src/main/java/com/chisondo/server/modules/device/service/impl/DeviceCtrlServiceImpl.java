@@ -173,7 +173,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		this.deviceStateInfoService.saveOrUpdate(devBindReq);
 
 		DeviceBindRespDTO devBindResp = new DeviceBindRespDTO();
-		devBindResp.setDeviceId(deviceInfo.getDeviceId());
+		devBindResp.setDeviceId(Integer.valueOf(deviceInfo.getDeviceId()));
 		devBindResp.setDeviceName(deviceInfo.getDeviceName());
 		devBindResp.setCompanyId(deviceInfo.getCompanyId());
 		devBindResp.setCompanyName(CommonUtils.getCompanyNameById(devBindReq.getCompanyId()));
@@ -247,16 +247,36 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Override
 	public CommonResp makeTeaByTeaSpectrum(CommonReq req) {
-		UseTeaSpectrumReqDTO useTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), UseTeaSpectrumReqDTO.class);
-		log.info("makeTeaByTeaSpectrum ok");
-		UserMakeTeaEntity useMakeTea = (UserMakeTeaEntity) req.getAttrByKey(Keys.USER_MAKTE_TEA_INFO);
-		useMakeTea.setStatus(Constant.UserMakeTeaStatus.COMPLETED); // TODO 状态值待确认
-		useMakeTea.setMakeIndex(null == useTeaSpectrumReq.getIndex() ? 0 : useTeaSpectrumReq.getIndex());
-		useMakeTea.setLastTime(new Date());
-		this.userMakeTeaService.update(useMakeTea);
-		// TODO 待确认是否调用新设备接口服务 +
-//		this.deviceHttpService.stopWork()
-		return CommonResp.ok();
+		UseTeaSpectrumReqDTO useTeaSpectrumReq = (UseTeaSpectrumReqDTO) req.getAttrByKey(Keys.REQ);
+		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+		AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
+		AppChapuParaEntity teaSpectrumParam = (AppChapuParaEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_PARAM_INFO);
+		DeviceHttpReq devHttpReq = new DeviceHttpReq();
+		devHttpReq.setDeviceID(useTeaSpectrumReq.getDeviceId().toString());
+		devHttpReq.setMsg(new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater()));
+		DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
+		log.info("调用使用茶谱沏茶 HTTP 服务响应：{}", devHttpResp);
+		if (devHttpResp.isOK()) {
+			// 沏茶成功
+			UserMakeTeaEntity useMakeTea = new UserMakeTeaEntity();
+			useMakeTea.setTeamanId(user.getMemberId().toString());
+			useMakeTea.setDeviceId(Integer.valueOf(useTeaSpectrumReq.getDeviceId()));
+			useMakeTea.setChapuId(teaSpectrum.getChapuId());
+			useMakeTea.setChapuName(teaSpectrum.getName());
+			useMakeTea.setMaxNum(teaSpectrum.getMakeTimes());
+			useMakeTea.setMakeIndex(useTeaSpectrumReq.getIndex());
+			useMakeTea.setAddTime(DateUtils.currentDate());
+	//		useMakeTea.setLastTime(null); 最后一泡执行时间？
+			useMakeTea.setStatus(Constant.UserMakeTeaStatus.COMPLETED);
+			useMakeTea.setTemperature(teaSpectrumParam.getTemp());
+			useMakeTea.setWarm(0);
+			useMakeTea.setSoak(teaSpectrumParam.getDura());
+			useMakeTea.setTeaSortId(teaSpectrum.getSortId());
+			useMakeTea.setTeaSortName(teaSpectrum.getSortName());
+			useMakeTea.setMakeType(Constant.MakeTeaType.TEA_SPECTRUM);
+			this.userMakeTeaService.save(useMakeTea);
+		}
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
 	@Override
@@ -354,7 +374,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		devHttpReq.setDeviceID(chgDevTeaSpectrumReq.getDeviceId());
 		devHttpReq.setIndex(chgDevTeaSpectrumReq.getIndex());
 		devHttpReq.setMaketimes(teaSpectrum.getMakeTimes());
-		DevParamMsg teaparam = new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), 200); // TODO 待确认 出水量怎么传
+		DevParamMsg teaparam = new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater());
 		devHttpReq.setTeaparm(teaparam);
 		devHttpReq.setChapuid(teaSpectrum.getChapuId());
 		devHttpReq.setChapuname(teaSpectrum.getName());

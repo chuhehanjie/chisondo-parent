@@ -1,32 +1,30 @@
 package com.chisondo.server.modules.device.service.impl;
-import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
-import com.chisondo.model.http.resp.DevSettingHttpResp;
-import com.chisondo.server.common.exception.CommonException;
-import com.chisondo.server.modules.device.dto.resp.*;
-import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
-import com.chisondo.server.modules.tea.entity.AppChapuEntity;
-import com.chisondo.server.modules.tea.service.AppChapuService;
-import com.google.common.collect.ImmutableList;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
+import com.chisondo.model.http.resp.DevSettingHttpResp;
+import com.chisondo.model.http.resp.DevStatusReportResp;
+import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.*;
-import com.chisondo.server.modules.device.dto.req.DevStatusReportReq;
+import com.chisondo.server.modules.device.dto.resp.*;
+import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 @Service("deviceQueryService")
@@ -123,9 +121,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		// 首先从 redis 取
 		String devStateInfoStr = this.redisUtils.get(deviceId);
 		if (ValidateUtils.isNotEmptyString(devStateInfoStr)) {
-			DevStatusReportReq devStatusReportReq = JSONObject.parseObject(devStateInfoStr, DevStatusReportReq.class);
+			DevStatusReportResp devStatusReportResp = JSONObject.parseObject(devStateInfoStr, DevStatusReportResp.class);
 			DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(deviceId);
-			DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportReq, devStateInfo);
+			DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
 			devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
 			devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
 			return CommonResp.ok(devStatusResp);

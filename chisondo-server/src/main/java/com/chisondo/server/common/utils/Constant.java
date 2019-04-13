@@ -14,6 +14,8 @@ public class Constant {
 
     public static final String ROOT_NODE_ID = "-1";
 
+    public static final String DEF_DEV_NAME = "MT123";
+
     /**
      * 注册用户时的默认密码
      */

@@ -141,16 +141,18 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
      */
     private void processDevStatusReport(Channel deviceChannel, Object msg) {
         // 设备心跳上报请求
-        DevStatusReportResp reportReq = (DevStatusReportResp) msg;
-        log.info("接收设备[{}]心跳上报请求!", reportReq.getDeviceID());
-        String deviceId = reportReq.getDeviceID();
+        DevStatusReportResp reportResp = (DevStatusReportResp) msg;
+        log.info("接收设备[{}]心跳上报请求!", reportResp.getDeviceID());
+        String deviceId = reportResp.getDeviceID();
         if (null == DevTcpChannelManager.getChannelByDeviceId(deviceId)) {
             DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);
         }
-        reportReq.setTcpValTime(new Date());
+        reportResp.setTcpValTime(new Date());
+        // 设置连接设备的客户端IP
+        reportResp.setClientIP(deviceChannel.remoteAddress().toString());
         // TODO 更新 redis 中设备状态
-        this.redisClient.opsForValue().set(reportReq.getDeviceID(), JSONObject.toJSONString(reportReq), 60*20, TimeUnit.SECONDS);
-        // this.reportDevStatus2App(reportReq);
+        this.redisClient.opsForValue().set(reportResp.getDeviceID(), JSONObject.toJSONString(reportResp), 60*20, TimeUnit.SECONDS);
+        this.reportDevStatus2App(reportResp);
     }
 
     private void reportDevStatus2App(DevStatusReportResp reportReq) {

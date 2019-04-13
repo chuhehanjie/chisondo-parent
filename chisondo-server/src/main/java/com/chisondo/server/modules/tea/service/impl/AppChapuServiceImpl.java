@@ -128,7 +128,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		if (ValidateUtils.isNotEmptyCollection(teaSpectrumParams)) {
 			teaSpectrumParams.forEach(tsp -> {
 				QryTeaSpectrumParamDTO teaSpectrumParamDTO = new QryTeaSpectrumParamDTO();
-				teaSpectrumParamDTO.setWater(200); // TODO 待确认 出水量如何取值
+				teaSpectrumParamDTO.setWater(tsp.getWater());
 				teaSpectrumParamDTO.setTemp(tsp.getTemp());
 				teaSpectrumParamDTO.setDura(tsp.getDura());
 				teaSpectrumParamDTOs.add(teaSpectrumParamDTO);

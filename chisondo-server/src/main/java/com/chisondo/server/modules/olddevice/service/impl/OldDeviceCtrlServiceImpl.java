@@ -78,7 +78,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         ConnectDevReq connectDevReq = new ConnectDevReq();
         connectDevReq.setUserId(user.getMemberId().toString());
         connectDevReq.setPhoneNum(user.getPhone());
-        connectDevReq.setDeviceId(deviceInfo.getDeviceId());
+        connectDevReq.setDeviceId(Integer.valueOf(deviceInfo.getDeviceId()));
         connectDevReq.setPasswd(deviceInfo.getPassword());
         connectDevReq.setNeedValidate(0);
         return connectDevReq;

@@ -15,7 +15,7 @@ public class ActivedDeviceInfoEntity  implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//设备ID
-	private Integer deviceId;
+	private String deviceId;
 	//设备名称
 	private String deviceName;
 	//
@@ -45,13 +45,14 @@ public class ActivedDeviceInfoEntity  implements Serializable {
 	//1-优先2G网络（默认）  2-优先Wi-Fi网络
 	private Integer gmsFlag;
 
-	public void setDeviceId(Integer deviceId) {
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
 
-	public Integer getDeviceId() {
-		return deviceId;
-	}
 	public void setDeviceName(String deviceName) {
 		this.deviceName = deviceName;
 	}

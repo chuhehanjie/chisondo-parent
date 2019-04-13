@@ -29,6 +29,8 @@ public class DevStatusReportResp extends CommonHttpResp {
      */
     private Date tcpValTime;
 
+    private String clientIP;
+
     public String getAction() {
         return action;
     }
@@ -67,5 +69,13 @@ public class DevStatusReportResp extends CommonHttpResp {
 
     public void setTcpValTime(Date tcpValTime) {
         this.tcpValTime = tcpValTime;
+    }
+
+    public void setClientIP(String clientIP) {
+        this.clientIP = clientIP;
+    }
+
+    public String getClientIP() {
+        return clientIP;
     }
 }

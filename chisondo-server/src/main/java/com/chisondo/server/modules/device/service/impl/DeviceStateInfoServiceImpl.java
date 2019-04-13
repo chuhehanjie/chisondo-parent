@@ -2,11 +2,10 @@ package com.chisondo.server.modules.device.service.impl;
 import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.utils.*;
-import com.chisondo.server.modules.device.dto.req.DevStatusReportReq;
 import com.chisondo.server.modules.device.dto.req.DeviceBindReqDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,7 +73,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	private void setDevStateAttrs(DeviceBindReqDTO devBindReq, DeviceStateInfoEntity devStateInfo) {
-		devStateInfo.setDeviceId(Integer.valueOf(devBindReq.getDeviceId()));
+		devStateInfo.setDeviceId(devBindReq.getDeviceId());
 		devStateInfo.setDeviceStateInfo("DEV" + devBindReq.getDeviceId());
 		devStateInfo.setOnlineState(Constant.OnlineState.NO);
 		devStateInfo.setConnectState(Constant.ConnectState.NOT_CONNECTED);
@@ -89,15 +88,15 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	@Override
-	public void updateDevStatus(DevStatusReportReq devStatusReportReq) {
-		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportReq);
+	public void updateDevStatus(DevStatusReportResp devStatusReportResp) {
+		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportResp);
 		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		this.update(devStateInfo);
 		log.info("updateDevStatus success");
 	}
 
-	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportReq devStatusReportReq) {
-        DeviceStateInfoEntity devStateInfo = this.convert2DevStatusInfo(devStatusReportReq);
+	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp) {
+        DeviceStateInfoEntity devStateInfo = this.convert2DevStatusInfo(devStatusReportResp);
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
 		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		devStateInfo.setUpdateTime(new Date());
@@ -105,21 +104,21 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		return devStateInfo;
 	}
 
-	public DeviceStateInfoEntity convert2DevStatusInfo(DevStatusReportReq devStatusReportReq) {
+	public DeviceStateInfoEntity convert2DevStatusInfo(DevStatusReportResp devStatusReportResp) {
 		DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
-		devStateInfo.setDeviceId(Integer.valueOf(devStatusReportReq.getDeviceID()));
+		devStateInfo.setDeviceId(devStatusReportResp.getDeviceID());
 //		devStateInfo.setDeviceStateInfo("");
-		devStateInfo.setLastValTime(devStatusReportReq.getTcpValTime());
-		devStateInfo.setMakeTemp(devStatusReportReq.getMsg().getTemperature());
-		devStateInfo.setTemp(devStatusReportReq.getMsg().getTemperature());
-		devStateInfo.setWarm(devStatusReportReq.getMsg().getWarmstatus());
-		devStateInfo.setDensity(devStatusReportReq.getMsg().getTaststatus());
-		devStateInfo.setWaterlv(devStatusReportReq.getMsg().getWaterlevel());
-		devStateInfo.setMakeDura(devStatusReportReq.getMsg().getSoak());
-		devStateInfo.setReamin(Integer.valueOf(devStatusReportReq.getMsg().getRemaintime()));
-		devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportReq.getMsg().getErrorstatus() ? 1 : 0);
-		devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportReq.getMsg().getErrorstatus() ? 1 : 0);
-		devStateInfo.setWork(devStatusReportReq.getMsg().getWorkstatus());
+		devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
+		devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
+		devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());
+		devStateInfo.setWarm(devStatusReportResp.getMsg().getWarmstatus());
+		devStateInfo.setDensity(devStatusReportResp.getMsg().getTaststatus());
+		devStateInfo.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
+		devStateInfo.setMakeDura(devStatusReportResp.getMsg().getSoak());
+		devStateInfo.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
+		devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+		devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+		devStateInfo.setWork(devStatusReportResp.getMsg().getWorkstatus());
 		return devStateInfo;
 	}
 
