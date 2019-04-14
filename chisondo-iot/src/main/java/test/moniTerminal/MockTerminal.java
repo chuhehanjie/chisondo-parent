@@ -86,7 +86,8 @@ public class MockTerminal {
     }
 
     public static void main(String[] args) throws InterruptedException {
-		mockClientDev("32839884");
+		//mockClientDev("32839884");
+		System.out.println(getDevStatusInfo("18170964"));
 	}
 
 	/**

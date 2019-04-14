@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.*;
+import com.chisondo.server.datasources.DataSourceNames;
+import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.dto.req.DeviceCtrlReqDTO;
 import com.chisondo.server.modules.device.dto.req.StopWorkReqDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
@@ -50,8 +52,11 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     }
 
     private void validate(CommonReq req) {
-        ParamValidatorUtils.validateByBeanId("devExistenceValidator", req);
-        ParamValidatorUtils.validateByBeanId("userExistenceValidator", req);
+        if (ValidateUtils.isEmpty(req.getAttrByKey(Keys.DEVICE_INFO)) && ValidateUtils.isEmpty(req.getAttrByKey(Keys.USER_INFO))) {
+            DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+            ParamValidatorUtils.validateByBeanId("devExistenceValidator", req);
+            ParamValidatorUtils.validateByBeanId("userExistenceValidator", req);
+        }
     }
 
     private ConnectDevResp connectDevice(CommonReq req) {

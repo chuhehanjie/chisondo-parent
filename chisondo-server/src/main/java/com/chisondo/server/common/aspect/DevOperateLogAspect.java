@@ -88,22 +88,28 @@ public class DevOperateLogAspect {
 	}
 
 	private void saveDevOperateLog(ProceedingJoinPoint joinPoint, Object result, long startTime, long endTime, String methodDesc) {
-		CommonReq req = (CommonReq) joinPoint.getArgs()[0];
-		CommonResp resp = (CommonResp) result;
-		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
-		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
-		DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
-		devOperateLog.setDeviceId(ValidateUtils.isEmpty(deviceInfo) ? "" : deviceInfo.getDeviceId().toString());
-		devOperateLog.setTeamanId(user.getMemberId() + "");
-		devOperateLog.setUserMobileNo(user.getPhone());
-		devOperateLog.setOperType(0); // TODO 操作类型未定义
-		devOperateLog.setReqContent(JSONObject.toJSONString(req));
-		devOperateLog.setResContent(JSONObject.toJSONString(resp));
-		devOperateLog.setStartTime(new Date(startTime));
-		devOperateLog.setEndTime(new Date(endTime));
-		devOperateLog.setDesc(methodDesc);
-		devOperateLog.setOperResult(resp.getRetn() == HttpStatus.SC_OK ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
-		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
-		this.devOperateLogService.save(devOperateLog);
+		try {
+			CommonReq req = (CommonReq) joinPoint.getArgs()[0];
+			CommonResp resp = (CommonResp) result;
+			UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
+			DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
+			devOperateLog.setDeviceId(ValidateUtils.isEmpty(deviceInfo) ? "" : deviceInfo.getDeviceId().toString());
+			devOperateLog.setTeamanId(user.getMemberId() + "");
+			devOperateLog.setUserMobileNo(user.getPhone());
+			devOperateLog.setOperType(0); // TODO 操作类型未定义
+			devOperateLog.setReqContent(JSONObject.toJSONString(req));
+			devOperateLog.setResContent(JSONObject.toJSONString(resp));
+			devOperateLog.setStartTime(new Date(startTime));
+			devOperateLog.setEndTime(new Date(endTime));
+			devOperateLog.setDesc(methodDesc);
+			devOperateLog.setOperResult(resp.getRetn() == HttpStatus.SC_OK ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
+			DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+			this.devOperateLogService.save(devOperateLog);
+		} catch (Exception e) {
+			log.error("保存设备操作日志异常", e);
+		} finally {
+			DynamicDataSource.clearDataSource();
+		}
 	}
 }

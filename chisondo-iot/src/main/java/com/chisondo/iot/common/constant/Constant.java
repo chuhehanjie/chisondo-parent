@@ -1,6 +1,9 @@
 package com.chisondo.iot.common.constant;
 
 public class Constant {
+
+    public static final String CLOSE_SYMBOL = "\\n";
+
     public interface DevStatus {
         /**
          * 心跳

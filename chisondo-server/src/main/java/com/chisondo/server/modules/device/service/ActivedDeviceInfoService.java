@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface ActivedDeviceInfoService {
 	
-	ActivedDeviceInfoEntity queryObject(Integer deviceId);
+	ActivedDeviceInfoEntity queryObject(String deviceId);
 	
 	List<ActivedDeviceInfoEntity> queryList(Map<String, Object> map);
 	

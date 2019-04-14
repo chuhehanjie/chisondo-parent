@@ -22,7 +22,7 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	private ActivedDeviceInfoDao deviceInfoDao;
 	
 	@Override
-	public ActivedDeviceInfoEntity queryObject(Integer deviceId){
+	public ActivedDeviceInfoEntity queryObject(String deviceId){
 		return deviceInfoDao.queryObject(deviceId);
 	}
 	
@@ -64,7 +64,7 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 
 	@Override
 	public ActivedDeviceInfoEntity getDeviceInfoById(String deviceId) {
-		return this.queryObject(Integer.valueOf(deviceId));
+		return this.queryObject(deviceId);
 	}
 
 	@Override

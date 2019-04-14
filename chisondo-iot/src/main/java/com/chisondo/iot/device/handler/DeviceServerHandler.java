@@ -101,7 +101,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         if (msg instanceof DeviceHttpResp) {
             this.processDevCtrlResp(deviceChannel, msg);
         } else if (msg instanceof DevStatusReportResp) {
-            this.processDevStatusReport(deviceChannel, (DevStatusReportResp) msg);
+            this.processDevStatusReport(deviceChannel, msg);
         } else if (msg instanceof ByteBuf) {
             System.out.println("this is byteBuf msg.");
             deviceChannel.writeAndFlush(msg);
@@ -118,9 +118,10 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         // 接收设备发送的响应，并将响应发送到 http server
         DeviceHttpResp resp = (DeviceHttpResp) msg;
         if (null == resp.getDeviceID()) {
-            System.out.println("resp = " + JSONObject.toJSONString(resp));
+            log.error("设备ID为空");
             return;
         }
+        log.debug("设备控件响应信息 = {}", JSONObject.toJSONString(resp));
         Channel httpChannel = DevHttpChannelManager.getHttpChannelByDeviceId(resp.getDeviceID());
         if (null != httpChannel) {
             FullHttpResponse response = IOTUtils.buildResponse(resp);
@@ -130,7 +131,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
                 future.channel().close();
             });
         } else {
-            System.out.println("resp = " + JSONObject.toJSONString(resp));
+            log.error("未找到对应的 http channel");
         }
     }
 
@@ -142,7 +143,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     private void processDevStatusReport(Channel deviceChannel, Object msg) {
         // 设备心跳上报请求
         DevStatusReportResp reportResp = (DevStatusReportResp) msg;
-        log.info("接收设备[{}]心跳上报请求!", reportResp.getDeviceID());
+        log.debug("接收设备[{}]心跳上报请求!", reportResp.getDeviceID());
         String deviceId = reportResp.getDeviceID();
         if (null == DevTcpChannelManager.getChannelByDeviceId(deviceId)) {
             DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);

@@ -1,6 +1,7 @@
 package com.chisondo.iot.device.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.iot.common.constant.Constant;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.device.request.DevStatusReportReq;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
@@ -10,14 +11,17 @@ import com.chisondo.model.http.resp.DeviceHttpResp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
 public class DeviceServerDecoder extends StringDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         String json = IOTUtils.convertByteBufToString(msg);
-        System.out.println("decoder msg = " + json);
+        log.debug("decoder msg = " + json);
+        json = this.filterCloseSymbol(json);
         if (this.isDevStatusReportReq(json)) {
             // 设备状态上报请求
             DevStatusReportReq reportReq = JSONObject.parseObject(json, DevStatusReportReq.class);
@@ -42,6 +46,19 @@ public class DeviceServerDecoder extends StringDecoder {
                 out.add("test msg");
             }
         }
+    }
+
+    private String filterCloseSymbol(String json) {
+        return json.endsWith(Constant.CLOSE_SYMBOL) ? json.replace(Constant.CLOSE_SYMBOL, "") : json;
+    }
+
+    public static void main(String[] args) {
+        String json = "{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"18170964\",\"msg\":{\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}\\n";
+        if (json.endsWith(Constant.CLOSE_SYMBOL)) {
+            json = json.replace(Constant.CLOSE_SYMBOL, "");
+        }
+        DevStatusReportReq reportReq = JSONObject.parseObject(json, DevStatusReportReq.class);
+        System.out.println(reportReq.getDeviceID());
     }
 
     /**
