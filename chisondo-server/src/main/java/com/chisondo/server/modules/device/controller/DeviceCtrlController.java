@@ -95,7 +95,7 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/stopWorking")
-	@ParamValidator({DevExistenceValidator.class, StopWorkValidator.class})
+	@ParamValidator({UserDevRelaValidator.class, StopWorkValidator.class})
 	@DevOperateLog("停止沏茶/洗茶/烧水操作")
 	public CommonResp stopWorking(@RequestBody CommonReq req){
 		if (req.isOldDev()) {
