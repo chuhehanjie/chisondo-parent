@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class DeviceCtrlReqDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private String startTime;
     private String deviceId; // 设备ID
     private String phoneNum; // 手机号码	设备绑定的手机号码
     private int temperature; // 设定温度	60~100,0-停止加热
@@ -79,5 +80,13 @@ public class DeviceCtrlReqDTO implements Serializable {
 
     public void setWarm(Integer warm) {
         this.warm = warm;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 }

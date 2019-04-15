@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class MakeTeaReq implements Serializable {
     private static final long serialVersionUID = 1L;
+    private String startTime;
     private String sessionId;
     private String ver;
     private int temperature;
@@ -18,6 +19,7 @@ public class MakeTeaReq implements Serializable {
         this.temperature = devCtrlReqDTO.getTemperature();
         this.warm = devCtrlReqDTO.getWarm();
         this.soak = devCtrlReqDTO.getSoak();
+        this.startTime = devCtrlReqDTO.getStartTime();
     }
 
     public String getSessionId() {
@@ -58,5 +60,13 @@ public class MakeTeaReq implements Serializable {
 
     public void setSoak(int soak) {
         this.soak = soak;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 }
