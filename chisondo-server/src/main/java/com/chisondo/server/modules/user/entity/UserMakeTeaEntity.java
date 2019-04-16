@@ -19,7 +19,7 @@ public class UserMakeTeaEntity  implements Serializable {
 	//
 	private String teamanId;
 	//
-	private Integer deviceId;
+	private String deviceId;
 	//
 	private Integer chapuId;
 	//
@@ -53,6 +53,8 @@ public class UserMakeTeaEntity  implements Serializable {
 	//
 	private Integer density;
 
+	private Integer waterLevel;
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -67,11 +69,11 @@ public class UserMakeTeaEntity  implements Serializable {
 	public String getTeamanId() {
 		return teamanId;
 	}
-	public void setDeviceId(Integer deviceId) {
+	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
 
-	public Integer getDeviceId() {
+	public String getDeviceId() {
 		return deviceId;
 	}
 	public void setChapuId(Integer chapuId) {
@@ -185,5 +187,13 @@ public class UserMakeTeaEntity  implements Serializable {
 
 	public Integer getDensity() {
 		return density;
+	}
+
+	public Integer getWaterLevel() {
+		return waterLevel;
+	}
+
+	public void setWaterLevel(Integer waterLevel) {
+		this.waterLevel = waterLevel;
 	}
 }

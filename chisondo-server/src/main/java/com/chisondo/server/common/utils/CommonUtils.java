@@ -8,6 +8,7 @@ import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -161,6 +162,12 @@ public final class CommonUtils {
             return imgPrefix + srcImg;
         }
         return srcImg;
+    }
+
+    public static void debugLog(Logger log, String msg) {
+        if (log.isDebugEnabled()) {
+            log.debug(msg);
+        }
     }
 
 }

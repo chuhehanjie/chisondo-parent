@@ -146,6 +146,17 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     }
 
     /**
+     * 停止洗茶
+     * @param sessionId
+     * @param req
+     * @return
+     */
+    private JSONObject stopWashTea(String sessionId, CommonReq req) {
+        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.ACTION, 0);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "washTea", JSONObject.class, params, this.buildHeaderMap(req));
+    }
+
+    /**
      * 停止泡茶
      * @param sessionId
      * @param req
@@ -153,16 +164,21 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject stopWorking(String sessionId, CommonReq req) {
         StopWorkReqDTO stopWorkReq = JSONObject.parseObject(req.getBizBody(), StopWorkReqDTO.class);
-        Map<String, Object> params = Maps.newHashMap();
-        params.put(Keys.SESSION_ID, sessionId);
-        if (stopWorkReq.getOperFlag() == Constant.StopWorkOperFlag.STOP_KEEP_WARM) {
-            params.put("stopWarm", true);
-            params.put("stopWarmEx", 1);
+        //  停止洗茶操作
+        if (stopWorkReq.getOperFlag() == Constant.StopWorkOperFlag.STOP_WASH_TEA) {
+            return this.stopWashTea(sessionId, req);
         } else {
-            params.put("stopHeat", true);
-            params.put("stopHeatEx", 1);
+            Map<String, Object> params = Maps.newHashMap();
+            params.put(Keys.SESSION_ID, sessionId);
+            if (stopWorkReq.getOperFlag() == Constant.StopWorkOperFlag.STOP_KEEP_WARM) {
+                params.put("stopWarm", true);
+                params.put("stopWarmEx", 1);
+            } else {
+                params.put("stopHeat", true);
+                params.put("stopHeatEx", 1);
+            }
+            return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "stopWorking", JSONObject.class, params, this.buildHeaderMap(req));
         }
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "stopWorking", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**

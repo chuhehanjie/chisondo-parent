@@ -24,11 +24,14 @@
         <result property="makeType" column="make_type"/>
         <result property="barcode" column="barcode"/>
         <result property="density" column="density"/>
+        <result property="waterLevel" column="water_level"/>
     </resultMap>
 
 	<sql id="queryMakeTeaRecordsByCondition">
 		SELECT
 			umt.id as makeId,
+			dev.device_id AS deviceId,
+			dev.device_name AS deviceName,
 			dv.PHONE as phoneNum,
 			dv.VIP_NAME as userName,
 			dv.VIP_HEAD_IMG as userImg,
@@ -43,9 +46,10 @@
 			umt.tea_sort_id as teaSortId,
 			umt.tea_sort_name as teaSortName,
 			umt.temperature as temperature,
-			150 as waterlevel,
+			umt.water_level as waterlevel,
 			umt.soak as soak
 		FROM tb_user_make_tea umt
+		INNER JOIN tb_actived_device_info dev ON dev.device_id = umt.device_id
 		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
 		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
 		WHERE 1=1
@@ -208,6 +212,7 @@
 			`tea_sort_name`, 
 			`make_type`, 
 			`barcode`, 
+			`water_level`,
 			`density`
 		)
 		values
@@ -229,6 +234,7 @@
 			#{teaSortName}, 
 			#{makeType}, 
 			#{barcode}, 
+			#{waterLevel},
 			#{density}
 		)
 	</insert>
@@ -253,6 +259,7 @@
 			<if test="teaSortName != null">`tea_sort_name` = #{teaSortName}, </if>
 			<if test="makeType != null">`make_type` = #{makeType}, </if>
 			<if test="barcode != null">`barcode` = #{barcode}, </if>
+			<if test="waterLevel != null">`water_level` = #{waterLevel}, </if>
 			<if test="density != null">`density` = #{density}</if>
 		</set>
 		where id = #{id}

@@ -39,6 +39,7 @@ import com.chisondo.server.modules.user.service.UserVipService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +101,12 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			if (devHttpResp.isOK()) {
 				UserMakeTeaEntity userMakeTea = this.buildUserMakeTea(startOrReserveTeaReq, user.getMemberId().toString(), devHttpResp);
 				this.userMakeTeaService.save(userMakeTea);
-				return CommonResp.ok();
+				// 如果需要保温
+                if (ValidateUtils.isNotEmpty(userMakeTea.getWarm())) {
+                    devHttpResp = this.deviceHttpService.startKeeWarm(new DeviceHttpReq(userMakeTea.getDeviceId()));
+                    CommonUtils.debugLog(log, "调用 http 保温控制响应：" + devHttpResp);
+                }
+				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 			} else {
 				// 设备接口服务返回失败
 				return CommonResp.error(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -108,7 +114,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		}
 	}
 
-	private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq) {
+    private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(startOrReserveTeaReq.getDeviceId());
 		devHttpReq.setMsg(new DevParamMsg(startOrReserveTeaReq.getTemperature(), startOrReserveTeaReq.getSoak(), startOrReserveTeaReq.getWaterlevel()));
@@ -142,13 +148,14 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	private UserMakeTeaEntity buildUserMakeTea(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String userId, DeviceHttpResp devHttpResp) {
 		UserMakeTeaEntity userMakeTea = new UserMakeTeaEntity();
 		userMakeTea.setTeamanId(userId);
-		userMakeTea.setDeviceId(Integer.valueOf(startOrReserveTeaReq.getDeviceId()));
+		userMakeTea.setDeviceId(startOrReserveTeaReq.getDeviceId());
 		userMakeTea.setChapuId(0);
 		userMakeTea.setMaxNum(0);
 		userMakeTea.setMakeIndex(0);
 		userMakeTea.setAddTime(new Date());
 		userMakeTea.setStatus(devHttpResp.getMsg().getState()); // TODO 先使用接口返回的状态值
 		userMakeTea.setTemperature(startOrReserveTeaReq.getTemperature());
+		userMakeTea.setWaterLevel(startOrReserveTeaReq.getWaterlevel());
 		userMakeTea.setWarm(startOrReserveTeaReq.getWarm());
 		userMakeTea.setSoak(startOrReserveTeaReq.getSoak());
 		userMakeTea.setTeaSortId(startOrReserveTeaReq.getTeaSortId());
@@ -262,7 +269,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			// 沏茶成功
 			UserMakeTeaEntity useMakeTea = new UserMakeTeaEntity();
 			useMakeTea.setTeamanId(user.getMemberId().toString());
-			useMakeTea.setDeviceId(Integer.valueOf(useTeaSpectrumReq.getDeviceId()));
+			useMakeTea.setDeviceId(useTeaSpectrumReq.getDeviceId());
 			useMakeTea.setChapuId(teaSpectrum.getChapuId());
 			useMakeTea.setChapuName(teaSpectrum.getName());
 			useMakeTea.setMaxNum(teaSpectrum.getMakeTimes());

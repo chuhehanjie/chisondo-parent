@@ -1,23 +1,28 @@
 package com.chisondo.server.modules.device.dto.resp;
 
-public class MakeTeaRowRespDTO {
-    private	Integer	makeId	; // 	记录编号
-    private	String	phoneNum	; // 	用户手机号码
-    private	String	userName	; // 	用户昵称	可为空可为微信昵称
-    private	String	userImg	; // 	用户图像	可为空可为微信图像
-    private	String	startTime	; // 	启动时间
-    private	String	endTime	; // 	结束时间
-    private	Integer	makeType	; // 	沏茶类型	0-普通沏茶；1-茶谱沏茶；2-洗茶；3-烧水
-    private	Integer	makeMode	; // 	沏茶方式	0-手机终端操作；1-设备面板操作
-    private	int	chapuId	; // 	茶谱ID
-    private	String	chapuName	; // 	茶谱名称
-    private	Integer	chapuIndex	; // 	执行的是第几泡
-    private	String	chapuImage	; // 	茶谱图像	可为空
-    private	Integer	teaSortId	; // 	茶类ID
-    private	String	teaSortName	; // 	茶类名称
-    private	Integer	temperature	; // 	温度
-    private	Integer	waterlevel	; // 	出水量
-    private	Integer	soak	; // 	沏茶时间
+import java.io.Serializable;
+
+public class MakeTeaRowRespDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private	Integer	makeId; // 记录编号
+    private	String	phoneNum; // 用户手机号码
+    private	String	userName; // 用户昵称	可为空可为微信昵称
+    private	String	userImg; // 用户图像	可为空可为微信图像
+    private	String	startTime; // 启动时间
+    private	String	endTime; // 结束时间
+    private	Integer	makeType; // 沏茶类型	0-普通沏茶；1-茶谱沏茶；2-洗茶；3-烧水
+    private	Integer	makeMode; // 沏茶方式	0-手机终端操作；1-设备面板操作
+    private	int	chapuId; // 茶谱ID
+    private	String	chapuName; // 茶谱名称
+    private	Integer	chapuIndex; // 执行的是第几泡
+    private	String	chapuImage; // 茶谱图像	可为空
+    private	Integer	teaSortId; // 茶类ID
+    private	String	teaSortName; // 茶类名称
+    private	Integer	temperature; // 温度
+    private	Integer	waterlevel; // 出水量
+    private	Integer	soak; // 沏茶时间
+    private String deviceId;
+    private String deviceName;
 
     public Integer getMakeId() {
         return makeId;
@@ -153,5 +158,21 @@ public class MakeTeaRowRespDTO {
 
     public void setSoak(Integer soak) {
         this.soak = soak;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 }

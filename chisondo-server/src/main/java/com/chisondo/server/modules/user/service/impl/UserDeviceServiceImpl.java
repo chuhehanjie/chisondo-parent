@@ -56,11 +56,14 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
 	@Override
 	public void save(DeviceBindReqDTO devBindReq, Long userId) {
+		// 首先将用户其他设备设置为非默认
+		this.setNoneDefaultDev(userId);
 		UserDeviceEntity userDevice = new UserDeviceEntity();
 		userDevice.setTeamanId(userId.toString());
 		userDevice.setDeviceId(Integer.valueOf(devBindReq.getDeviceId()));
+		// 设置为默认设备
 		userDevice.setPrivateTag(Constant.DevPrivateTag.NO);
-		userDevice.setDefaultTag(Constant.DevDefaultTag.NO);
+		userDevice.setDefaultTag(Constant.DevDefaultTag.YES);
 		this.save(userDevice);
 	}
 
