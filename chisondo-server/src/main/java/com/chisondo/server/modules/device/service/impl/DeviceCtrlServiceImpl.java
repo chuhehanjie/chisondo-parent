@@ -323,7 +323,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public void delDevConnectRecord(CommonReq req) {
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		ActivedDeviceInfoEntity devInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
-		this.userDeviceService.delUserDeviceByParams(ImmutableMap.of(Keys.TEAMAN_ID, user.getMemberId(), Keys.DEVICE_ID, devInfo.getDeviceId()));
+		this.userDeviceService.delUserDeviceByParams(ImmutableMap.of(Keys.TEAMAN_ID, user.getMemberId().toString(), Keys.DEVICE_ID, devInfo.getDeviceId()));
 	}
 
 	@Override
