@@ -249,6 +249,10 @@ public class DeviceCtrlController extends AbstractController {
 	@DevOperateLog("取消预约")
 	@ParamValidator({UserDevRelaValidator.class, CancelReservationValidator.class})
 	public CommonResp cancelReservation(@RequestBody CommonReq req) {
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.CANCEL_RESERVATION);
+			return CommonUtils.buildOldDevResp(result);
+		}
 		return this.deviceCtrlService.cancelReservation(req);
 	}
 }

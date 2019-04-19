@@ -26,6 +26,9 @@ public class CancelTeaSpectrumValidator implements BusiValidator {
 
     @Override
     public void validate(CommonReq req) {
+        if (req.isOldDev()) {
+            return;
+        }
         String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
         // 根据设备ID和茶谱ID获取最近的用户沏茶记录
         Map<String, Object> params = Maps.newHashMap();

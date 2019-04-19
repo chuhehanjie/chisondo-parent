@@ -28,6 +28,9 @@ public class CancelReservationValidator implements BusiValidator {
 
     @Override
     public void validate(CommonReq req) {
+        if (req.isOldDev()) {
+            return;
+        }
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
         String reservNo = jsonObj.getString("reservNo");
         if (ValidateUtils.isEmptyString(reservNo)) {

@@ -137,6 +137,14 @@ public class Constant {
         int USE_TEA_SPECTRUM = 4;
         int CANCEL_TEA_SPECTRUM = 5;
         int WARM_CONTROL = 6;
+        /**
+         * 取消预约
+         */
+        int CANCEL_RESERVATION = 7;
+        /**
+         * 查询预约
+         */
+        int QUERY_RESERVATION = 8;
     }
 
     /**

@@ -110,6 +110,12 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         } else if (operationType == Constant.OldDeviceOperType.WARM_CONTROL) {
             action = "setWarmState";
             result = this.setWarmState(sessionId, req);
+        } else if (operationType == Constant.OldDeviceOperType.CANCEL_RESERVATION) {
+            action = "cancelReservation";
+            result = this.cancelReservation(sessionId, req);
+        } else if (operationType == Constant.OldDeviceOperType.QUERY_RESERVATION) {
+            action = "queryReservation";
+            result = this.queryReservation(sessionId, req);
         }
         log.info("action = {} result = {}", action, result);
         return result;
@@ -217,6 +223,18 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     }
 
     /**
+     * 取消预约
+     * @param sessionId
+     * @param req
+     * @return
+     */
+    private JSONObject cancelReservation(String sessionId, CommonReq req) {
+        JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+        Map<String, Object> params = ImmutableMap.of(Keys.RESERV_NO, jsonObj.get(Keys.RESERV_NO));
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "cancelReservation", JSONObject.class, params, this.buildHeaderMap(req));
+    }
+
+    /**
      * 查询设备状态
      * @param deviceId
      * @return
@@ -225,5 +243,17 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     public JSONObject queryDevStatus(String deviceId) {
         Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, Integer.valueOf(deviceId));
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "qryDevStatus", JSONObject.class, params);
+    }
+
+    /**
+     * 查询预约信息
+     * @return
+     */
+    private JSONObject queryReservation(String sessionId, CommonReq req) {
+        UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+        JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+        Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, Integer.valueOf(jsonObj.getString(Keys.DEVICE_ID)), Keys.USER_ID, user.getMemberId(),
+                Keys.SESSION_ID, sessionId, Query.NUM, jsonObj.get(Query.NUM), Query.PAGE, jsonObj.get(Query.PAGE));
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "queryReservation", JSONObject.class, params);
     }
 }

@@ -1,14 +1,15 @@
 package com.chisondo.server.modules.user.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.server.common.annotation.ParamValidator;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.Query;
-import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
+import com.chisondo.server.modules.device.validator.UserExistenceValidator;
+import com.chisondo.server.modules.olddevice.service.OldDeviceCtrlService;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
 import com.chisondo.server.modules.user.service.UserBookService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
@@ -38,11 +39,19 @@ public class UserQueryController {
 	@Autowired
 	private UserVipService userVipService;
 
+	@Autowired
+	private OldDeviceCtrlService oldDevCtrlService;
+
 	/**
 	 * 查询用户预约信息
 	 */
 	@PostMapping("/api/rest/queryReservation")
+	@ParamValidator({UserExistenceValidator.class})
 	public CommonResp queryUserReservation(@RequestBody CommonReq req){
+		if (req.isOldDev()) {
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.QUERY_RESERVATION);
+			return CommonUtils.buildOldDevResp(result);
+		}
 		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
 		this.validate(jsonObj);
 		Map<String, Object> params = this.buildQryParams(jsonObj);
