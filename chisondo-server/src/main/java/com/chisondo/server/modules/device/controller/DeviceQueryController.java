@@ -75,9 +75,10 @@ public class DeviceQueryController extends AbstractController {
 		devStatusResp.setTeaSortName(result.getString("teaSortName"));
 		devStatusResp.setChapuId(result.getInteger(Keys.CHAPU_ID));
 		devStatusResp.setChapuName(result.getString("chapuName"));
-		devStatusResp.setChapuImage("");
-		devStatusResp.setChapuMakeTimes(0);
-		devStatusResp.setIndex(0);
+		devStatusResp.setReservLeftTime(result.getInteger("reservLeftTime"));
+		devStatusResp.setChapuImage(result.getString("chapuImage"));
+		devStatusResp.setChapuMakeTimes(result.getInteger("chapuMakeTimes"));
+		devStatusResp.setIndex(result.getInteger("index"));
 		return devStatusResp;
 	}
 

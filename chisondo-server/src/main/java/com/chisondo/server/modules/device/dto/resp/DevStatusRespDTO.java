@@ -25,6 +25,7 @@ public class DevStatusRespDTO implements Serializable {
     private String	chapuImage	; //
     private Integer	chapuMakeTimes	; //
     private Integer	index	; // 	>0：当前正在进行的是第几泡;-1：没有正在使用的茶谱;0：已完成茶谱最大泡数，下一步开始第1泡;999：茶谱正常结束
+    private Integer reservLeftTime; // 预约剩余时间
 
     public Integer getConnStatus() {
         return connStatus;
@@ -184,5 +185,13 @@ public class DevStatusRespDTO implements Serializable {
 
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public Integer getReservLeftTime() {
+        return reservLeftTime;
+    }
+
+    public void setReservLeftTime(Integer reservLeftTime) {
+        this.reservLeftTime = reservLeftTime;
     }
 }
