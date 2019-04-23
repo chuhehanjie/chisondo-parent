@@ -6,13 +6,11 @@ import com.chisondo.server.common.core.AbstractController;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
-import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.device.validator.DevExistenceValidator;
 import com.chisondo.server.modules.device.validator.QueryParamValidator;
 import com.chisondo.server.modules.olddevice.service.OldDeviceCtrlService;
@@ -79,6 +77,7 @@ public class DeviceQueryController extends AbstractController {
 		devStatusResp.setChapuImage(result.getString("chapuImage"));
 		devStatusResp.setChapuMakeTimes(result.getInteger("chapuMakeTimes"));
 		devStatusResp.setIndex(result.getInteger("index"));
+		devStatusResp.setUseNum(result.getInteger("useNum"));
 		return devStatusResp;
 	}
 
