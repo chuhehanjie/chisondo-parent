@@ -1,4 +1,6 @@
 package com.chisondo.server.modules.device.controller;
+import com.google.common.collect.Lists;
+import com.chisondo.server.modules.device.dto.resp.WaterHeatInfo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.annotation.ParamValidator;
@@ -8,7 +10,9 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.modules.device.dto.resp.DevSettingRespDTO;
 import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
+import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.validator.DevExistenceValidator;
@@ -44,6 +48,14 @@ public class DeviceQueryController extends AbstractController {
 	@RequestMapping("/api/rest/qryDevStatus")
 	@ParamValidator({DevExistenceValidator.class})
 	public CommonResp queryDeviceStatus(@RequestBody CommonReq req) {
+		String pwd =  JSONObject.parseObject(req.getBizBody()).getString("pwd");
+		if (ValidateUtils.isNotEmptyString(pwd)) {
+			// 密码不为空，则需要校验密码
+			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
+			if (ValidateUtils.notEquals(pwd, deviceInfo.getPassword())) {
+				return CommonResp.error("设备密码不正确");
+			}
+		}
 		if (req.isOldDev()) {
 			String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 			JSONObject result = this.oldDeviceCtrlService.queryDevStatus(deviceId);
@@ -89,25 +101,11 @@ public class DeviceQueryController extends AbstractController {
 	@RequestMapping("/api/rest/qryDeviceSetInfo")
 	@ParamValidator({DevExistenceValidator.class})
 	public CommonResp queryDevSettingInfo(@RequestBody CommonReq req) {
-		/*retn	Y	Integer	返回码
-		desc	Y	String	返回描述
-		deviceName	Y	String	设备名称
-		devicePwd	Y	String	连接密码
-		isOpenSound	Y	Integer	是否静音	0-有提示音；1-无提音
-		waterHeat	Y	Array	烧水参数
-		temperature	Y	Integer	设定温度
-		soak	Y	Integer	设定时间	烧水默认 0
-		waterlevel	Y	Integer	出水量	分8档
-		chapuInfo	N	Array	茶谱信息
-		index	Y	Integer	面板位置	液晶屏中的茶谱顺序
-		chapuId	Y	Integer	茶谱ID
-		chapuName	Y	String	茶谱名称
-		chapuImg	N	String	茶谱图标	可为空，显示默认图标
-		sortId	Y	int	茶类ID	参考“获取茶类”接口
-		sortName	Y	String	茶类名称
-		makeTimes	Y	int	泡数	茶谱总泡数
-		brandName	Y	String	茶品牌名称	茶叶所属品牌*/
-
+		if (req.isOldDev()) {
+			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
+			DevSettingRespDTO devSettingResp = new DevSettingRespDTO(deviceInfo.getDeviceName(), deviceInfo.getPassword());
+			return CommonResp.ok(devSettingResp);
+		}
 		return this.deviceQueryService.queryDevSettingInfo(req);
 	}
 

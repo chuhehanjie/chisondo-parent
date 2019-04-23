@@ -1,5 +1,7 @@
 package com.chisondo.server.modules.device.dto.resp;
 
+import io.swagger.models.auth.In;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,10 +10,18 @@ public class DevSettingRespDTO implements Serializable {
 
     private String deviceName; //设备名称
     private String devicePwd; // 连接密码
-    private int isOpenSound; // 是否静音	0-有提示音；1-无提音
+    private Integer isOpenSound; // 是否静音	0-有提示音；1-无提音
     private WaterHeatInfo waterHeat; // 烧水参数
 
     private List<TeaSpectrumInfo> chapuInfo; // 茶谱信息
+
+    public DevSettingRespDTO() {
+    }
+
+    public DevSettingRespDTO(String deviceName, String devicePwd) {
+        this.deviceName = deviceName;
+        this.devicePwd = devicePwd;
+    }
 
     public String getDeviceName() {
         return deviceName;
@@ -29,11 +39,11 @@ public class DevSettingRespDTO implements Serializable {
         this.devicePwd = devicePwd;
     }
 
-    public int getIsOpenSound() {
+    public Integer getIsOpenSound() {
         return isOpenSound;
     }
 
-    public void setIsOpenSound(int isOpenSound) {
+    public void setIsOpenSound(Integer isOpenSound) {
         this.isOpenSound = isOpenSound;
     }
 

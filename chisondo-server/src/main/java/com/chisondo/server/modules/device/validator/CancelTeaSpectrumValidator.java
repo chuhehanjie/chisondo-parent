@@ -26,6 +26,7 @@ public class CancelTeaSpectrumValidator implements BusiValidator {
 
     @Override
     public void validate(CommonReq req) {
+        // 根据设备ID获取对应的用户
         if (req.isOldDev()) {
             return;
         }

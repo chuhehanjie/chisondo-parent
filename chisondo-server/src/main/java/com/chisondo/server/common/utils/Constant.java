@@ -145,6 +145,10 @@ public class Constant {
          * 查询预约
          */
         int QUERY_RESERVATION = 8;
+        /**
+         * 烧水
+         */
+        int BOIL_WATER = 9;
     }
 
     /**

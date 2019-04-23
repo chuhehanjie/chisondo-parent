@@ -32,7 +32,7 @@ public class DevExistenceValidator implements BusiValidator {
         if (ValidateUtils.isEmpty(deviceInfo)) {
             throw new CommonException("设备信息不存在");
         }
-        req.addAttr("deviceInfo", deviceInfo);
+        req.addAttr(Keys.DEVICE_INFO, deviceInfo);
         req.addAttr(Keys.DEVICE_ID, deviceId);
     }
 }

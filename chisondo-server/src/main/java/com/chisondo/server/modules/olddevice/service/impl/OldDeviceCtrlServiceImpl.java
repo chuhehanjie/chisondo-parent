@@ -41,6 +41,9 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     public JSONObject service(CommonReq req, int operationType) {
         this.validate(req);
         ConnectDevResp connectDevResp = this.connectDevice(req);
+        if (!connectDevResp.isOK()) {
+            return new JSONObject(ImmutableMap.of("STATE", connectDevResp.getErrCode(), "STATE_INFO", connectDevResp.getErrorInfo()));
+        }
         JSONObject result = this.dispatch(connectDevResp.getSessionId(), req, operationType);
         this.disconnectDevice(connectDevResp.getSessionId(), req);
         return result;
@@ -92,7 +95,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     private JSONObject dispatch(String sessionId, CommonReq req, int operationType) {
         String action = "";
         JSONObject result = null;
-        if (operationType == Constant.OldDeviceOperType.START_OR_RESERVE_MAKE_TEA) {
+        if (operationType == Constant.OldDeviceOperType.START_OR_RESERVE_MAKE_TEA || operationType == Constant.OldDeviceOperType.BOIL_WATER ) {
             action = "startWorking";
             result = this.startWorking(sessionId, req);
         } else if (operationType == Constant.OldDeviceOperType.WASH_TEA) {

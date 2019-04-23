@@ -122,7 +122,7 @@ public class ConnectDevResp implements Serializable {
     }
 
     public boolean isOK() {
-        return 0 == this.STATE;
+        return 0 == this.errCode;
     }
 
     public String getErrorInfo() {

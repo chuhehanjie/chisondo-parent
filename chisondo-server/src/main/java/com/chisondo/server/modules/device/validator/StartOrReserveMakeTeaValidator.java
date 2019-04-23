@@ -47,6 +47,12 @@ public class StartOrReserveMakeTeaValidator implements BusiValidator {
         if (ValidateUtils.isEmpty(startOrReserveTeaReq.getWarm())) {
             throw new CommonException("温度值为空");
         }
+        if (ValidateUtils.isNotEmpty(startOrReserveTeaReq.getSoup())) {
+            if (startOrReserveTeaReq.getSoup() < 150 || startOrReserveTeaReq.getSoup() > 500) {
+                throw new CommonException("出汤量必须在150-500之间");
+            }
+        }
+
         ParamValidatorUtils.validateByBeanId("devCtrlParamValidator", req);
         req.addAttr(Keys.REQ, startOrReserveTeaReq);
         req.addAttr("isReserveMakeTea", isReserveMakeTea);

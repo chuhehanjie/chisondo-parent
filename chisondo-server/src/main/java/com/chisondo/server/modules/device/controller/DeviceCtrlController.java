@@ -81,9 +81,8 @@ public class DeviceCtrlController extends AbstractController {
 	@ParamValidator({UserDevRelaValidator.class, DevCtrlParamValidator.class})
 	@DevOperateLog("烧水控制")
 	public CommonResp boilWater(@RequestBody CommonReq req){
-		// TODO 老设备未找到烧水控制API 需确认(当前调用开始沏茶接口)
 		if (req.isOldDev()) {
-			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.START_OR_RESERVE_MAKE_TEA);
+			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.BOIL_WATER);
 			return CommonUtils.buildOldDevResp(result);
 		}
 		return this.deviceCtrlService.boilWater(req);
@@ -126,7 +125,7 @@ public class DeviceCtrlController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/cancelChapu")
-	@ParamValidator({DevExistenceValidator.class, CancelTeaSpectrumValidator.class})
+	@ParamValidator({UserDevRelaValidator.class, CancelTeaSpectrumValidator.class})
 	@DevOperateLog("取消使用茶谱沏茶")
 	public CommonResp cancelTeaSpectrum(@RequestBody CommonReq req){
 		if (req.isOldDev()) {

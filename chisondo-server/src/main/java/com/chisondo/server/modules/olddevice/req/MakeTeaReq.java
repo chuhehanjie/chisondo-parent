@@ -9,9 +9,9 @@ public class MakeTeaReq implements Serializable {
     private String startTime;
     private String sessionId;
     private String ver;
-    private int temperature;
-    private int warm;
-    private int soak;
+    private Integer temperature;
+    private Integer warm;
+    private Integer soak;
 
     public MakeTeaReq(String sessionId, DeviceCtrlReqDTO devCtrlReqDTO) {
         this.sessionId = sessionId;
@@ -20,6 +20,14 @@ public class MakeTeaReq implements Serializable {
         this.warm = devCtrlReqDTO.getWarm();
         this.soak = devCtrlReqDTO.getSoak();
         this.startTime = devCtrlReqDTO.getStartTime();
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
     public String getSessionId() {
@@ -38,35 +46,27 @@ public class MakeTeaReq implements Serializable {
         this.ver = ver;
     }
 
-    public int getTemperature() {
+    public Integer getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(Integer temperature) {
         this.temperature = temperature;
     }
 
-    public int getWarm() {
+    public Integer getWarm() {
         return warm;
     }
 
-    public void setWarm(int warm) {
+    public void setWarm(Integer warm) {
         this.warm = warm;
     }
 
-    public int getSoak() {
+    public Integer getSoak() {
         return soak;
     }
 
-    public void setSoak(int soak) {
+    public void setSoak(Integer soak) {
         this.soak = soak;
-    }
-
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
     }
 }
