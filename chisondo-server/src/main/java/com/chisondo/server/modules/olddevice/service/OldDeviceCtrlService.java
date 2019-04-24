@@ -7,4 +7,6 @@ public interface OldDeviceCtrlService {
     JSONObject service(CommonReq req, int operationType);
 
     JSONObject queryDevStatus(String deviceId);
+
+    JSONObject queryReservation(CommonReq req);
 }

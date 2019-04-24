@@ -81,11 +81,13 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     }
 
     private ConnectDevReq buildConnectDevReq(CommonReq req) {
-        UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
         ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
+        UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
         ConnectDevReq connectDevReq = new ConnectDevReq();
-        connectDevReq.setUserId(user.getMemberId().toString());
-        connectDevReq.setPhoneNum(user.getPhone());
+        if (ValidateUtils.isNotEmpty(user)) {
+            connectDevReq.setUserId(user.getMemberId().toString());
+            connectDevReq.setPhoneNum(user.getPhone());
+        }
         connectDevReq.setDeviceId(Integer.valueOf(deviceInfo.getDeviceId()));
         connectDevReq.setPasswd(deviceInfo.getPassword());
         connectDevReq.setNeedValidate(0);
@@ -233,7 +235,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject cancelReservation(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
-        Map<String, Object> params = ImmutableMap.of(Keys.RESERV_NO, jsonObj.get(Keys.RESERV_NO));
+        Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.RESERV_NO, jsonObj.get(Keys.RESERV_NO));
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "cancelReservation", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
@@ -253,10 +255,28 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      * @return
      */
     private JSONObject queryReservation(String sessionId, CommonReq req) {
-        UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
-        JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
-        Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, Integer.valueOf(jsonObj.getString(Keys.DEVICE_ID)), Keys.USER_ID, user.getMemberId(),
-                Keys.SESSION_ID, sessionId, Query.NUM, jsonObj.get(Query.NUM), Query.PAGE, jsonObj.get(Query.PAGE));
+        Map<String, Object> params = this.buildQryParams(req);
+        params.put(Keys.SESSION_ID, sessionId);
         return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "queryReservation", JSONObject.class, params);
     }
+
+    private Map<String, Object> buildQryParams(CommonReq req) {
+        UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+        JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+        Map<String, Object> params = Maps.newHashMap();
+        params.put(Keys.DEVICE_ID, Integer.valueOf(jsonObj.getString(Keys.DEVICE_ID)));
+        params.put(Query.NUM, jsonObj.get(Query.NUM));
+        params.put(Query.PAGE, jsonObj.get(Query.PAGE));
+        if (ValidateUtils.isNotEmpty(user)) {
+            params.put(Keys.USER_ID, user.getMemberId().toString());
+        }
+        return params;
+    }
+
+    @Override
+    public JSONObject queryReservation(CommonReq req) {
+        Map<String, Object> params = this.buildQryParams(req);
+        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "queryReservation", JSONObject.class, params);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.chisondo.server.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.http.HttpStatus;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
@@ -153,7 +154,7 @@ public final class CommonUtils {
     }
 
     public static CommonResp buildOldDevResp(JSONObject result) {
-        return new CommonResp(result.getIntValue("STATE"), result.getString("STATE_INFO"));
+        return new CommonResp(0 == result.getIntValue("STATE") ? HttpStatus.SC_OK : HttpStatus.SC_INTERNAL_SERVER_ERROR, result.getString("STATE_INFO"));
     }
 
     public static String plusFullImgPath(String srcImg) {
