@@ -1,4 +1,5 @@
 package com.chisondo.server.modules.tea.service.impl;
+import java.util.Date;
 import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
@@ -11,6 +12,7 @@ import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.dto.*;
+import com.chisondo.server.modules.tea.entity.AppChapuMineEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
 import com.chisondo.server.modules.tea.service.AppChapuMineService;
 import com.chisondo.server.modules.tea.service.AppChapuParaService;
@@ -419,10 +421,23 @@ public class AppChapuServiceImpl implements AppChapuService {
         teaSpectrum.setDislikeTimes(0);
         this.save(teaSpectrum);
         this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum, 1);
+        // 查询我的茶谱是否有对应记录，如果没有则创建
+		this.saveMyTeaSpectrum(user, teaSpectrum);
         return teaSpectrum.getChapuId();
     }
 
-    private void saveTeaSpectrumParams(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, AppChapuEntity teaSpectrum, int index) {
+	private void saveMyTeaSpectrum(UserVipEntity user, AppChapuEntity teaSpectrum) {
+		AppChapuMineEntity myTeaSpecrum = new AppChapuMineEntity();
+		myTeaSpecrum.setUserId(Integer.valueOf(user.getMemberId().toString()));
+		myTeaSpecrum.setChapuId(teaSpectrum.getChapuId());
+		myTeaSpecrum.setFlag(TeaSpectrumConstant.MyChapuFlag.CREATED);
+		myTeaSpecrum.setOperTime(DateUtils.currentDate());
+		myTeaSpecrum.setUseTimes(0);
+		myTeaSpecrum.setLastUseTime(null);
+		this.appChapuMineService.save(myTeaSpecrum);
+	}
+
+	private void saveTeaSpectrumParams(SaveTeaSpectrumReqDTO saveTeaSpectrumReq, AppChapuEntity teaSpectrum, int index) {
         // 保存茶谱参数
         for (QryTeaSpectrumParamDTO item : saveTeaSpectrumReq.getParameter()) {
             AppChapuParaEntity teaSpectrumParam = new AppChapuParaEntity(teaSpectrum.getChapuId(), index, item.getTemp(), item.getDura(), item.getWater());
