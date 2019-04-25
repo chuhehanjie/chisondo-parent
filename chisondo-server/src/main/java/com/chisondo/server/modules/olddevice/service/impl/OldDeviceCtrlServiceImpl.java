@@ -1,7 +1,7 @@
 package com.chisondo.server.modules.olddevice.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.server.common.exception.CommonException;
+import com.chisondo.model.http.HttpStatus;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.*;
 import com.chisondo.server.datasources.DataSourceNames;
@@ -22,9 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.xml.ws.Response;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 @Service("oldDeviceCtrlService")
@@ -43,6 +41,9 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
         ConnectDevResp connectDevResp = this.connectDevice(req);
         if (!connectDevResp.isOK()) {
             return new JSONObject(ImmutableMap.of("STATE", connectDevResp.getErrCode(), "STATE_INFO", connectDevResp.getErrorInfo()));
+        }
+        if (ValidateUtils.isEmptyString(connectDevResp.getSessionId())) {
+            return new JSONObject(ImmutableMap.of("STATE", HttpStatus.SC_INTERNAL_SERVER_ERROR, "STATE_INFO", "连接设备异常"));
         }
         JSONObject result = this.dispatch(connectDevResp.getSessionId(), req, operationType);
         this.disconnectDevice(connectDevResp.getSessionId(), req);
