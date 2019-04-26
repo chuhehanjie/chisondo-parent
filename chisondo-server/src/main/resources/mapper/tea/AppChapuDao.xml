@@ -430,7 +430,7 @@
 			t.standard,
 			t.public_time AS createTime,
 			t.use_times AS useNum,
-			t.brand AS branName,
+			t.brand,
 			t.amount,
 			t.awake,
 			t.desc,
