@@ -12,7 +12,7 @@ public class DevMockController {
     @RequestMapping("/api/rest/enableMockDev")
     public String enableMockDev(@RequestParam String deviceId) {
         if (null == DevTcpChannelManager.getChannelByDeviceId(deviceId)) {
-            MockTerminal.mockClientDev(deviceId);
+            MockTerminal.mockClientDev(deviceId.split(","));
         }
         return "OK";
     }
