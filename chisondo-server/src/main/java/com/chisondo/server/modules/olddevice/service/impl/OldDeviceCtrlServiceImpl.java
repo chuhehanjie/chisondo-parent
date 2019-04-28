@@ -32,8 +32,6 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     @Autowired
     private RestTemplateUtils restTemplateUtils;
 
-    @Value("${chisondo.server.oldDevReqURL}")
-    private String oldDevReqURL;
 
     @Override
     public JSONObject service(CommonReq req, int operationType) {
@@ -51,7 +49,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     }
 
     private void disconnectDevice(String sessionId, CommonReq req) {
-        JSONObject result = this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "disconnectDevice", JSONObject.class, ImmutableMap.of(Keys.SESSION_ID, sessionId), this.buildHeaderMap(req));
+        JSONObject result = this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "disconnectDevice", JSONObject.class, ImmutableMap.of(Keys.SESSION_ID, sessionId), this.buildHeaderMap(req));
         log.info("disconnectDevice result = {}", result);
     }
 
@@ -65,7 +63,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
 
     private ConnectDevResp connectDevice(CommonReq req) {
         ConnectDevReq connectDevReq = this.buildConnectDevReq(req);
-        ResponseEntity<ConnectDevResp> result = this.restTemplateUtils.postForEntity(this.oldDevReqURL + "connectDevice", ConnectDevResp.class, connectDevReq);
+        ResponseEntity<ConnectDevResp> result = this.restTemplateUtils.postForEntity(CacheDataUtils.getOldDevSrvURL() + "connectDevice", ConnectDevResp.class, connectDevReq);
         if (result.getHeaders().containsKey(Keys.SET_COOKIE)) {
             String cookie = this.parseCookie(result.getHeaders().get(Keys.SET_COOKIE).get(0));
             req.addAttr(Keys.COOKIE, cookie);
@@ -135,7 +133,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject startWorking(String sessionId, CommonReq req) {
         MakeTeaReq makeTeaReq = new MakeTeaReq(sessionId, JSONObject.parseObject(req.getBizBody(), DeviceCtrlReqDTO.class));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "startWorking", JSONObject.class, makeTeaReq, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "startWorking", JSONObject.class, makeTeaReq, this.buildHeaderMap(req));
     }
 
     private Map<String, String> buildHeaderMap(CommonReq req) {
@@ -154,7 +152,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject washTea(String sessionId, CommonReq req) {
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.ACTION, 1);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "washTea", JSONObject.class, params, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "washTea", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -165,7 +163,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject stopWashTea(String sessionId, CommonReq req) {
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.ACTION, 0);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "washTea", JSONObject.class, params, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "washTea", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -189,7 +187,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
                 params.put("stopHeat", true);
                 params.put("stopHeatEx", 1);
             }
-            return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "stopWorking", JSONObject.class, params, this.buildHeaderMap(req));
+            return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "stopWorking", JSONObject.class, params, this.buildHeaderMap(req));
         }
     }
 
@@ -202,7 +200,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     private JSONObject startByChapu(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.CHAPU_ID, jsonObj.get(Keys.CHAPU_ID), "index", jsonObj.get("index"));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "startByChapu", JSONObject.class, params, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "startByChapu", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -213,7 +211,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject cancelChapu(String sessionId, CommonReq req) {
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "cancelChapu", JSONObject.class, params, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "cancelChapu", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -225,7 +223,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     private JSONObject setWarmState(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.OPER_FLAG, jsonObj.get(Keys.OPER_FLAG));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "setWarmState", JSONObject.class, params, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "setWarmState", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -237,7 +235,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     private JSONObject cancelReservation(String sessionId, CommonReq req) {
         JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
         Map<String, Object> params = ImmutableMap.of(Keys.SESSION_ID, sessionId, Keys.RESERV_NO, jsonObj.get(Keys.RESERV_NO));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "cancelReservation", JSONObject.class, params, this.buildHeaderMap(req));
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "cancelReservation", JSONObject.class, params, this.buildHeaderMap(req));
     }
 
     /**
@@ -248,7 +246,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     @Override
     public JSONObject queryDevStatus(String deviceId) {
         Map<String, Object> params = ImmutableMap.of(Keys.DEVICE_ID, Integer.valueOf(deviceId));
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "qryDevStatus", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "qryDevStatus", JSONObject.class, params);
     }
 
     /**
@@ -258,7 +256,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     private JSONObject queryReservation(String sessionId, CommonReq req) {
         Map<String, Object> params = this.buildQryParams(req);
         params.put(Keys.SESSION_ID, sessionId);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "queryReservation", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "queryReservation", JSONObject.class, params);
     }
 
     private Map<String, Object> buildQryParams(CommonReq req) {
@@ -277,7 +275,7 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
     @Override
     public JSONObject queryReservation(CommonReq req) {
         Map<String, Object> params = this.buildQryParams(req);
-        return this.restTemplateUtils.httpPostMediaTypeJson(this.oldDevReqURL + "queryReservation", JSONObject.class, params);
+        return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "queryReservation", JSONObject.class, params);
     }
 
 }

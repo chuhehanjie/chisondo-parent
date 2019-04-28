@@ -6,6 +6,7 @@ import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
+import com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -168,6 +170,28 @@ public final class CommonUtils {
     public static void debugLog(Logger log, String msg) {
         if (log.isDebugEnabled()) {
             log.debug(msg);
+        }
+    }
+
+    public static void processDevTypeAndOnlineStatus(List<DeviceInfoRespDTO> deviceDetails) {
+        if (ValidateUtils.isNotEmptyCollection(deviceDetails)) {
+            deviceDetails.forEach(deviceDetail -> {
+                if (ValidateUtils.equals(Constant.OnlineState.YES, deviceDetail.getOnlineStatus())) {
+                    // 设备在线，且设备类型为 WIFI
+                    if (ValidateUtils.equals(1, deviceDetail.getDeviceType())) {
+                        // 老设备则表示 WIFI 在线
+                        deviceDetail.setOnlineStatus(1);
+                        deviceDetail.setDeviceType(0); // WIFI 设备
+                    } else  {
+                        // 2G 和 WIFI 都在线
+                        deviceDetail.setOnlineStatus(2);
+                        deviceDetail.setDeviceType(1); // 2G 设备
+                        deviceDetail.setWiFiSSID("");
+                    }
+                } else {
+                    deviceDetail.setWiFiSSID("");
+                }
+            });
         }
     }
 

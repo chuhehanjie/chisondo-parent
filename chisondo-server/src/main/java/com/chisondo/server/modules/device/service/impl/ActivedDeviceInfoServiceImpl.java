@@ -1,5 +1,8 @@
 package com.chisondo.server.modules.device.service.impl;
 
+import com.chisondo.server.common.utils.CommonUtils;
+import com.chisondo.server.common.utils.Constant;
+import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.dto.req.SetDevNameReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevPwdReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevSoundReqDTO;
@@ -14,6 +17,7 @@ import com.chisondo.server.modules.device.dao.ActivedDeviceInfoDao;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 
+import javax.validation.Valid;
 
 
 @Service("deviceInfoService")
@@ -59,6 +63,7 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	@Override
 	public List<DeviceInfoRespDTO> queryHisConnectDevOfUser(String userMobile) {
 		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoDao.queryHisConnectDevOfUserByPhone(userMobile);
+		CommonUtils.processDevTypeAndOnlineStatus(devInfoList);
 		return devInfoList;
 	}
 
@@ -84,6 +89,10 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 
 	@Override
 	public List<DeviceInfoRespDTO> queryDeviceDetail(Map<String, Object> params) {
-		return this.deviceInfoDao.queryDeviceDetail(params);
+		List<DeviceInfoRespDTO> deviceDetails = this.deviceInfoDao.queryDeviceDetail(params);
+		CommonUtils.processDevTypeAndOnlineStatus(deviceDetails);
+		return deviceDetails;
 	}
+
+
 }

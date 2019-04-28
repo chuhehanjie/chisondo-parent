@@ -2,7 +2,6 @@ chisondo:
   server:
     http2DevURL: http://127.0.0.1:8099/
 #    oldDevReqURL: http://entrypoint.teamanworld.com:9090/TeamanAccServ/wxaccess?api=
-    oldDevReqURL: http://47.111.167.92:8080/TeamanAccServ/wxaccess?api=
 spring:
   redis:
       open: true  # 是否开启redis缓存  true开启   false关闭

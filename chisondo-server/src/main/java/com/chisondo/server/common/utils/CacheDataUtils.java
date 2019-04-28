@@ -82,4 +82,8 @@ public class CacheDataUtils {
     public static List<Integer> getWaterLevels() {
         return waterLevels;
     }
+
+    public static String getOldDevSrvURL() {
+        return getConfigValueByKey("OLD_DEV_SRV_URL");
+    }
 }
