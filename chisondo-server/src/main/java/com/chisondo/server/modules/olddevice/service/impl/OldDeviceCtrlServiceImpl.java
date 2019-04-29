@@ -133,6 +133,10 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
      */
     private JSONObject startWorking(String sessionId, CommonReq req) {
         MakeTeaReq makeTeaReq = new MakeTeaReq(sessionId, JSONObject.parseObject(req.getBizBody(), DeviceCtrlReqDTO.class));
+        // 老设备浸泡时间需要除以5
+        if (ValidateUtils.isNotEmpty(makeTeaReq.getSoak())) {
+            makeTeaReq.setSoak(makeTeaReq.getSoak() / 5);
+        }
         return this.restTemplateUtils.httpPostMediaTypeJson(CacheDataUtils.getOldDevSrvURL() + "startWorking", JSONObject.class, makeTeaReq, this.buildHeaderMap(req));
     }
 
