@@ -21,6 +21,7 @@ import com.chisondo.server.modules.device.dto.req.*;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
+import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
 import com.chisondo.server.modules.device.service.DeviceOperateLogService;
@@ -357,6 +358,13 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	@Override
 	public CommonResp setDefaultDevice(CommonReq req) {
 		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
+		if (ValidateUtils.isNotEmptyString(jsonObj.getString("password"))) {
+			// 传入了密码，则校验密码是否正确
+			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
+			if (ValidateUtils.notEquals(deviceInfo.getPassword(), jsonObj.getString("password"))) {
+				return CommonResp.error("密码不正确");
+			}
+		}
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		int operFlag = jsonObj.getIntValue(Keys.OPER_FLAG);
@@ -456,6 +464,18 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			devOperateLog.setEndTime(new Date(endTime));
 			devOperateLog.setOperResult(devHttpResp.isOK() ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
 			devOperateLog.setDesc("处理用户预约沏茶");
+		}
+	}
+
+	@Override
+	public void updateMakeType4Dev(int makeType, String deviceId) {
+		if (makeType == 1) {
+			// 如果 makeType=0 才修改
+			DeviceStateInfoEntity deviceState = this.deviceStateInfoService.queryObject(deviceId);
+			if (ValidateUtils.equals(0, deviceState.getMakeType())) {
+				deviceState.setMakeType(1);
+			}
+			this.deviceStateInfoService.update(deviceState);
 		}
 	}
 }

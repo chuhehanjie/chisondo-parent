@@ -338,7 +338,6 @@ public class AppChapuServiceImpl implements AppChapuService {
 		List<UserDeviceEntity> userDeviceRelas = this.userDeviceService.queryList(ImmutableMap.of(Keys.TEAMAN_ID, memberId));
 		if (ValidateUtils.isNotEmptyCollection(userDeviceRelas)) {
 			List<Integer> deviceIds = userDeviceRelas.stream().map(item -> item.getDeviceId()).collect(Collectors.toList());
-			// makeType 重新设置为 1 ，表示普通沏茶
 			Map<String, Object> params = ImmutableMap.of(Keys.CHAPU_ID, chapuId, "deviceIds", deviceIds);
 			this.deviceStateInfoService.setDevChapu2Finish(params);
 		}

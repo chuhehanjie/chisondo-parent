@@ -10,6 +10,7 @@ import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
+import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
 import com.chisondo.server.modules.device.validator.*;
 import com.chisondo.server.modules.olddevice.service.OldDeviceCtrlService;
@@ -130,6 +131,9 @@ public class DeviceCtrlController extends AbstractController {
 	public CommonResp cancelTeaSpectrum(@RequestBody CommonReq req){
 		if (req.isOldDev()) {
 			JSONObject result = this.oldDevCtrlService.service(req, Constant.OldDeviceOperType.CANCEL_TEA_SPECTRUM);
+			String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+			int makeType = 1;
+			this.deviceCtrlService.updateMakeType4Dev(makeType, deviceId);
 			return CommonUtils.buildOldDevResp(result);
 		}
 		return this.deviceCtrlService.cancelTeaSpectrum(req);

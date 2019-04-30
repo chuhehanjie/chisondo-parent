@@ -73,4 +73,7 @@ public interface DeviceCtrlService {
 
     @Transactional
     void processReverseMakeTea(List<UserBookEntity> userBookList);
+
+    @Transactional
+    void updateMakeType4Dev(int makeType, String deviceId);
 }
