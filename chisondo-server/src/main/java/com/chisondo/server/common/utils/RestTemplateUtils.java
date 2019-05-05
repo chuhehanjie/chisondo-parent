@@ -133,7 +133,7 @@ public class RestTemplateUtils {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<LinkedMultiValueMap> req = new HttpEntity<LinkedMultiValueMap>(multMap, headers);
+        HttpEntity<LinkedMultiValueMap> req = new HttpEntity<>(multMap, headers);
         T result = restTemplate.postForObject(url, req, respType);
         log.info("Http Post请求   MediaType  application/x-www-form-urlencoded  \r\nUrl={}  \r\nparam={} \r\nresult={}", new String[]{url, JSON.toJSONString(obj), JSON.toJSONString(result)});
         return result;

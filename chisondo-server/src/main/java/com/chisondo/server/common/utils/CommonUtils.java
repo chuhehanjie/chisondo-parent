@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author ding.zhong
@@ -195,4 +196,17 @@ public final class CommonUtils {
         }
     }
 
+    /**
+     * 获取随机验证码
+     *
+     * @return
+     */
+    public static String getValidationCode(int length) {
+        StringBuilder sb = new StringBuilder();
+        Random rand = new Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(rand.nextInt(10));
+        }
+        return sb.toString();
+    }
 }
