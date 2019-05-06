@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chisondo.server.modules.sys.dao.StarbannerDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.chisondo.server.modules.sys.entity.StarbannerEntity" id="starbannerMap">
+        <result property="bannerId" column="banner_id"/>
+        <result property="companyid" column="companyId"/>
+        <result property="imageurl" column="imageUrl"/>
+        <result property="bannertype" column="bannertype"/>
+        <result property="linkurl" column="linkUrl"/>
+        <result property="starttime" column="starttime"/>
+        <result property="endtime" column="endtime"/>
+        <result property="showtime" column="showtime"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.chisondo.server.modules.sys.entity.StarbannerEntity">
+		select * from t_start_banner where banner_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.chisondo.server.modules.sys.entity.StarbannerEntity">
+		select * from t_start_banner where 1=1
+			<if test="bannerId != null and bannerId !='' ">
+				AND banner_id = #{bannerId}
+			</if>
+				<if test="companyId != null and companyId !='' ">
+				AND companyId = #{companyId}
+			</if>
+				<if test="imageurl != null and imageurl !='' ">
+				AND imageUrl = #{imageurl}
+			</if>
+				<if test="bannertype != null and bannertype !='' ">
+				AND bannertype = #{bannertype}
+			</if>
+				<if test="linkurl != null and linkurl !='' ">
+				AND linkUrl = #{linkurl}
+			</if>
+		    <if test="isShow == 1 ">
+				AND endtime &gt; now()
+			</if>
+		    <if test="isShow == 2 ">
+				AND endtime &lt;= now()
+			</if>
+		        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by banner_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_start_banner where 1=1
+			<if test="bannerId != null and bannerId !='' ">
+					AND banner_id = #{bannerId}
+				</if>
+				<if test="companyId != null and companyId !='' ">
+					AND companyId = #{companyid}
+				</if>
+				<if test="imageurl != null and imageurl !='' ">
+					AND imageUrl = #{imageurl}
+				</if>
+				<if test="bannertype != null and bannertype !='' ">
+					AND bannertype = #{bannertype}
+				</if>
+				<if test="linkurl != null and linkurl !='' ">
+					AND linkUrl = #{linkurl}
+				</if>
+				<if test="isShow == 1 ">
+					AND endtime &gt; now()
+				</if>
+				<if test="isShow == 2 ">
+					AND endtime &lt;= now()
+				</if>
+			</select>
+	 
+	<insert id="save" parameterType="com.chisondo.server.modules.sys.entity.StarbannerEntity" useGeneratedKeys="true" keyProperty="bannerId">
+		insert into t_start_banner
+		(
+			`companyId`, 
+			`imageUrl`, 
+			`bannertype`, 
+			`linkUrl`, 
+			`starttime`, 
+			`endtime`, 
+			`showtime`
+		)
+		values
+		(
+			#{companyid}, 
+			#{imageurl}, 
+			#{bannertype}, 
+			#{linkurl}, 
+			#{starttime}, 
+			#{endtime}, 
+			#{showtime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.chisondo.server.modules.sys.entity.StarbannerEntity">
+		update t_start_banner 
+		<set>
+			<if test="companyid != null">`companyId` = #{companyid}, </if>
+			<if test="imageurl != null">`imageUrl` = #{imageurl}, </if>
+			<if test="bannertype != null">`bannertype` = #{bannertype}, </if>
+			<if test="linkurl != null">`linkUrl` = #{linkurl}, </if>
+			<if test="starttime != null">`starttime` = #{starttime}, </if>
+			<if test="endtime != null">`endtime` = #{endtime}, </if>
+			<if test="showtime != null">`showtime` = #{showtime}</if>
+		</set>
+		where banner_id = #{bannerId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_start_banner where banner_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_start_banner where banner_id in 
+		<foreach item="bannerId" collection="array" open="(" separator="," close=")">
+			#{bannerId}
+		</foreach>
+	</delete>
+
+</mapper>
