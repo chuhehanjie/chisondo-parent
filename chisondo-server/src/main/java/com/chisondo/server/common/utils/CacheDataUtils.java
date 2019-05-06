@@ -1,5 +1,7 @@
 package com.chisondo.server.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.chisondo.server.modules.sys.dto.CompanyConfigDTO;
 import com.chisondo.server.modules.sys.entity.CompanyEntity;
 import com.chisondo.server.modules.sys.entity.SysConfigEntity;
 import com.chisondo.server.modules.sys.service.CompanyService;
@@ -39,6 +41,8 @@ public class CacheDataUtils {
 
     private static String imgPathPrefix;
 
+    private static List<CompanyConfigDTO> companyConfigList;
+
     @PostConstruct
     public void init() {
         companyList = this.companyService.queryList(Collections.EMPTY_MAP);
@@ -48,6 +52,10 @@ public class CacheDataUtils {
         waterLevels = ImmutableList.of(150, 200, 250, 300, 350, 400, 450, 550);
         allChapuList = this.appChapuService.queryList(new HashMap<>());
         imgPathPrefix = getConfigValueByKey("IMG_PREFIX");
+        String json = getConfigValueByKey("COMPANY_CONFIG");
+        if (ValidateUtils.isNotEmptyString(json)) {
+            companyConfigList = JSONObject.parseArray(json, CompanyConfigDTO.class);
+        }
     }
 
     public static List<CompanyEntity> getCompanyList() {
@@ -85,5 +93,9 @@ public class CacheDataUtils {
 
     public static String getOldDevSrvURL() {
         return getConfigValueByKey("OLD_DEV_SRV_URL");
+    }
+
+    public static List<CompanyConfigDTO> getCompanyConfigList() {
+        return companyConfigList;
     }
 }

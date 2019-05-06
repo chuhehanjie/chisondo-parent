@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface StarbannerService {
 	
-	StarbannerEntity queryObject(Integer bannerId);
+	StarbannerEntity queryObject(Integer id);
 	
 	List<StarbannerEntity> queryList(Map<String, Object> map);
 	
@@ -24,7 +24,7 @@ public interface StarbannerService {
 	
 	void update(StarbannerEntity starbanner);
 	
-	void delete(Integer bannerId);
+	void delete(Integer id);
 	
-	void deleteBatch(Integer[] bannerIds);
+	void deleteBatch(Integer[] ids);
 }

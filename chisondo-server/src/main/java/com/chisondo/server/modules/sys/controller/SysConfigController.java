@@ -2,12 +2,14 @@ package com.chisondo.server.modules.sys.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.core.AbstractController;
+import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.CacheDataUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
+import com.chisondo.server.modules.sys.dto.CompanyConfigDTO;
 import com.chisondo.server.modules.sys.entity.StarbannerEntity;
 import com.chisondo.server.modules.sys.entity.SysConfigEntity;
 import com.chisondo.server.modules.sys.service.StarbannerService;
@@ -54,13 +56,37 @@ public class SysConfigController extends AbstractController {
 		JSONObject jsonObject = JSONObject.parseObject(req.getBizBody());
 		Map<String, Object> params = Maps.newHashMap();
 		if (ValidateUtils.isNotEmpty(jsonObject.get("companyId"))) {
-			params.put("companyId", jsonObject.getInteger("companyId"));
+			params.put("companyId", jsonObject.getInteger("companyId") + "");
 		}
 		if (ValidateUtils.isNotEmpty(jsonObject.get("isshow"))) {
-			params.put("isShow", jsonObject.getInteger("isshow"));
+			params.put("isShow", jsonObject.getInteger("isshow") + "");
 		}
 		List<StarbannerEntity> resultList = this.starbannerService.queryList(params);
 		return CommonResp.ok(resultList);
+	}
+
+	/**
+	 * 查询配置参数信息
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping("/api/rest/qryconfiginfo")
+	@DataSource(name = DataSourceNames.SECOND)
+	public CommonResp queryConfigInfo(@RequestBody CommonReq req){
+		JSONObject jsonObject = JSONObject.parseObject(req.getBizBody());
+		if (ValidateUtils.isEmpty(jsonObject.get("companyId"))) {
+			throw new CommonException("企业ID为空");
+		}
+		CompanyConfigDTO companyConfig = new CompanyConfigDTO();
+		if (ValidateUtils.isNotEmptyCollection(CacheDataUtils.getCompanyConfigList())) {
+			for (CompanyConfigDTO item : CacheDataUtils.getCompanyConfigList()) {
+				if (ValidateUtils.equals(item.getCompanyId(), jsonObject.get("companyId"))) {
+					companyConfig = item;
+					break;
+				}
+			}
+		}
+		return CommonResp.ok(companyConfig);
 	}
 
 

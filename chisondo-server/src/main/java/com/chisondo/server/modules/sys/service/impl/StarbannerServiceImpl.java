@@ -9,15 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-
 @Service("starbannerService")
 public class StarbannerServiceImpl implements StarbannerService {
 	@Autowired
 	private StarbannerDao starbannerDao;
 	
 	@Override
-	public StarbannerEntity queryObject(Integer bannerId){
-		return starbannerDao.queryObject(bannerId);
+	public StarbannerEntity queryObject(Integer id){
+		return starbannerDao.queryObject(id);
 	}
 	
 	@Override
@@ -41,13 +40,13 @@ public class StarbannerServiceImpl implements StarbannerService {
 	}
 	
 	@Override
-	public void delete(Integer bannerId){
-		starbannerDao.delete(bannerId);
+	public void delete(Integer id){
+		starbannerDao.delete(id);
 	}
 	
 	@Override
-	public void deleteBatch(Integer[] bannerIds){
-		starbannerDao.deleteBatch(bannerIds);
+	public void deleteBatch(Integer[] ids){
+		starbannerDao.deleteBatch(ids);
 	}
 	
 }

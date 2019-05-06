@@ -15,76 +15,76 @@ public class StarbannerEntity  implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
-	private Integer bannerId;
+	private Integer id;
 	//
-	private Integer companyid;
+	private Integer companyId;
 	//
-	private String imageurl;
+	private String imageUrl;
 	//
-	private Integer bannertype;
+	private Integer bannerType;
 	//
-	private String linkurl;
+	private String linkUrl;
 	//
-	private Date starttime;
+	private Date startTime;
 	//
-	private Date endtime;
+	private Date endTime;
 	//
-	private Integer showtime;
+	private Integer showTime;
 
-	public void setBannerId(Integer bannerId) {
-		this.bannerId = bannerId;
-	}
-
-	public Integer getBannerId() {
-		return bannerId;
-	}
-	public void setCompanyid(Integer companyid) {
-		this.companyid = companyid;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
-	public Integer getCompanyid() {
-		return companyid;
+	public Integer getId() {
+		return id;
 	}
-	public void setImageurl(String imageurl) {
-		this.imageurl = imageurl;
-	}
-
-	public String getImageurl() {
-		return imageurl;
-	}
-	public void setBannertype(Integer bannertype) {
-		this.bannertype = bannertype;
+	public void setCompanyId(Integer companyId) {
+		this.companyId = companyId;
 	}
 
-	public Integer getBannertype() {
-		return bannertype;
+	public Integer getCompanyId() {
+		return companyId;
 	}
-	public void setLinkurl(String linkurl) {
-		this.linkurl = linkurl;
-	}
-
-	public String getLinkurl() {
-		return linkurl;
-	}
-	public void setStarttime(Date starttime) {
-		this.starttime = starttime;
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
-	public Date getStarttime() {
-		return starttime;
+	public String getImageUrl() {
+		return imageUrl;
 	}
-	public void setEndtime(Date endtime) {
-		this.endtime = endtime;
-	}
-
-	public Date getEndtime() {
-		return endtime;
-	}
-	public void setShowtime(Integer showtime) {
-		this.showtime = showtime;
+	public void setBannerType(Integer bannerType) {
+		this.bannerType = bannerType;
 	}
 
-	public Integer getShowtime() {
-		return showtime;
+	public Integer getBannerType() {
+		return bannerType;
+	}
+	public void setLinkUrl(String linkUrl) {
+		this.linkUrl = linkUrl;
+	}
+
+	public String getLinkUrl() {
+		return linkUrl;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setShowTime(Integer showTime) {
+		this.showTime = showTime;
+	}
+
+	public Integer getShowTime() {
+		return showTime;
 	}
 }

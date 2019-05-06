@@ -5,49 +5,49 @@
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.chisondo.server.modules.sys.entity.StarbannerEntity" id="starbannerMap">
-        <result property="bannerId" column="banner_id"/>
-        <result property="companyid" column="companyId"/>
-        <result property="imageurl" column="imageUrl"/>
-        <result property="bannertype" column="bannertype"/>
-        <result property="linkurl" column="linkUrl"/>
-        <result property="starttime" column="starttime"/>
-        <result property="endtime" column="endtime"/>
-        <result property="showtime" column="showtime"/>
+        <result property="id" column="id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="bannerType" column="banner_type"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="showTime" column="show_time"/>
     </resultMap>
 
 	<select id="queryObject" resultType="com.chisondo.server.modules.sys.entity.StarbannerEntity">
-		select * from t_start_banner where banner_id = #{value}
+		select * from t_start_banner where id = #{value}
 	</select>
 
 	<select id="queryList" resultType="com.chisondo.server.modules.sys.entity.StarbannerEntity">
 		select * from t_start_banner where 1=1
-			<if test="bannerId != null and bannerId !='' ">
-				AND banner_id = #{bannerId}
+			<if test="id != null and id !='' ">
+				AND id = #{id}
 			</if>
-				<if test="companyId != null and companyId !='' ">
-				AND companyId = #{companyId}
+			<if test="companyId != null and companyId !='' ">
+				AND company_id = #{companyId}
 			</if>
-				<if test="imageurl != null and imageurl !='' ">
-				AND imageUrl = #{imageurl}
+			<if test="imageUrl != null and imageUrl !='' ">
+				AND image_url = #{imageUrl}
 			</if>
-				<if test="bannertype != null and bannertype !='' ">
-				AND bannertype = #{bannertype}
+			<if test="bannerType != null and bannerType !='' ">
+				AND banner_type = #{bannerType}
 			</if>
-				<if test="linkurl != null and linkurl !='' ">
-				AND linkUrl = #{linkurl}
+			<if test="linkUrl != null and linkUrl !='' ">
+				AND link_url = #{linkUrl}
 			</if>
-		    <if test="isShow == 1 ">
-				AND endtime &gt; now()
+			<if test="isShow != null and isShow == 1 ">
+				AND end_time &gt; now()
 			</if>
-		    <if test="isShow == 2 ">
-				AND endtime &lt;= now()
+			<if test="isShow != null and isShow == 2 ">
+				AND end_time &lt;= now()
 			</if>
-		        <choose>
+		<choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
             </when>
 			<otherwise>
-                order by banner_id desc
+                order by id desc
 			</otherwise>
         </choose>
 		<if test="offset != null and limit != null">
@@ -57,74 +57,74 @@
 	
  	<select id="queryTotal" resultType="int">
 		select count(*) from t_start_banner where 1=1
-			<if test="bannerId != null and bannerId !='' ">
-					AND banner_id = #{bannerId}
-				</if>
+			<if test="id != null and id !='' ">
+                AND id = #{id}
+            </if>
 				<if test="companyId != null and companyId !='' ">
-					AND companyId = #{companyid}
+                AND company_id = #{companyId}
+            </if>
+				<if test="imageUrl != null and imageUrl !='' ">
+                AND image_url = #{imageUrl}
+            </if>
+				<if test="bannerType != null and bannerType !='' ">
+                AND banner_type = #{bannerType}
+            </if>
+				<if test="linkUrl != null and linkUrl !='' ">
+                AND link_url = #{linkUrl}
 				</if>
-				<if test="imageurl != null and imageurl !='' ">
-					AND imageUrl = #{imageurl}
-				</if>
-				<if test="bannertype != null and bannertype !='' ">
-					AND bannertype = #{bannertype}
-				</if>
-				<if test="linkurl != null and linkurl !='' ">
-					AND linkUrl = #{linkurl}
-				</if>
-				<if test="isShow == 1 ">
-					AND endtime &gt; now()
-				</if>
-				<if test="isShow == 2 ">
-					AND endtime &lt;= now()
-				</if>
+			<if test="isShow != null and isShow == 1 ">
+				AND end_time &gt; now()
+			</if>
+			<if test="isShow != null and isShow == 2 ">
+				AND end_time &lt;= now()
+			</if>
 			</select>
 	 
-	<insert id="save" parameterType="com.chisondo.server.modules.sys.entity.StarbannerEntity" useGeneratedKeys="true" keyProperty="bannerId">
+	<insert id="save" parameterType="com.chisondo.server.modules.sys.entity.StarbannerEntity" useGeneratedKeys="true" keyProperty="id">
 		insert into t_start_banner
 		(
-			`companyId`, 
-			`imageUrl`, 
-			`bannertype`, 
-			`linkUrl`, 
-			`starttime`, 
-			`endtime`, 
-			`showtime`
+			`company_id`, 
+			`image_url`, 
+			`banner_type`, 
+			`link_url`, 
+			`start_time`, 
+			`end_time`, 
+			`show_time`
 		)
 		values
 		(
-			#{companyid}, 
-			#{imageurl}, 
-			#{bannertype}, 
-			#{linkurl}, 
-			#{starttime}, 
-			#{endtime}, 
-			#{showtime}
+			#{companyId}, 
+			#{imageUrl}, 
+			#{bannerType}, 
+			#{linkUrl}, 
+			#{startTime}, 
+			#{endTime}, 
+			#{showTime}
 		)
 	</insert>
 	 
 	<update id="update" parameterType="com.chisondo.server.modules.sys.entity.StarbannerEntity">
 		update t_start_banner 
 		<set>
-			<if test="companyid != null">`companyId` = #{companyid}, </if>
-			<if test="imageurl != null">`imageUrl` = #{imageurl}, </if>
-			<if test="bannertype != null">`bannertype` = #{bannertype}, </if>
-			<if test="linkurl != null">`linkUrl` = #{linkurl}, </if>
-			<if test="starttime != null">`starttime` = #{starttime}, </if>
-			<if test="endtime != null">`endtime` = #{endtime}, </if>
-			<if test="showtime != null">`showtime` = #{showtime}</if>
+			<if test="companyId != null">`company_id` = #{companyId}, </if>
+			<if test="imageUrl != null">`image_url` = #{imageUrl}, </if>
+			<if test="bannerType != null">`banner_type` = #{bannerType}, </if>
+			<if test="linkUrl != null">`link_url` = #{linkUrl}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="showTime != null">`show_time` = #{showTime}</if>
 		</set>
-		where banner_id = #{bannerId}
+		where id = #{id}
 	</update>
 	
 	<delete id="delete">
-		delete from t_start_banner where banner_id = #{value}
+		delete from t_start_banner where id = #{value}
 	</delete>
 	
 	<delete id="deleteBatch">
-		delete from t_start_banner where banner_id in 
-		<foreach item="bannerId" collection="array" open="(" separator="," close=")">
-			#{bannerId}
+		delete from t_start_banner where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
 		</foreach>
 	</delete>
 
