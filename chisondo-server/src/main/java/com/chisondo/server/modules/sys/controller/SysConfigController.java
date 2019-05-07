@@ -9,7 +9,6 @@ import com.chisondo.server.common.utils.CacheDataUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.annotation.DataSource;
-import com.chisondo.server.modules.sys.dto.CompanyConfigDTO;
 import com.chisondo.server.modules.sys.entity.StarbannerEntity;
 import com.chisondo.server.modules.sys.entity.SysConfigEntity;
 import com.chisondo.server.modules.sys.service.StarbannerService;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sun.misc.Cache;
 
 import java.util.List;
 import java.util.Map;
@@ -77,16 +77,14 @@ public class SysConfigController extends AbstractController {
 		if (ValidateUtils.isEmpty(jsonObject.get("companyId"))) {
 			throw new CommonException("企业ID为空");
 		}
-		CompanyConfigDTO companyConfig = new CompanyConfigDTO();
 		if (ValidateUtils.isNotEmptyCollection(CacheDataUtils.getCompanyConfigList())) {
-			for (CompanyConfigDTO item : CacheDataUtils.getCompanyConfigList()) {
-				if (ValidateUtils.equals(item.getCompanyId(), jsonObject.get("companyId"))) {
-					companyConfig = item;
-					break;
+			for (SysConfigEntity sysConfig : CacheDataUtils.getCompanyConfigList()) {
+				if (ValidateUtils.equals(sysConfig.getKey(), CacheDataUtils.PREFIX_COMPANY_CONFIG + jsonObject.get("companyId"))) {
+					return CommonResp.ok(JSONObject.parseObject(sysConfig.getValue()));
 				}
 			}
 		}
-		return CommonResp.ok(companyConfig);
+		return CommonResp.ok();
 	}
 
 
