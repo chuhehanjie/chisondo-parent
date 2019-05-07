@@ -1,7 +1,6 @@
 package com.chisondo.server.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.server.modules.sys.dto.CompanyConfigDTO;
 import com.chisondo.server.modules.sys.entity.CompanyEntity;
 import com.chisondo.server.modules.sys.entity.SysConfigEntity;
 import com.chisondo.server.modules.sys.service.CompanyService;
@@ -17,6 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("cacheDataUtils")
@@ -41,7 +41,9 @@ public class CacheDataUtils {
 
     private static String imgPathPrefix;
 
-    private static List<CompanyConfigDTO> companyConfigList;
+    private static List<SysConfigEntity> companyConfigList;
+
+    public static final String PREFIX_COMPANY_CONFIG = "COMPANY_CONFIG_";
 
     @PostConstruct
     public void init() {
@@ -52,10 +54,7 @@ public class CacheDataUtils {
         waterLevels = ImmutableList.of(150, 200, 250, 300, 350, 400, 450, 550);
         allChapuList = this.appChapuService.queryList(new HashMap<>());
         imgPathPrefix = getConfigValueByKey("IMG_PREFIX");
-        String json = getConfigValueByKey("COMPANY_CONFIG");
-        if (ValidateUtils.isNotEmptyString(json)) {
-            companyConfigList = JSONObject.parseArray(json, CompanyConfigDTO.class);
-        }
+        companyConfigList = configList.stream().filter(config -> config.getKey().startsWith(PREFIX_COMPANY_CONFIG)).collect(Collectors.toList());
     }
 
     public static List<CompanyEntity> getCompanyList() {
@@ -95,7 +94,7 @@ public class CacheDataUtils {
         return getConfigValueByKey("OLD_DEV_SRV_URL");
     }
 
-    public static List<CompanyConfigDTO> getCompanyConfigList() {
+    public static List<SysConfigEntity> getCompanyConfigList() {
         return companyConfigList;
     }
 }
