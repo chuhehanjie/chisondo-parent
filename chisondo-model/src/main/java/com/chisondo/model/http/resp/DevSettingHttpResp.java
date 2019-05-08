@@ -13,6 +13,14 @@ public class DevSettingHttpResp extends CommonHttpResp {
 
     private TeaSpectrumMsgResp chapumsg;
 
+    public DevSettingHttpResp(int retn, String desc) {
+        super(retn, desc);
+    }
+
+    public DevSettingHttpResp() {
+
+    }
+
     public String getAction() {
         return action;
     }

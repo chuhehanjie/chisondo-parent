@@ -57,7 +57,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 
 		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.DEVICE_ID).toString()));
-
+		if (!httpResp.isOK()) {
+			return new CommonResp(httpResp.getRetn(), httpResp.getDesc());
+		}
 		DevSettingRespDTO devSettingResp = this.buildDevSettingResp(deviceInfo, httpResp);
 		return CommonResp.ok(devSettingResp);
 	}
@@ -130,6 +132,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		} else {
 			// 从数据库中取
 			DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(deviceId);
+			if (ValidateUtils.isEmpty(devStateInfo)) {
+				return CommonResp.error("设备状态信息不存在！");
+			}
 			DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStateInfo);
 			return CommonResp.ok(devStatusResp);
 		}

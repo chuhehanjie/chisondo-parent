@@ -95,8 +95,8 @@ public class DevOperateLogAspect {
 			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 			DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
 			devOperateLog.setDeviceId(ValidateUtils.isEmpty(deviceInfo) ? "" : deviceInfo.getDeviceId().toString());
-			devOperateLog.setTeamanId(user.getMemberId() + "");
-			devOperateLog.setUserMobileNo(user.getPhone());
+			devOperateLog.setTeamanId(ValidateUtils.isEmpty(user) ? "" : user.getMemberId() + "");
+			devOperateLog.setUserMobileNo(ValidateUtils.isEmpty(user) ? "" :user.getPhone());
 			devOperateLog.setOperType(0); // TODO 操作类型未定义
 			devOperateLog.setReqContent(JSONObject.toJSONString(req));
 			devOperateLog.setResContent(JSONObject.toJSONString(resp));

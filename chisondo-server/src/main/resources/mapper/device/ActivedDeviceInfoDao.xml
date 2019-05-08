@@ -257,7 +257,7 @@
 	</update>
 
 	<update id="updateDevSound" parameterType="com.chisondo.server.modules.device.dto.req.SetDevSoundReqDTO">
-		UPDATE tb_actived_device_info set vol_flag = #{operFlag}, gms_flag = #{gmsFlag} where device_id = #{deviceId}
+		UPDATE tb_actived_device_info set vol_flag = #{operFlag}, gms_flag = #{gmsflag} where device_id = #{deviceId}
 	</update>
 
 </mapper>
