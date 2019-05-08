@@ -34,7 +34,8 @@ public class DeviceServerDecoder extends StringDecoder {
             // 查询设备设置参数响应
             DevSettingHttpResp devSettingResp = JSONObject.parseObject(json, DevSettingHttpResp.class);
             out.add(devSettingResp);
-        } else if (this.isStartWorkResp(json) || this.isLockOrUnlockDevResp(json) || this.isErrorResp(json)) {
+        } else if (this.isStartWorkResp(json) || this.isStopWorkResp(json) || this.isLockOrUnlockDevResp(json) || this.isKeepWarmCtrlResp(json)
+                || this.isSetChapuParamResp(json) || this.isSetOtherParamResp(json) || this.isErrorResp(json)) {
             DeviceHttpResp deviceResp = JSONObject.parseObject(json, DeviceHttpResp.class);
             out.add(deviceResp);
         } else {
@@ -71,6 +72,15 @@ public class DeviceServerDecoder extends StringDecoder {
     }
 
     /**
+     * 是否停止沏茶/洗茶/烧水响应
+     * @param json
+     * @return
+     */
+    private boolean isStopWorkResp(String json) {
+        return json.contains("\"action\":\"stopworkok\"");
+    }
+
+    /**
      * 是否设备状态上报请求
      * @param json
      * @return
@@ -104,6 +114,33 @@ public class DeviceServerDecoder extends StringDecoder {
      */
     private boolean isLockOrUnlockDevResp(String json) {
         return json.contains("\"action\":\"devicelockok\"");
+    }
+
+    /**
+     * 是否保温控制响应
+     * @param json
+     * @return
+     */
+    private boolean isKeepWarmCtrlResp(String json) {
+        return json.contains("\"action\":\"keepwarmok\"");
+    }
+
+    /**
+     * 是否设置内置茶谱参数响应
+     * @param json
+     * @return
+     */
+    private boolean isSetChapuParamResp(String json) {
+        return json.contains("\"action\":\"setchapuparmok\"");
+    }
+
+    /**
+     * 是否设置静音/网络响应
+     * @param json
+     * @return
+     */
+    private boolean isSetOtherParamResp(String json) {
+        return json.contains("\"action\":\"setotherparmok\"");
     }
 
     private boolean isErrorResp(String json) {

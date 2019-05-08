@@ -3,6 +3,8 @@ package com.chisondo.server.common.utils;
 public class Keys {
     public static final String DEVICE_ID = "deviceId";
 
+    public static final String NEW_DEVICE_ID = "newDeviceId";
+
     public static final String PHONE_NUM = "phoneNum";
 
     public static final String USER_MOBILE = "userMobile";

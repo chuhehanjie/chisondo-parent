@@ -4,15 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.annotation.ParamValidator;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
-import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.common.utils.CacheDataUtils;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.SpringContextUtils;
-import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.common.validator.BusiValidator;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -66,8 +60,8 @@ public class ValidatorAspect {
 		if (ValidateUtils.isEmptyString(deviceId)) {
 			throw new CommonException("设备ID为空");
 		}
-//		boolean isOldDev = Boolean.valueOf(CacheDataUtils.getConfigValueByKey("OLD_DEV_FLAG"));
+//		boolean isOldDevice = Boolean.valueOf(CacheDataUtils.getConfigValueByKey("OLD_DEV_FLAG"));
 		// TODO 老设备规则待定 return deviceId.length() == 8;
-		return deviceId.length() <= 8;
+		return CommonUtils.isOldDevice(deviceId);
 	}
 }

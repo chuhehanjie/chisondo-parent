@@ -45,6 +45,11 @@ public class ActivedDeviceInfoEntity  implements Serializable {
 	//1-优先2G网络（默认）  2-优先Wi-Fi网络
 	private Integer gmsFlag;
 
+	/**
+	 * 新设备ID
+	 */
+	private String newDeviceId;
+
 	public String getDeviceId() {
 		return deviceId;
 	}
@@ -150,5 +155,13 @@ public class ActivedDeviceInfoEntity  implements Serializable {
 
 	public Integer getGmsFlag() {
 		return gmsFlag;
+	}
+
+	public String getNewDeviceId() {
+		return newDeviceId;
+	}
+
+	public void setNewDeviceId(String newDeviceId) {
+		this.newDeviceId = newDeviceId;
 	}
 }

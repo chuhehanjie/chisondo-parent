@@ -49,7 +49,8 @@ public class BindDeviceValidator implements BusiValidator {
         if (this.isDeviceNotAllowConnect(devBindReq.getDeviceId())) {
             throw new CommonException("设备已被占用");
         }
-        req.addAttr("devBindReq", devBindReq);
+        devBindReq.setDeviceId(deviceInfo.getDeviceId());
+        req.addAttr(Keys.REQ, devBindReq);
     }
 
     private void validate(DeviceBindReqDTO devBindReq) {

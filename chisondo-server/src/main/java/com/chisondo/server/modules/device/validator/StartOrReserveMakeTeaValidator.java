@@ -20,6 +20,7 @@ public class StartOrReserveMakeTeaValidator implements BusiValidator {
     @Override
     public void validate(CommonReq req) {
         StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = JSONObject.parseObject(req.getBizBody(), StartOrReserveMakeTeaReqDTO.class);
+        startOrReserveTeaReq.setDeviceId((String) req.getAttrByKey(Keys.DEVICE_ID));
         if (ValidateUtils.isEmpty(startOrReserveTeaReq)) {
             throw new CommonException("请求体为空");
         }

@@ -2,11 +2,13 @@ package com.chisondo.server.modules.device.service.impl;
 
 import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Constant;
+import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.dto.req.SetDevNameReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevPwdReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevSoundReqDTO;
 import com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -94,5 +96,9 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 		return deviceDetails;
 	}
 
-
+	@Override
+	public ActivedDeviceInfoEntity getNewDeviceByNewDevId(String deviceId) {
+		List<ActivedDeviceInfoEntity> deviceList = this.queryList(ImmutableMap.of(Keys.NEW_DEVICE_ID, deviceId));
+		return ValidateUtils.isNotEmptyCollection(deviceList) ? deviceList.get(0) : null;
+	}
 }

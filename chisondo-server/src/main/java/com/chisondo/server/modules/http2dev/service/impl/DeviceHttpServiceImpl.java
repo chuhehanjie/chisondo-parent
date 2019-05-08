@@ -57,8 +57,8 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
      */
     @Override
     public DeviceHttpResp washTeaCtrl(DeviceHttpReq req) {
-        req.setAction("setdevparm");
-        req.setActionflag(1); // 洗茶按键
+        req.setAction("startwork");
+        req.setActionflag(Constant.DevStartWorkAction.WASH_TEA); // 洗茶按键
         return this.deviceControl(this.http2DevURL + DevReqURIConstant.START_WORK, req);
     }
 
@@ -69,8 +69,8 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
      */
     @Override
     public DeviceHttpResp boilWaterCtrl(DeviceHttpReq req) {
-        req.setAction("setdevparm");
-        req.setActionflag(2); // 烧水按键
+        req.setAction("startwork");
+        req.setActionflag(Constant.DevStartWorkAction.BOIL_WATER); // 烧水按键
         return this.deviceControl(this.http2DevURL + DevReqURIConstant.START_WORK, req);
     }
 

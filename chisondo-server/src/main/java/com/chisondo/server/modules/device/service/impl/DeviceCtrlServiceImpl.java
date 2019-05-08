@@ -6,6 +6,7 @@ import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.alibaba.fastjson.JSONObject;
@@ -15,8 +16,6 @@ import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.*;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.dto.req.*;
 import com.chisondo.server.modules.device.dto.resp.DeviceBindRespDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
@@ -39,8 +38,8 @@ import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.chisondo.server.modules.user.service.UserVipService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +85,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public CommonResp startOrReserveMakeTea(CommonReq req) {
 		StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = (StartOrReserveMakeTeaReqDTO) req.getAttrByKey(Keys.REQ);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
 		boolean isReserveMakeTea = (boolean) req.getAttrByKey("isReserveMakeTea");
 		// 是否预约泡茶
 		if (isReserveMakeTea) {
@@ -96,7 +96,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			// TODO 调用新设备接口服务 小程序http -->> 设备 http -->> 设备 tcp -->> 沏茶器
 			/*新设备非预约泡茶直接入4.5.3用户泡茶表；预约泡茶入4.5.4用户预约泡茶表，后端由定时程序根据预约时间自动启动泡茶信息，修改4.5.4表记录状态，
 			并将泡茶信息插入4.5.3用户泡茶表；*/
-			DeviceHttpReq devHttpReq = this.buildDevHttpReq(startOrReserveTeaReq);
+			DeviceHttpReq devHttpReq = this.buildDevHttpReq(startOrReserveTeaReq, newDeviceId);
 
 			DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
 			if (devHttpResp.isOK()) {
@@ -104,7 +104,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 				this.userMakeTeaService.save(userMakeTea);
 				// 如果需要保温
                 if (ValidateUtils.isNotEmpty(userMakeTea.getWarm())) {
-                    devHttpResp = this.deviceHttpService.startKeeWarm(new DeviceHttpReq(userMakeTea.getDeviceId()));
+                    devHttpResp = this.deviceHttpService.startKeeWarm(new DeviceHttpReq(newDeviceId));
                     CommonUtils.debugLog(log, "调用 http 保温控制响应：" + devHttpResp);
                 }
 				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -115,16 +115,16 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		}
 	}
 
-    private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq) {
+    private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String newDeviceId) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
-		devHttpReq.setDeviceID(startOrReserveTeaReq.getDeviceId());
+		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setMsg(new DevParamMsg(startOrReserveTeaReq.getTemperature(), startOrReserveTeaReq.getSoak(), startOrReserveTeaReq.getWaterlevel()));
 		return devHttpReq;
 	}
 
-	private DeviceHttpReq buildDevHttpReq(BoilWaterReqDTO boilWaterReq) {
+	private DeviceHttpReq buildDevHttpReq(BoilWaterReqDTO boilWaterReq, String newDeviceId) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
-		devHttpReq.setDeviceID(boilWaterReq.getDeviceId());
+		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setMsg(new DevParamMsg(boilWaterReq.getTemperature(), boilWaterReq.getSoak(), boilWaterReq.getWaterlevel()));
 		return devHttpReq;
 	}
@@ -169,7 +169,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Override
 	public DeviceBindRespDTO bindDevice(CommonReq req) {
-		DeviceBindReqDTO devBindReq = (DeviceBindReqDTO) req.getAttrByKey("devBindReq");
+		DeviceBindReqDTO devBindReq = (DeviceBindReqDTO) req.getAttrByKey(Keys.REQ);
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 		UserVipEntity user = this.getUser(devBindReq);
 
@@ -227,7 +227,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	@Override
 	public CommonResp washTea(CommonReq req) {
 		WashTeaReqDTO washTeaReq = JSONObject.parseObject(req.getBizBody(), WashTeaReqDTO.class);
-		DeviceHttpReq devHttpReq = this.buildWashTeaHttpReq(washTeaReq);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		DeviceHttpReq devHttpReq = this.buildWashTeaHttpReq(washTeaReq, newDeviceId);
 		DeviceHttpResp devHttpResp = this.deviceHttpService.washTeaCtrl(devHttpReq);
 		log.info("调用洗茶 HTTP 服务响应：{}", devHttpResp);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -236,7 +237,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	@Override
 	public CommonResp boilWater(CommonReq req) {
 		BoilWaterReqDTO boilWaterReq = JSONObject.parseObject(req.getBizBody(), BoilWaterReqDTO.class);
-		DeviceHttpReq devHttpReq = this.buildDevHttpReq(boilWaterReq);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		DeviceHttpReq devHttpReq = this.buildDevHttpReq(boilWaterReq, newDeviceId);
 		DeviceHttpResp devHttpResp = this.deviceHttpService.boilWaterCtrl(devHttpReq);
 		log.info("调用烧水 HTTP 服务响应：{}", devHttpResp);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -244,15 +246,38 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Override
 	public CommonResp stopWorking(CommonReq req) {
-		StopWorkReqDTO stopWorkReq = JSONObject.parseObject(req.getBizBody(), StopWorkReqDTO.class);
+		StopWorkReqDTO stopWorkReq = (StopWorkReqDTO) req.getAttrByKey(Keys.REQ);
+		String deviceId = stopWorkReq.getDeviceId();
+		List<UserMakeTeaEntity> userMakeTeaList = this.queryUserMakeTeaRecords(deviceId);
+		if (ValidateUtils.isEmptyCollection(userMakeTeaList)) {
+			throw new CommonException("设备沏茶记录不存在");
+		}
 		/*老设备调用老流程中接口服务程序，如果是停止沏茶、烧水操作，调用接口4.3.3；停止洗茶调用接口4.3.2；取消使用茶谱沏茶调用接口4.3.5；在调用老接口前先调用4.3.7连接沏茶器接口，获取sessionid，调用完控制接口后再调用4.3.8断开和沏茶器连接；
 ⑥、新设备更新4.5.3用户泡茶表*/
-		StopWorkHttpReq devHttpReq = this.buildStopWorkReq(stopWorkReq);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		StopWorkHttpReq devHttpReq = this.buildStopWorkReq(stopWorkReq, newDeviceId);
 		DeviceHttpResp devHttpResp = this.deviceHttpService.stopWork(devHttpReq);
-		// 更新用户泡茶表状态
-		this.userMakeTeaService.updateStatus(stopWorkReq.getDeviceId(), Constant.UserMakeTeaStatus.CANCELED);
 		log.info("调用停止沏茶/洗茶/烧水 HTTP 服务响应：{}", devHttpResp);
+		if (devHttpResp.isOK()) {
+			// 更新用户泡茶表状态
+			UserMakeTeaEntity userMakeTea = userMakeTeaList.get(0);
+			userMakeTea.setStatus(Constant.UserMakeTeaStatus.CANCELED);
+			userMakeTea.setCancelTime(DateUtils.currentDate());
+			this.userMakeTeaService.update(userMakeTea);
+		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	private List<UserMakeTeaEntity> queryUserMakeTeaRecords(String deviceId) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put(Keys.DEVICE_ID, deviceId);
+		params.put(Query.SIDX, "add_time");
+		params.put(Query.ORDER, "desc");
+		params.put(Query.OFFSET, 0);
+		params.put(Query.LIMIT, 1);
+		// 首先查询出最近的泡茶记录表
+		List<UserMakeTeaEntity> userMakeTeaList = this.userMakeTeaService.queryList(params);
+		return userMakeTeaList;
 	}
 
 	@Override
@@ -262,7 +287,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
 		AppChapuParaEntity teaSpectrumParam = (AppChapuParaEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_PARAM_INFO);
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
-		devHttpReq.setDeviceID(useTeaSpectrumReq.getDeviceId().toString());
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setMsg(new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater()));
 		DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
 		log.info("调用使用茶谱沏茶 HTTP 服务响应：{}", devHttpResp);
@@ -313,8 +339,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		  ⑥、新设备更新4.5.3用户泡茶表；（不需要更新）
 		  ⑦、操作信息统一入4.5.6沏茶器操作日志表，该日志表保存近10天的操作日志记录。
 		*/
-		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
-		DeviceHttpReq devHttpReq = new DeviceHttpReq(deviceId);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		DeviceHttpReq devHttpReq = new DeviceHttpReq(newDeviceId);
 		DeviceHttpResp devHttpResp = this.deviceHttpService.startKeeWarm(devHttpReq);
 		log.info("调用保温控制 HTTP 服务响应：{}", devHttpResp);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -345,7 +371,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public CommonResp setDeviceSound(CommonReq req) {
 		SetDevSoundReqDTO setDevSoundReq = JSONObject.parseObject(req.getBizBody(), SetDevSoundReqDTO.class);
 		SetDevOtherParamHttpReq devHttpReq = new SetDevOtherParamHttpReq();
-		devHttpReq.setDeviceID(setDevSoundReq.getDeviceId());
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setVolflag(setDevSoundReq.getOperFlag() == 0 ? Constant.DevVolumeCtrl.OPEN : Constant.DevVolumeCtrl.CLOSE);
 		devHttpReq.setGmsflag(setDevSoundReq.getGmsflag());
 		devHttpReq.setMsg(new DevParamMsg()); // TODO 待确认 设置声音和网络不应该传MSG
@@ -387,8 +414,9 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		if (ValidateUtils.isEmpty(teaSpectrumParam)) {
 			throw new CommonException("茶谱参数未设置");
 		}
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
 		SetDevChapuParamHttpReq devHttpReq = new SetDevChapuParamHttpReq();
-		devHttpReq.setDeviceID(chgDevTeaSpectrumReq.getDeviceId());
+		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setIndex(chgDevTeaSpectrumReq.getIndex());
 		devHttpReq.setMaketimes(teaSpectrum.getMakeTimes());
 		DevParamMsg teaparam = new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater());
@@ -409,17 +437,17 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		return CommonResp.ok();
 	}
 
-	private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq) {
+	private DeviceHttpReq buildWashTeaHttpReq(WashTeaReqDTO washTeaReq, String newDeviceId) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
-		devHttpReq.setDeviceID(washTeaReq.getDeviceId());
+		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setMsg(new DevParamMsg(washTeaReq.getTemperature(), washTeaReq.getSoak(), washTeaReq.getWaterlevel()));
 		return devHttpReq;
 	}
 
-	private StopWorkHttpReq buildStopWorkReq(StopWorkReqDTO stopWorkReq) {
+	private StopWorkHttpReq buildStopWorkReq(StopWorkReqDTO stopWorkReq, String newDeviceId) {
 		StopWorkHttpReq req = new StopWorkHttpReq();
 		req.setActionflag(this.convertActionFlag(stopWorkReq.getOperFlag()));
-		req.setDeviceID(stopWorkReq.getDeviceId());
+		req.setDeviceID(newDeviceId);
 		return req;
 	}
 
@@ -443,7 +471,12 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	public void processReverseMakeTea(List<UserBookEntity> userBookList) {
 		for (UserBookEntity userBook : userBookList) {
 			StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = JSONObject.parseObject(userBook.getReserveParam(), StartOrReserveMakeTeaReqDTO.class);
-			DeviceHttpReq devHttpReq = this.buildDevHttpReq(startOrReserveTeaReq);
+			ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.queryObject(startOrReserveTeaReq.getDeviceId());
+			if (ValidateUtils.isEmpty(deviceInfo)) {
+				log.error("新设备[{}]不存在！", startOrReserveTeaReq.getDeviceId());
+				continue;
+			}
+			DeviceHttpReq devHttpReq = this.buildDevHttpReq(startOrReserveTeaReq, deviceInfo.getNewDeviceId());
 			DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
 			long startTime = System.currentTimeMillis();
 			if (devHttpResp.isOK()) {

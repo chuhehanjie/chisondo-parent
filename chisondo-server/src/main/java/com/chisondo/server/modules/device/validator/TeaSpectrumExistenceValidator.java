@@ -30,6 +30,6 @@ public class TeaSpectrumExistenceValidator implements BusiValidator {
         if (ValidateUtils.isEmpty(teaSpectrum)) {
             throw new CommonException("茶谱信息不存在");
         }
-        req.addAttr("teaSpectrumInfo", teaSpectrum);
+        req.addAttr(Keys.TEA_SPECTRUM_INFO, teaSpectrum);
     }
 }

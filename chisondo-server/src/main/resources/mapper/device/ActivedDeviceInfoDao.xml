@@ -20,11 +20,13 @@
         <result property="companyId" column="company_id"/>
         <result property="volFlag" column="vol_flag"/>
         <result property="gmsFlag" column="gms_flag"/>
+		<result property="newDeviceId" column="new_device_id"/>
     </resultMap>
 
 	<sql id="queryDevInfoOfUser">
 		SELECT
 			a.device_id AS deviceId,
+			a.new_device_id AS newDeviceId,
 			dev.device_name AS deviceName,
 			dev.dev_desc AS deviceDesc,
 			a.connect_state AS connStatus,
@@ -61,6 +63,9 @@
 		select * from tb_actived_device_info where 1=1
 			<if test="deviceId != null and deviceId !='' ">
 				AND device_id = #{deviceId}
+			</if>
+			<if test="newDeviceId != null and newDeviceId !='' ">
+				AND new_device_id = #{newDeviceId}
 			</if>
 				<if test="deviceName != null and deviceName !='' ">
 				AND device_name = #{deviceName}
@@ -122,6 +127,9 @@
 			<if test="deviceId != null and deviceId !='' ">
                 AND device_id = #{deviceId}
             </if>
+			<if test="newDeviceId != null and newDeviceId !='' ">
+				AND new_device_id = #{newDeviceId}
+			</if>
 				<if test="deviceName != null and deviceName !='' ">
                 AND device_name = #{deviceName}
             </if>
@@ -183,7 +191,8 @@
 			`lock_panel`, 
 			`company_id`, 
 			`vol_flag`, 
-			`gms_flag`
+			`gms_flag`,
+			`new_device_id`
 		)
 		values
 		(
@@ -201,7 +210,8 @@
 			#{lockPanel}, 
 			#{companyId}, 
 			#{volFlag}, 
-			#{gmsFlag}
+			#{gmsFlag},
+			#{newDeviceId}
 		)
 	</insert>
 	 
@@ -221,6 +231,7 @@
 			<if test="lockPanel != null">`lock_panel` = #{lockPanel}, </if>
 			<if test="companyId != null">`company_id` = #{companyId}, </if>
 			<if test="volFlag != null">`vol_flag` = #{volFlag}, </if>
+			<if test="newDeviceId != null">`new_device_id` = #{newDeviceId}, </if>
 			<if test="gmsFlag != null">`gms_flag` = #{gmsFlag}</if>
 		</set>
 		where device_id = #{deviceId}

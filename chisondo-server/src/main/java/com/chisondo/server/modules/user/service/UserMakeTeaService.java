@@ -37,5 +37,4 @@ public interface UserMakeTeaService {
 
     List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserMobile(Map<String, Object> params);
 
-    void updateStatus(String deviceId, int status);
 }

@@ -46,6 +46,7 @@ public class UseTeaSpectrumValidator implements BusiValidator {
         if (ValidateUtils.isEmptyCollection(teaSpectrumParams)) {
             throw new CommonException("茶谱参数不存在");
         }
+        useTeaSpectrumReq.setDeviceId((String) req.getAttrByKey(Keys.DEVICE_ID));
         req.addAttr(Keys.REQ, useTeaSpectrumReq);
         req.addAttr(Keys.TEA_SPECTRUM_INFO, teaSpectrum);
         req.addAttr(Keys.TEA_SPECTRUM_PARAM_INFO, teaSpectrumParams.get(0));

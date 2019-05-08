@@ -1,6 +1,4 @@
 package com.chisondo.server.modules.device.controller;
-import com.google.common.collect.Lists;
-import com.chisondo.server.modules.device.dto.resp.WaterHeatInfo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.annotation.ParamValidator;
@@ -13,7 +11,6 @@ import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.dto.resp.DevSettingRespDTO;
 import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
-import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.validator.DevExistenceValidator;
 import com.chisondo.server.modules.device.validator.QueryParamValidator;
@@ -31,10 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class DeviceQueryController extends AbstractController {
-
-
-	@Autowired
-	private ActivedDeviceInfoService deviceInfoService;
 
 	@Autowired
 	private DeviceQueryService deviceQueryService;

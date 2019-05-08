@@ -43,4 +43,6 @@ public interface ActivedDeviceInfoService {
     void updateDevSound(SetDevSoundReqDTO setDevSoundReq);
 
 	List<DeviceInfoRespDTO> queryDeviceDetail(Map<String, Object> params);
+
+    ActivedDeviceInfoEntity getNewDeviceByNewDevId(String deviceId);
 }

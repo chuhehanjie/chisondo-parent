@@ -1,5 +1,4 @@
 package com.chisondo.server.modules.device.controller;
-import java.util.Date;
 
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.core.AbstractController;
@@ -12,7 +11,6 @@ import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,20 +37,22 @@ public class DeviceStatusReportController extends AbstractController {
 	 */
 	@RequestMapping("/api/rest/currentState")
 	public CommonResp updateDevStatus(@RequestBody DevStatusReportResp devStatusReportResp) {
-		if (ValidateUtils.isEmpty(this.deviceInfoService.getDeviceInfoById(devStatusReportResp.getDeviceID()))) {
+		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(devStatusReportResp.getDeviceID());
+		if (ValidateUtils.isEmpty(deviceInfo)) {
 			// 新设备入库
-			this.addNewDevice(devStatusReportResp);
-			this.addDeviceStateInfo(devStatusReportResp);
+			ActivedDeviceInfoEntity newDevice = this.addNewDevice(devStatusReportResp);
+			this.addDeviceStateInfo(devStatusReportResp, newDevice);
 		} else {
 			// TODO 直接从 redis 查询设备状态
+			devStatusReportResp.setDeviceID(deviceInfo.getDeviceId());
 			this.deviceStateInfoService.updateDevStatus(devStatusReportResp);
 		}
 		return CommonResp.ok();
 	}
 
-	private void addDeviceStateInfo(@RequestBody DevStatusReportResp devStatusReportResp) {
+	private void addDeviceStateInfo(@RequestBody DevStatusReportResp devStatusReportResp, ActivedDeviceInfoEntity deviceInfo) {
 		DeviceStateInfoEntity deviceStateInfo = new DeviceStateInfoEntity();
-		deviceStateInfo.setDeviceId(devStatusReportResp.getDeviceID());
+		deviceStateInfo.setDeviceId(deviceInfo.getDeviceId());
 		deviceStateInfo.setOnlineState(Constant.OnlineState.YES);
 		deviceStateInfo.setDeviceStateInfo("TEST10086"); // TODO 待确认 设备状态信息值先写死
 		deviceStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
@@ -87,9 +87,10 @@ public class DeviceStatusReportController extends AbstractController {
 		this.deviceStateInfoService.save(deviceStateInfo);
 	}
 
-	private void addNewDevice(@RequestBody DevStatusReportResp devStatusReportResp) {
+	private ActivedDeviceInfoEntity addNewDevice(@RequestBody DevStatusReportResp devStatusReportResp) {
 		ActivedDeviceInfoEntity deviceInfo = new ActivedDeviceInfoEntity();
-		deviceInfo.setDeviceId(devStatusReportResp.getDeviceID());
+		deviceInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
+		deviceInfo.setDeviceId(this.buildDeviceId(devStatusReportResp.getDeviceID()));
 		deviceInfo.setDeviceName(Constant.DEF_DEV_NAME);
 		deviceInfo.setDeviceTypeId(3); // 3 表示新设备
 		deviceInfo.setActivedTime(DateUtils.currentDate());
@@ -105,6 +106,13 @@ public class DeviceStatusReportController extends AbstractController {
 		deviceInfo.setVolFlag(null);
 		deviceInfo.setGmsFlag(null);
 		deviceInfoService.save(deviceInfo);
+		return deviceInfo;
+	}
+
+	private String buildDeviceId(String deviceID) {
+		String actualDevId = deviceID.hashCode() + "";
+		actualDevId = actualDevId.replace("-", "");
+		return actualDevId.length() > 10 ? actualDevId.substring(0, 10) : actualDevId;
 	}
 
 }

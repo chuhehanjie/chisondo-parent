@@ -42,16 +42,6 @@ public final class CommonUtils {
         return "泉笙道";
     }
 
-    /**
-     * 判断是否为老设备
-     * @param deviceId
-     * @return
-     */
-    public static boolean isOldDevice(String deviceId) {
-        // TODO 具体判断规则待定
-        return false;
-    }
-
    /* public static String getJSONFromRequest(HttpServletRequest req) throws IOException {
         InputStream inputStream = req.getInputStream();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -208,5 +198,9 @@ public final class CommonUtils {
             sb.append(rand.nextInt(10));
         }
         return sb.toString();
+    }
+
+    public static boolean isOldDevice(String deviceId) {
+        return deviceId.length() <= 8;
     }
 }
