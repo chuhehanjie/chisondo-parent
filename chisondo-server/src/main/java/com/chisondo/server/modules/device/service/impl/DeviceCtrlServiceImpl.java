@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.DeviceHttpReq;
@@ -341,7 +342,18 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		*/
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
 		DeviceHttpReq devHttpReq = new DeviceHttpReq(newDeviceId);
-		DeviceHttpResp devHttpResp = this.deviceHttpService.startKeeWarm(devHttpReq);
+        int operFlag = (int) req.getAttrByKey(Keys.OPER_FLAG);
+        DeviceHttpResp devHttpResp = null;
+        if (Constant.KeeWarmCtrlOperFalg.START_KEEP_WARM == operFlag) {
+            // 开始保温
+            devHttpResp = this.deviceHttpService.startKeeWarm(devHttpReq);
+        } else {
+            // 结束保温
+            StopWorkHttpReq stopWorkReq = new StopWorkHttpReq();
+            stopWorkReq.setActionflag(DevConstant.StopWorkActionFlag.STOP_WARM);
+            stopWorkReq.setDeviceID(newDeviceId);
+            devHttpResp = this.deviceHttpService.stopWork(stopWorkReq);
+        }
 		log.info("调用保温控制 HTTP 服务响应：{}", devHttpResp);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
@@ -410,8 +422,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
     public CommonResp changeDevTeaSpectrum(CommonReq req) {
 	    ChgDevTeaSpectrumReqDTO chgDevTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), ChgDevTeaSpectrumReqDTO.class);
         AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
-		AppChapuParaEntity teaSpectrumParam = this.appChapuParaService.queryObject(teaSpectrum.getChapuId());
-		if (ValidateUtils.isEmpty(teaSpectrumParam)) {
+        List<AppChapuParaEntity> teaSpectrumParams = this.appChapuParaService.queryList(ImmutableMap.of(Keys.CHAPU_ID, teaSpectrum.getChapuId()));
+		if (ValidateUtils.isEmptyCollection(teaSpectrumParams)) {
 			throw new CommonException("茶谱参数未设置");
 		}
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
@@ -419,8 +431,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setIndex(chgDevTeaSpectrumReq.getIndex());
 		devHttpReq.setMaketimes(teaSpectrum.getMakeTimes());
-		DevParamMsg teaparam = new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater());
-		devHttpReq.setTeaparm(teaparam);
+        List<DevParamMsg> teaparam = teaSpectrumParams.stream().map(teaSpectrumParam -> new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater())).collect(Collectors.toList());
+        devHttpReq.setTeaparm(teaparam);
 		devHttpReq.setChapuid(teaSpectrum.getChapuId());
 		devHttpReq.setChapuname(teaSpectrum.getName());
 		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevChapuParam(devHttpReq);

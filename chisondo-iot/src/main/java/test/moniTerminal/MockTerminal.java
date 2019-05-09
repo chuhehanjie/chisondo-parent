@@ -5,6 +5,7 @@ import com.chisondo.iot.common.constant.Constant;
 import com.chisondo.iot.device.request.DevStatusReportReq;
 import com.chisondo.model.http.resp.DevStatusMsgResp;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,7 +46,7 @@ public class MockTerminal {
 
                     @Override
                     protected void initChannel(SocketChannel sc) throws Exception {
-                        sc.pipeline().addLast(new StringDecoder());
+                        sc.pipeline().addLast(new StringDecoder(CharsetUtil.UTF_8));
                         sc.pipeline().addLast(new MockTerminalHandler());
                     }
                 });
@@ -90,7 +91,7 @@ public class MockTerminal {
 
     public static void main(String[] args) throws InterruptedException {
         String[] deviceIds = getDeviceIds();
-        mockClientDev(deviceIds);
+        mockClientDev("1234超级设备".split(","));
         //System.out.println(getDevStatusInfo("18170964"));
     }
 

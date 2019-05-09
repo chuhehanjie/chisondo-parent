@@ -26,12 +26,14 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLException;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
@@ -60,8 +62,8 @@ public class DeviceChannelInitializer extends ChannelInitializer<SocketChannel> 
     private static final int WRITE_IDEL_TIME_OUT = 216;// 写超时
     private static final int ALL_IDEL_TIME_OUT = 300; // 所有超时
 
-    private static final StringDecoder DECODER = new DeviceServerDecoder();
-    private static final StringEncoder ENCODER = new DeviceServerEncoder();
+    private static final StringDecoder DECODER = new DeviceServerDecoder(CharsetUtil.UTF_8);
+    private static final StringEncoder ENCODER = new DeviceServerEncoder(CharsetUtil.UTF_8);
 
     @Autowired
     @Qualifier("deviceServerHandler")

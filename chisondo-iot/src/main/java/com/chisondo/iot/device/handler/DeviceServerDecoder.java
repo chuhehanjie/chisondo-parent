@@ -1,4 +1,7 @@
 package com.chisondo.iot.device.handler;
+import com.chisondo.model.http.resp.DevSettingMsgResp;
+import com.chisondo.model.http.resp.TeaSpectrumMsgResp;
+import com.chisondo.model.http.resp.DevParamMsg;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.iot.common.constant.Constant;
@@ -13,10 +16,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 @Slf4j
 public class DeviceServerDecoder extends StringDecoder {
+
+    public DeviceServerDecoder(Charset charset) {
+        super(charset);
+    }
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         String json = IOTUtils.convertByteBufToString(msg);
@@ -60,6 +69,39 @@ public class DeviceServerDecoder extends StringDecoder {
         }
         DevStatusReportReq reportReq = JSONObject.parseObject(json, DevStatusReportReq.class);
         System.out.println(reportReq.getDeviceID());
+        DevSettingHttpResp devSettingResp = new DevSettingHttpResp();
+        devSettingResp.setAction("qrydevparmok");
+        devSettingResp.setDeviceID("987654321");
+        DevSettingMsgResp msg = new DevSettingMsgResp();
+        msg.setState(0);
+        msg.setStateinfo(0);
+        msg.setVolflag(1);
+        msg.setGmsflag(1);
+        devSettingResp.setMsg(msg);
+        DevParamMsg washteaMsg = new DevParamMsg();
+        washteaMsg.setTemperature(65);
+        washteaMsg.setSoak(200);
+        washteaMsg.setWaterlevel(300);
+        devSettingResp.setWashteamsg(washteaMsg);
+        DevParamMsg boilwaterMsg = new DevParamMsg();
+        boilwaterMsg.setTemperature(70);
+        boilwaterMsg.setSoak(250);
+        boilwaterMsg.setWaterlevel(350);
+        devSettingResp.setBoilwatermsg(boilwaterMsg);
+        TeaSpectrumMsgResp chapuMsg = new TeaSpectrumMsgResp();
+        chapuMsg.setIndex(2);
+        chapuMsg.setChapuid(3);
+        chapuMsg.setChapuname("乌龙茶-浓");
+        chapuMsg.setMaketimes(1);
+        DevParamMsg teaParam = new DevParamMsg();
+        teaParam.setTemperature(75);
+        teaParam.setSoak(300);
+        teaParam.setWaterlevel(400);
+        chapuMsg.setTeaparm(teaParam);
+        devSettingResp.setChapumsg(chapuMsg);
+        devSettingResp.setRetn(200);
+        devSettingResp.setDesc("请求成功");
+        System.out.println(JSONObject.toJSONString(devSettingResp));
     }
 
     /**
@@ -146,4 +188,5 @@ public class DeviceServerDecoder extends StringDecoder {
     private boolean isErrorResp(String json) {
         return json.contains("\"retn\":500");
     }
+
 }

@@ -3,6 +3,7 @@ package com.chisondo.model.http.req;
 import com.chisondo.model.http.resp.DevParamMsg;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 设备设备茶谱参数 HTTP 请求对象
@@ -19,7 +20,7 @@ public class SetDevChapuParamHttpReq implements Serializable {
     private Integer chapuid; // 茶谱ID
     private String chapuname; // 茶谱名称
     private Integer maketimes; // 总泡数
-    private DevParamMsg teaparm; //	每一泡参数
+    private List<DevParamMsg> teaparm; //	每一泡参数
 
     private String deviceID;
 
@@ -63,11 +64,11 @@ public class SetDevChapuParamHttpReq implements Serializable {
         this.maketimes = maketimes;
     }
 
-    public DevParamMsg getTeaparm() {
+    public List<DevParamMsg> getTeaparm() {
         return teaparm;
     }
 
-    public void setTeaparm(DevParamMsg teaparm) {
+    public void setTeaparm(List<DevParamMsg> teaparm) {
         this.teaparm = teaparm;
     }
 

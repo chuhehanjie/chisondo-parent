@@ -23,5 +23,6 @@ public class KeepWarmCtrlValidator implements BusiValidator {
         if (Constant.KeeWarmCtrlOperFalg.START_KEEP_WARM != operFlag && Constant.KeeWarmCtrlOperFalg.STOP_KEEP_WARM != operFlag) {
             throw new CommonException("操作类型无效");
         }
+        req.addAttr(Keys.OPER_FLAG, operFlag);
     }
 }

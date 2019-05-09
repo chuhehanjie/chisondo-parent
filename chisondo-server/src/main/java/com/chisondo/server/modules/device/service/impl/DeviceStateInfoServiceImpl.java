@@ -91,8 +91,18 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	public void updateDevStatus(DevStatusReportResp devStatusReportResp) {
 		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportResp);
 		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
-		this.update(devStateInfo);
-		log.info("updateDevStatus success");
+		//  根据设备ID查询设备状态信息是否存在
+		DeviceStateInfoEntity existedDevState = this.queryObject(devStateInfo.getDeviceId());
+		if (ValidateUtils.isEmpty(existedDevState)) {
+			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
+			devStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());
+			// 不存在则添加
+			this.save(devStateInfo);
+			log.info("add device state success");
+		} else {
+			this.update(devStateInfo);
+			log.info("updateDevStatus success");
+		}
 	}
 
 	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp) {
