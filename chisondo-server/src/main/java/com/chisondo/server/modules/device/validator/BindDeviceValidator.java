@@ -63,7 +63,8 @@ public class BindDeviceValidator implements BusiValidator {
         if (ValidateUtils.isEmpty(devBindReq.getCompanyId())) {
             throw new CommonException("公司ID为空");
         }
-        if (ValidateUtils.isEmptyString(devBindReq.getLongitude())) {
+        // update by dz 20190509 这几个属性不需要做必填校验
+       /* if (ValidateUtils.isEmptyString(devBindReq.getLongitude())) {
             throw new CommonException("经度为空");
         }
         if (ValidateUtils.isEmptyString(devBindReq.getLatitude())) {
@@ -80,7 +81,7 @@ public class BindDeviceValidator implements BusiValidator {
         }
         if (ValidateUtils.isEmptyString(devBindReq.getDetaddress())) {
             throw new CommonException("详细地址为空");
-        }
+        }*/
         if (ValidateUtils.isEmptyString(devBindReq.getPasswd())) {
             throw new CommonException("密码为空");
         }
