@@ -26,7 +26,7 @@
 	<sql id="queryDevInfoOfUser">
 		SELECT
 			a.device_id AS deviceId,
-			a.new_device_id AS newDeviceId,
+			dev.new_device_id AS newDeviceId,
 			dev.device_name AS deviceName,
 			dev.dev_desc AS deviceDesc,
 			a.connect_state AS connStatus,

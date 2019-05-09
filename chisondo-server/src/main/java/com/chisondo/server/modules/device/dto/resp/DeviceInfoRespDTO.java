@@ -20,6 +20,7 @@ public class DeviceInfoRespDTO {
     private String	latitude; // 	GPS纬度	设备 纬度
     private Integer deviceType; // 0，Wi-Fi版设备；1，2G版设备；
     private String WiFiSSID; // 当Wi-Fi在线时 返回
+    private String newDeviceId;
 
     public Integer getDeviceId() {
         return deviceId;
@@ -171,5 +172,13 @@ public class DeviceInfoRespDTO {
 
     public void setWiFiSSID(String wiFiSSID) {
         WiFiSSID = wiFiSSID;
+    }
+
+    public String getNewDeviceId() {
+        return newDeviceId;
+    }
+
+    public void setNewDeviceId(String newDeviceId) {
+        this.newDeviceId = newDeviceId;
     }
 }
