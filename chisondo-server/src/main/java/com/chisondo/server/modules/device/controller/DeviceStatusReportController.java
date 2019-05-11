@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -32,9 +33,14 @@ public class DeviceStatusReportController extends AbstractController {
 	@Autowired
 	private ActivedDeviceInfoService deviceInfoService;
 	/**
-	 * 设备状态上报
-	 * 由 设备 ->> 设备TCP报务 ->> 应用HTTP接收并更新设备状态
+	 * 从 redis 中更新设备状态
 	 */
+	@RequestMapping("/api/rest/updateDevStateFromRedis")
+	public CommonResp updateDevStateFromRedis(@RequestParam String deviceId) {
+		this.deviceStateInfoService.updateDevStateFromRedis(deviceId);
+		return CommonResp.ok();
+	}
+
 	@RequestMapping("/api/rest/currentState")
 	public CommonResp updateDevStatus(@RequestBody DevStatusReportResp devStatusReportResp) {
 		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(devStatusReportResp.getDeviceID());

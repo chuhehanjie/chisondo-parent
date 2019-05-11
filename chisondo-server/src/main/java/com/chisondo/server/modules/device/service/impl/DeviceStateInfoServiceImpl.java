@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.req.DeviceBindReqDTO;
-import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
+import com.chisondo.model.http.resp.DevStatusRespDTO;
+import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
+import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 
 	@Autowired
 	private RedisUtils redisUtils;
+
+	@Autowired
+	private ActivedDeviceInfoService deviceInfoService;
 	
 	@Override
 	public DeviceStateInfoEntity queryObject(String deviceId){
@@ -112,7 +117,9 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
 		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
 		this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
-		this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
+		if (devStatusResp.getReamin() > 0) {
+			this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
+		}
 	}
 
 	/**
@@ -121,22 +128,20 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	 * @param devStateInfo
 	 */
 	private void processDevWorkingRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
-		if (devStatusResp.getReamin() > 0) {
-			new Thread(() -> {
-				int remainTime = devStatusResp.getReamin() - 1;
-				for (int i = remainTime; i >= 0; i--) {
-					try {
-						devStatusResp.setReamin(i);
-						this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						log.error("更新设备工作剩余时间失败！", e);
-					}
+		new Thread(() -> {
+			int remainTime = devStatusResp.getReamin() - 1;
+			for (int i = remainTime; i >= 0; i--) {
+				try {
+					devStatusResp.setReamin(i);
+					this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					log.error("更新设备工作剩余时间失败！", e);
 				}
-				devStateInfo.setReamin(0);
-				this.update(devStateInfo);
-			}).start();
-		}
+			}
+			devStateInfo.setReamin(0);
+			this.update(devStateInfo);
+		}).start();
 	}
 
 	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp) {
@@ -169,5 +174,35 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	@Override
 	public void setDevChapu2Finish(Map<String, Object> params) {
 		this.deviceStateInfoDao.setDevChapu2Finish(params);
+	}
+
+	@Override
+	public void updateDevStateFromRedis(String deviceId) {
+		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(deviceId);
+		if (ValidateUtils.isEmpty(deviceInfo)) {
+			log.error("新设备[{}]信息不存在！", deviceId);
+			return;
+		}
+		DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+		DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
+		deviceState.setDeviceId(deviceInfo.getDeviceId());
+		deviceState.setUpdateTime(DateUtils.currentDate());
+		deviceState.setLastConnTime(DateUtils.currentDate());
+		deviceState.setMakeTemp(devStatusResp.getMakeTemp());
+		deviceState.setTemp(devStatusResp.getTemp());
+		deviceState.setWarm(devStatusResp.getWarm());
+		deviceState.setDensity(devStatusResp.getDensity());
+		deviceState.setWaterlv(devStatusResp.getWaterlv());
+		deviceState.setMakeDura(devStatusResp.getMakeDura());
+		deviceState.setReamin(devStatusResp.getReamin());
+		deviceState.setTea(devStatusResp.getTea());
+		deviceState.setWater(devStatusResp.getWater());
+		deviceState.setWork(devStatusResp.getWork());
+		if (devStatusResp.getReamin() > 0) {
+			this.processDevWorkingRemainTime(devStatusResp, deviceState);
+		} else {
+			this.update(deviceState);
+		}
+		log.error("更新设备[{}]状态信息成功！新设备ID = {}", deviceInfo.getDeviceId(), deviceInfo.getNewDeviceId());
 	}
 }

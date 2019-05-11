@@ -102,6 +102,11 @@ public class DeviceServerDecoder extends StringDecoder {
         devSettingResp.setRetn(200);
         devSettingResp.setDesc("请求成功");
         System.out.println(JSONObject.toJSONString(devSettingResp));
+        System.out.println("*************************************************");
+        String json2 = "{\"retn\":200, \"desc\":\"success\", \"action\":\"startworkok\",\"deviceID\":\"71823MJ890KB\",\"msg\":{\"state\":0,\"stateinfo\":0,\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"20\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1}}";
+        //String json2 = "{\"retn\":200, \"desc\":\"success\", \"action\":\"startworkok\",\"deviceID\":\"71823MJ890KB\"}";
+        DeviceHttpResp deviceResp = JSONObject.parseObject(json2, DeviceHttpResp.class);
+        System.out.println("deviceResp json = " + JSONObject.toJSONString(deviceResp));
     }
 
     /**

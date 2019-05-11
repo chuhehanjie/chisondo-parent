@@ -44,12 +44,6 @@ public class IOTApplication {
     }
 
 
-    @Value("${redis.address}")
-    private String redisAddres;
-
-    @Value("${redis.port}")
-    private int redisPort;
-
     @Value("${netty.tcp.port}")
     private int tcpPort;
 

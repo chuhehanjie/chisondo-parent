@@ -37,4 +37,6 @@ public interface DeviceStateInfoService {
     void updateDevStatus(DevStatusReportResp devStatusReportResp);
 
     void setDevChapu2Finish(Map<String, Object> params);
+
+    void updateDevStateFromRedis(String deviceId);
 }

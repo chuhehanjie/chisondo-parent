@@ -3,7 +3,7 @@ package com.chisondo.server.modules.device.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
-import com.chisondo.model.http.resp.DevStatusReportResp;
+import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;

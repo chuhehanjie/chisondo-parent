@@ -306,8 +306,8 @@
 	<update id="update" parameterType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
 		update tb_device_state_info 
 		<set>
-			<if test="onlineState != null">`online_state` = #{onlineState}, </if>
 			<if test="deviceStateInfo != null">`device_state_info` = #{deviceStateInfo}, </if>
+			<if test="onlineState != null">`online_state` = #{onlineState}, </if>
 			<if test="connectState != null">`connect_state` = #{connectState}, </if>
 			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
 			<if test="lastConnTime != null">`last_conn_time` = #{lastConnTime}, </if>

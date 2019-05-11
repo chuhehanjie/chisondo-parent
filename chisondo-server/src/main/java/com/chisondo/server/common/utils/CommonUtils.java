@@ -5,7 +5,7 @@ import com.chisondo.model.http.HttpStatus;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
+import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.google.common.collect.Maps;

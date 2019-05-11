@@ -1,6 +1,6 @@
 package com.chisondo.model.http.resp;
 
-public class DeviceMsgResp {
+public class DeviceMsgResp extends  DevStatusMsgResp {
     /**
      * 状态值，可扩展
      */

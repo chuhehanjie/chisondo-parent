@@ -9,7 +9,7 @@ import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.dto.resp.DevSettingRespDTO;
-import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
+import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.service.DeviceQueryService;
 import com.chisondo.server.modules.device.validator.DevExistenceValidator;

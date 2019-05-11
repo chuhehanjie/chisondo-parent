@@ -1,13 +1,12 @@
 package com.chisondo.iot.device.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.iot.common.redis.RedisUtils;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.common.utils.RestTemplateUtils;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
-import com.chisondo.model.http.resp.DevSettingHttpResp;
-import com.chisondo.model.http.resp.DevStatusReportResp;
-import com.chisondo.model.http.resp.DeviceHttpResp;
+import com.chisondo.model.http.resp.*;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -16,6 +15,8 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -36,8 +37,8 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     @Autowired
     private RestTemplateUtils restTemplateUtils;
 
-    /*@Autowired
-    private StringRedisTemplate redisClient;*/
+    @Autowired
+    private RedisUtils redisUtils;
 
     /**
      * A thread-safe Set  Using ChannelGroup, you can categorize Channels into a meaningful group.
@@ -125,6 +126,37 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         }
         log.debug("设备控件响应信息 = {}", JSONObject.toJSONString(resp));
         this.sendTCPResp2Http(resp, resp.getDeviceID());
+        // 同时更新设备状态
+        this.updateDevState2Redis(resp);
+        try {
+            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/updateDevStateFromRedis", String.class, resp.getDeviceID());
+            log.error("result = {}", result);
+        } catch (Exception e) {
+            log.error("更新设备状态信息失败！", e);
+        }
+    }
+
+    /**
+     * 更新设备状态到 redis
+     * @param resp
+     */
+    private void updateDevState2Redis(DeviceHttpResp resp) {
+        DevStatusRespDTO devStatusResp = this.redisUtils.get(resp.getDeviceID(), DevStatusRespDTO.class);
+        if (null == devStatusResp) {
+            log.error("设备[{}]状态信息在 redis 中不存在！", resp.getDeviceID());
+            return;
+        }
+        DeviceMsgResp devMsg = resp.getMsg();
+        devStatusResp.setTemp(devMsg.getTemperature());
+        devStatusResp.setWarm(devMsg.getWarmstatus());
+        devStatusResp.setDensity(devMsg.getTaststatus());
+        devStatusResp.setWaterlv(devMsg.getWaterlevel());
+        devStatusResp.setMakeDura(devMsg.getSoak());
+        devStatusResp.setReamin(Integer.valueOf(devMsg.getRemaintime()));
+        devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
+        devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
+        devStatusResp.setWork(devMsg.getWorkstatus());
+        this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
     }
 
     private void sendTCPResp2Http(Object resp, String deviceId) {
