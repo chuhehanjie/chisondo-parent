@@ -45,6 +45,21 @@ public class DeviceStatusReportController extends AbstractController {
 		return CommonResp.ok();
 	}
 
+	@RequestMapping("/api/rest/setDevStateOffline")
+	public CommonResp setDevStateOffline(@RequestBody Map<String, Object> params) {
+		String deviceId = params.get(Keys.DEVICE_ID).toString();
+		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(deviceId);
+		if (ValidateUtils.isNotEmpty(deviceInfo)) {
+			DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
+			deviceState.setDeviceId(deviceInfo.getDeviceId());
+			deviceState.setOnlineState(Constant.OnlineState.NO);
+			deviceState.setConnectState(Constant.ConnectState.NOT_CONNECTED);
+			deviceState.setUpdateTime(DateUtils.currentDate());
+			this.deviceStateInfoService.update(deviceState);
+		}
+		return CommonResp.ok();
+	}
+
 	@RequestMapping("/api/rest/currentState")
 	public CommonResp updateDevStatus(@RequestBody DevStatusReportResp devStatusReportResp) {
 		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(devStatusReportResp.getDeviceID());

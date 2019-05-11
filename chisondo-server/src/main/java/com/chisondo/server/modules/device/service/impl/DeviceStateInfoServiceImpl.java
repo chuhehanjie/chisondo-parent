@@ -124,9 +124,15 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	 */
 	private void processDevWorkingRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
 		new Thread(() -> {
+			boolean needUpdate = true;
 			int remainTime = devStatusResp.getReamin() - 1;
 			for (int i = remainTime; i >= 0; i--) {
 				try {
+					DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
+					if (tempDevStatusResp.getReamin() == 0) {
+						needUpdate = false;
+						break;
+					}
 					devStatusResp.setReamin(i);
 					this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
 					Thread.sleep(1000);
@@ -134,8 +140,10 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 					log.error("更新设备工作剩余时间失败！", e);
 				}
 			}
-			devStateInfo.setReamin(0);
-			this.update(devStateInfo);
+			if (!needUpdate) {
+				devStateInfo.setReamin(0);
+				this.update(devStateInfo);
+			}
 		}).start();
 	}
 

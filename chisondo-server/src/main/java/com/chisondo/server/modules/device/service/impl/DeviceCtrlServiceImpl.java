@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.DeviceHttpReq;
+import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.model.http.resp.DeviceHttpResp;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
@@ -81,6 +82,9 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Autowired
 	private DeviceOperateLogService devOperateLogService;
+
+	@Autowired
+	private RedisUtils redisUtils;
 
 	@Override
 	public CommonResp startOrReserveMakeTea(CommonReq req) {
@@ -312,8 +316,21 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			useMakeTea.setTeaSortName(teaSpectrum.getSortName());
 			useMakeTea.setMakeType(Constant.MakeTeaType.TEA_SPECTRUM);
 			this.userMakeTeaService.save(useMakeTea);
+			this.updateChapuInfo2Redis(teaSpectrum, newDeviceId, useMakeTea);
 		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	private void updateChapuInfo2Redis(AppChapuEntity teaSpectrum, String newDeviceId, UserMakeTeaEntity useMakeTea) {
+		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(newDeviceId, DevStatusRespDTO.class);
+		devStatusRespDTO.setMakeType(useMakeTea.getMakeType());
+		devStatusRespDTO.setChapuId(teaSpectrum.getChapuId());
+		devStatusRespDTO.setChapuName(teaSpectrum.getName());
+		devStatusRespDTO.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+		devStatusRespDTO.setIndex(useMakeTea.getMakeIndex());
+		devStatusRespDTO.setChapuImage(teaSpectrum.getImage());
+		devStatusRespDTO.setUseNum(teaSpectrum.getUseTimes());
+		this.redisUtils.set(newDeviceId, devStatusRespDTO);
 	}
 
 	@Override

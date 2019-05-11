@@ -70,14 +70,6 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel deviceChannel = ctx.channel();
         log.error("移除设备[{}]通道", deviceChannel.remoteAddress());
-
-        String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
-        if (!StringUtils.isEmpty(deviceId)) {
-            DevHttpChannelManager.removeByDeviceId(deviceId);
-        }
-        // TODO 从 redis 中删除
-
-        // TODO 更新状态到 HTTP
     }
 
 
@@ -128,10 +120,15 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         this.sendTCPResp2Http(resp, resp.getDeviceID());
         // 同时更新设备状态
         this.updateDevState2Redis(resp);
+        this.sendDevState2Http(resp.getDeviceID(), false);
+    }
+
+    private void sendDevState2Http(String deviceId, boolean isOffline) {
         try {
+            String  suffix = isOffline ? "setDevStateOffline" : "updateDevStateFromRedis";
             Map<String, Object> params = new HashMap<>();
-            params.put("deviceId", resp.getDeviceID());
-            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/updateDevStateFromRedis", String.class, params);
+            params.put("deviceId", deviceId);
+            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/" + suffix, String.class, params);
             log.error("result = {}", result);
         } catch (Exception e) {
             log.error("更新设备状态信息失败！", e);
@@ -253,9 +250,16 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     public void channelInactive(ChannelHandlerContext ctx) throws Exception { // (6)
         Channel deviceChannel = ctx.channel();
         String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
-        // TODO 更新设备状态为离线
-        // TODO 发送请求到 HTTP 服务
         log.info("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
+        DevHttpChannelManager.removeByDeviceId(deviceId);
+        DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+        devStatusResp.setOnlineStatus(0);
+        devStatusResp.setConnStatus(0);
+        // TODO 是否需要设置 remain 为 0？
+        this.redisUtils.set(deviceId, devStatusResp);
+        log.error("设备[{}]离线，从 redis 中更新状态", deviceId);
+        this.sendDevState2Http(deviceId, true);
+        log.error("发送离线请求到HTTP");
 //        DeviceChannelManager.removeDeviceChannel();
     }
 
