@@ -12,6 +12,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 
@@ -129,7 +132,9 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         // 同时更新设备状态
         this.updateDevState2Redis(resp);
         try {
-            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/updateDevStateFromRedis", String.class, resp.getDeviceID());
+            Map<String, Object> params = new HashMap<>();
+            params.put("deviceId", resp.getDeviceID());
+            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/updateDevStateFromRedis", String.class, params);
             log.error("result = {}", result);
         } catch (Exception e) {
             log.error("更新设备状态信息失败！", e);

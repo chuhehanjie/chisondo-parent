@@ -79,6 +79,8 @@ public class DeviceStateInfoEntity  implements Serializable {
 	// 使用的茶谱ID	没有在使用茶谱返回0
 	private Integer chapuId;
 
+	private String newDeviceId;
+
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
@@ -304,5 +306,13 @@ public class DeviceStateInfoEntity  implements Serializable {
 
 	public void setChapuId(Integer chapuId) {
 		this.chapuId = chapuId;
+	}
+
+	public String getNewDeviceId() {
+		return newDeviceId;
+	}
+
+	public void setNewDeviceId(String newDeviceId) {
+		this.newDeviceId = newDeviceId;
 	}
 }

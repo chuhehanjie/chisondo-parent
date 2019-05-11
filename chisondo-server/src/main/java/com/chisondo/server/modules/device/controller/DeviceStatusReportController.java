@@ -5,6 +5,7 @@ import com.chisondo.server.common.core.AbstractController;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.DateUtils;
+import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * 设备状态上报 controller
@@ -36,7 +39,8 @@ public class DeviceStatusReportController extends AbstractController {
 	 * 从 redis 中更新设备状态
 	 */
 	@RequestMapping("/api/rest/updateDevStateFromRedis")
-	public CommonResp updateDevStateFromRedis(@RequestParam String deviceId) {
+	public CommonResp updateDevStateFromRedis(@RequestBody Map<String, Object> params) {
+		String deviceId = params.get(Keys.DEVICE_ID).toString();
 		this.deviceStateInfoService.updateDevStateFromRedis(deviceId);
 		return CommonResp.ok();
 	}
@@ -49,8 +53,9 @@ public class DeviceStatusReportController extends AbstractController {
 			ActivedDeviceInfoEntity newDevice = this.addNewDevice(devStatusReportResp);
 			this.addDeviceStateInfo(devStatusReportResp, newDevice);
 		} else {
+			String newDeviceId = devStatusReportResp.getDeviceID();
 			devStatusReportResp.setDeviceID(deviceInfo.getDeviceId());
-			this.deviceStateInfoService.updateDevStatus(devStatusReportResp);
+			this.deviceStateInfoService.updateDevStatus(devStatusReportResp, newDeviceId);
 		}
 		return CommonResp.ok();
 	}
@@ -89,7 +94,8 @@ public class DeviceStatusReportController extends AbstractController {
 		deviceStateInfo.setChapuImage(null);
 		deviceStateInfo.setChapuMakeTimes(0);
 		deviceStateInfo.setIndex(-1);
-		this.deviceStateInfoService.save(deviceStateInfo);
+		deviceStateInfo.setNewDeviceId(deviceInfo.getNewDeviceId());
+		this.deviceStateInfoService.save2(devStatusReportResp, deviceStateInfo);
 	}
 
 	private ActivedDeviceInfoEntity addNewDevice(@RequestBody DevStatusReportResp devStatusReportResp) {

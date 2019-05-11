@@ -34,9 +34,11 @@ public interface DeviceStateInfoService {
     void saveOrUpdate(DeviceBindReqDTO devBindReq);
 
     @Transactional
-    void updateDevStatus(DevStatusReportResp devStatusReportResp);
+    void updateDevStatus(DevStatusReportResp devStatusReportResp, String newDeviceId);
 
     void setDevChapu2Finish(Map<String, Object> params);
 
     void updateDevStateFromRedis(String deviceId);
+
+    void save2(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity deviceStateInfo);
 }

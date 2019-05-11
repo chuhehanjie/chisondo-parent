@@ -97,7 +97,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	@Override
-	public void updateDevStatus(DevStatusReportResp devStatusReportResp) {
+	public void updateDevStatus(DevStatusReportResp devStatusReportResp, String newDeviceId) {
 		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportResp);
 		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		//  根据设备ID查询设备状态信息是否存在
@@ -113,13 +113,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			log.info("updateDevStatus success");
 		}
 		// 把设备状态信息保存到 redis 中
-		DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
-		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
-		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
-		this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
-		if (devStatusResp.getReamin() > 0) {
-			this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
-		}
+		devStateInfo.setNewDeviceId(newDeviceId);
+		this.save2Redis(devStatusReportResp, devStateInfo);
 	}
 
 	/**
@@ -204,5 +199,21 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			this.update(deviceState);
 		}
 		log.error("更新设备[{}]状态信息成功！新设备ID = {}", deviceInfo.getDeviceId(), deviceInfo.getNewDeviceId());
+	}
+
+	@Override
+	public void save2(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
+		this.save(devStateInfo);
+		this.save2Redis(devStatusReportResp, devStateInfo);
+	}
+
+	private void save2Redis(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
+		DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
+		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
+		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
+		this.redisUtils.set(devStateInfo.getNewDeviceId(), devStatusResp);
+		if (devStatusResp.getReamin() > 0) {
+			this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
+		}
 	}
 }
