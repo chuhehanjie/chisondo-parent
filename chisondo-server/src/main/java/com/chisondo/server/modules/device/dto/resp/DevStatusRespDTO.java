@@ -29,6 +29,8 @@ public class DevStatusRespDTO implements Serializable {
 
     private Integer useNum; // 使用次数
 
+    private String deviceId;
+
     public Integer getConnStatus() {
         return connStatus;
     }
@@ -203,5 +205,13 @@ public class DevStatusRespDTO implements Serializable {
 
     public void setUseNum(Integer useNum) {
         this.useNum = useNum;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 }

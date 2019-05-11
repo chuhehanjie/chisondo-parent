@@ -121,13 +121,8 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	public CommonResp queryDevStateInfo(CommonReq req) {
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 		// 首先从 redis 取
-		String devStateInfoStr = this.redisUtils.get(deviceId);
-		if (ValidateUtils.isNotEmptyString(devStateInfoStr)) {
-			DevStatusReportResp devStatusReportResp = JSONObject.parseObject(devStateInfoStr, DevStatusReportResp.class);
-			DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(deviceId);
-			DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
-			devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
-			devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
+		DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+		if (ValidateUtils.isNotEmpty(devStatusResp)) {
 			return CommonResp.ok(devStatusResp);
 		} else {
 			// 从数据库中取
@@ -135,7 +130,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 			if (ValidateUtils.isEmpty(devStateInfo)) {
 				return CommonResp.error("设备状态信息不存在！");
 			}
-			DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStateInfo);
+			devStatusResp = CommonUtils.convert2DevStatusInfo(devStateInfo);
 			return CommonResp.ok(devStatusResp);
 		}
 	}

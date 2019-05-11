@@ -5,11 +5,9 @@ import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.common.utils.RestTemplateUtils;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
-import com.chisondo.model.http.resp.CommonHttpResp;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -18,13 +16,11 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -40,8 +36,8 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     @Autowired
     private RestTemplateUtils restTemplateUtils;
 
-    @Autowired
-    private StringRedisTemplate redisClient;
+    /*@Autowired
+    private StringRedisTemplate redisClient;*/
 
     /**
      * A thread-safe Set  Using ChannelGroup, you can categorize Channels into a meaningful group.
@@ -179,7 +175,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         // 设置连接设备的客户端IP
         reportResp.setClientIP(this.convertClientIP(deviceChannel.remoteAddress().toString()));
         // TODO 更新 redis 中设备状态
-        this.redisClient.opsForValue().set(reportResp.getDeviceID(), JSONObject.toJSONString(reportResp), 60*20, TimeUnit.SECONDS);
+        //this.redisClient.opsForValue().set(reportResp.getDeviceID(), JSONObject.toJSONString(reportResp), 60*20, TimeUnit.SECONDS);
         this.reportDevStatus2App(reportResp);
     }
 

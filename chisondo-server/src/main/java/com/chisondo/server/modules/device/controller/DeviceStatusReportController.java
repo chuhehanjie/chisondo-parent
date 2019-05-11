@@ -43,7 +43,6 @@ public class DeviceStatusReportController extends AbstractController {
 			ActivedDeviceInfoEntity newDevice = this.addNewDevice(devStatusReportResp);
 			this.addDeviceStateInfo(devStatusReportResp, newDevice);
 		} else {
-			// TODO 直接从 redis 查询设备状态
 			devStatusReportResp.setDeviceID(deviceInfo.getDeviceId());
 			this.deviceStateInfoService.updateDevStatus(devStatusReportResp);
 		}

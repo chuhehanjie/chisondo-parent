@@ -100,6 +100,7 @@ public final class CommonUtils {
 
     public static DevStatusRespDTO convert2DevStatusInfo(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
         DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
+        devStatusResp.setDeviceId(devStatusReportResp.getDeviceID());
         devStatusResp.setTemp(devStatusReportResp.getMsg().getTemperature());
         devStatusResp.setWarm(devStatusReportResp.getMsg().getWarmstatus());
         devStatusResp.setDensity(devStatusReportResp.getMsg().getTaststatus());

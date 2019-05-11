@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.req.DeviceBindReqDTO;
+import com.chisondo.server.modules.device.dto.resp.DevStatusRespDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	@Autowired
 	private DeviceStateInfoDao deviceStateInfoDao;
+
+	@Autowired
+	private RedisUtils redisUtils;
 	
 	@Override
 	public DeviceStateInfoEntity queryObject(String deviceId){
@@ -102,6 +106,36 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		} else {
 			this.update(devStateInfo);
 			log.info("updateDevStatus success");
+		}
+		// 把设备状态信息保存到 redis 中
+		DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
+		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
+		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
+		this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
+		this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
+	}
+
+	/**
+	 * 处理设备工作剩余时间
+	 * @param devStatusResp
+	 * @param devStateInfo
+	 */
+	private void processDevWorkingRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
+		if (devStatusResp.getReamin() > 0) {
+			new Thread(() -> {
+				int remainTime = devStatusResp.getReamin() - 1;
+				for (int i = remainTime; i >= 0; i--) {
+					try {
+						devStatusResp.setReamin(i);
+						this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						log.error("更新设备工作剩余时间失败！", e);
+					}
+				}
+				devStateInfo.setReamin(0);
+				this.update(devStateInfo);
+			}).start();
 		}
 	}
 

@@ -1,3 +1,4 @@
+/*
 package com.chisondo.iot.common.redis;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,3 +69,4 @@ public class RedisConfiguration {
         return ob;
     }
 }
+*/
