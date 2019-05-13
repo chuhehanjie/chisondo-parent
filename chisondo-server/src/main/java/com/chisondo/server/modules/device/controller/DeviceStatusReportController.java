@@ -53,7 +53,7 @@ public class DeviceStatusReportController extends AbstractController {
 			DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
 			deviceState.setDeviceId(deviceInfo.getDeviceId());
 			deviceState.setOnlineState(Constant.OnlineState.NO);
-			deviceState.setConnectState(Constant.ConnectState.NOT_CONNECTED);
+			//deviceState.setConnectState(Constant.ConnectState.NOT_CONNECTED);
 			deviceState.setUpdateTime(DateUtils.currentDate());
 			this.deviceStateInfoService.update(deviceState);
 		}
@@ -75,12 +75,12 @@ public class DeviceStatusReportController extends AbstractController {
 		return CommonResp.ok();
 	}
 
-	private void addDeviceStateInfo(@RequestBody DevStatusReportResp devStatusReportResp, ActivedDeviceInfoEntity deviceInfo) {
+	private void addDeviceStateInfo(DevStatusReportResp devStatusReportResp, ActivedDeviceInfoEntity deviceInfo) {
 		DeviceStateInfoEntity deviceStateInfo = new DeviceStateInfoEntity();
 		deviceStateInfo.setDeviceId(deviceInfo.getDeviceId());
 		deviceStateInfo.setOnlineState(Constant.OnlineState.YES);
 		deviceStateInfo.setDeviceStateInfo("TEST10086"); // TODO 待确认 设备状态信息值先写死
-		deviceStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
+		// deviceStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		deviceStateInfo.setUpdateTime(DateUtils.currentDate());
 		deviceStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
 		deviceStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());

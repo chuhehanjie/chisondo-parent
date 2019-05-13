@@ -150,7 +150,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp) {
         DeviceStateInfoEntity devStateInfo = this.convert2DevStatusInfo(devStatusReportResp);
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
-		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
+//		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		devStateInfo.setUpdateTime(new Date());
 		devStateInfo.setLastConnTime(new Date());
 		return devStateInfo;
@@ -218,10 +218,18 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	private void save2Redis(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
 		DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
 		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
-		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
+//		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
 		this.redisUtils.set(devStateInfo.getNewDeviceId(), devStatusResp);
 		if (devStatusResp.getReamin() > 0) {
 			this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
 		}
+	}
+
+	@Override
+	public void updateConnectState(String deviceId, int connectState) {
+		DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
+		deviceState.setDeviceId(deviceId);
+		deviceState.setConnectState(connectState);
+		this.update(deviceState);
 	}
 }

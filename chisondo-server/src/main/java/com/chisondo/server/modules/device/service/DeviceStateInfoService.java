@@ -41,4 +41,6 @@ public interface DeviceStateInfoService {
     void updateDevStateFromRedis(String deviceId);
 
     void save2(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity deviceStateInfo);
+
+    void updateConnectState(String deviceId, int connectState);
 }

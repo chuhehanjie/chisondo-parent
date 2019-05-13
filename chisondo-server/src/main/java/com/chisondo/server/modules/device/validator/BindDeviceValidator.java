@@ -41,14 +41,14 @@ public class BindDeviceValidator implements BusiValidator {
             throw new CommonException("设备密码错误");
         }
         // 校验设备是否已经被占用(即状态为连接中)
-        if (this.isDeviceConnected(devBindReq.getDeviceId())) {
+        /*if (this.isDeviceConnected(devBindReq.getDeviceId())) {
             throw new CommonException("设备在连接中");
         }
 
         // 校验设备是否有其他用户关联，且只允许关联一个用户 privateTag = 1
         if (this.isDeviceNotAllowConnect(devBindReq.getDeviceId())) {
             throw new CommonException("设备已被占用");
-        }
+        }*/
         devBindReq.setDeviceId(deviceInfo.getDeviceId());
         req.addAttr(Keys.REQ, devBindReq);
     }
@@ -87,6 +87,7 @@ public class BindDeviceValidator implements BusiValidator {
         }
     }
 
+    @Deprecated
     private boolean isDeviceNotAllowConnect(String deviceId) {
         if (ValidateUtils.isNotEmptyCollection(this.userDeviceService.queryList(ImmutableMap.of(Keys.DEVICE_ID, deviceId,Keys.PRIVATE_TAG, Constant.DevPrivateTag.YES)))) {
             return true;
@@ -94,6 +95,7 @@ public class BindDeviceValidator implements BusiValidator {
         return false;
     }
 
+    @Deprecated
     private boolean isDeviceConnected(String deviceId) {
         if (ValidateUtils.isNotEmptyCollection(this.deviceStateInfoService.queryList(
                 ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.CONNECT_STATE, Constant.ConnectState.CONNECTED)))) {
