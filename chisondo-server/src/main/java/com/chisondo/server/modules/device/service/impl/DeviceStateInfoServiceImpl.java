@@ -83,17 +83,37 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 
 	private void setDevStateAttrs(DeviceBindReqDTO devBindReq, DeviceStateInfoEntity devStateInfo) {
 		devStateInfo.setDeviceId(devBindReq.getDeviceId());
-		devStateInfo.setDeviceStateInfo("DEV" + devBindReq.getDeviceId());
-		devStateInfo.setOnlineState(Constant.OnlineState.NO);
-		devStateInfo.setConnectState(Constant.ConnectState.NOT_CONNECTED);
-		devStateInfo.setClientIpAddress(HttpContextUtils.getHttpServletRequest().getRemoteAddr());
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
-		devStateInfo.setLongitude(Double.valueOf(devBindReq.getLongitude()));
-		devStateInfo.setLatitude(Double.valueOf(devBindReq.getLatitude()));
-		devStateInfo.setProvince(devBindReq.getProvince());
-		devStateInfo.setCity(devBindReq.getCity());
-		devStateInfo.setDistrict(devBindReq.getDistrict());
-		devStateInfo.setAddress(devBindReq.getDetaddress());
+		if (ValidateUtils.isEmptyString(devStateInfo.getDeviceStateInfo())) {
+			devStateInfo.setDeviceStateInfo("DEV" + devBindReq.getDeviceId());
+		}
+		if (ValidateUtils.isEmpty(devStateInfo.getOnlineState())) {
+			devStateInfo.setOnlineState(Constant.OnlineState.NO);
+		}
+		if (ValidateUtils.isEmpty(devStateInfo.getConnectState())) {
+			devStateInfo.setConnectState(Constant.ConnectState.NOT_CONNECTED);
+		}
+		if (ValidateUtils.isEmptyString(devStateInfo.getClientIpAddress())) {
+			devStateInfo.setClientIpAddress(HttpContextUtils.getHttpServletRequest().getRemoteAddr());
+		}
+		if (ValidateUtils.isNotEmptyString(devBindReq.getLongitude())) {
+			devStateInfo.setLongitude(Double.valueOf(devBindReq.getLongitude()));
+		}
+		if (ValidateUtils.isNotEmptyString(devBindReq.getLatitude())) {
+			devStateInfo.setLatitude(Double.valueOf(devBindReq.getLatitude()));
+		}
+		if (ValidateUtils.isNotEmptyString(devBindReq.getProvince())) {
+			devStateInfo.setProvince(devBindReq.getProvince());
+		}
+		if (ValidateUtils.isNotEmptyString(devBindReq.getCity())) {
+			devStateInfo.setCity(devBindReq.getCity());
+		}
+		if (ValidateUtils.isNotEmptyString(devBindReq.getDistrict())) {
+			devStateInfo.setDistrict(devBindReq.getDistrict());
+		}
+		if (ValidateUtils.isNotEmptyString(devBindReq.getDetaddress())) {
+			devStateInfo.setAddress(devBindReq.getDetaddress());
+		}
 	}
 
 	@Override

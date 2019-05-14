@@ -251,6 +251,7 @@
 	<select id="queryHisConnectDevOfUserByPhone" parameterType="java.lang.String" resultType="com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO" >
 		<include refid="queryDevInfoOfUser"></include>
 		where c.PHONE = #{userMobile}
+		order by a.online_state desc
 	</select>
 
 	<select id="queryDeviceDetail" parameterType="java.util.HashMap" resultType="com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO" >

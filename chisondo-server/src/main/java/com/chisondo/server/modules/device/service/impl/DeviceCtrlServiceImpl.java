@@ -180,10 +180,17 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 		req.addAttr(Keys.USER_INFO, user);
 
-		this.checkedHasBinded(devBindReq.getDeviceId(), user.getMemberId());
-		// 保存用户与设备之间的关系
-		this.userDeviceService.save(devBindReq, user.getMemberId());
-
+		UserDeviceEntity userDeviceRela = this.checkedHasBinded(devBindReq.getDeviceId(), user.getMemberId());
+		if (ValidateUtils.isNotEmpty(userDeviceRela)) {
+			if (ValidateUtils.equals(userDeviceRela.getDefaultTag(), Constant.DevDefaultTag.NO)) {
+				// 用户已经与设备绑定了，且不是默认设备，则需要设置该设备为默认设备
+				this.userDeviceService.setNoneDefaultDev(user.getMemberId());
+				this.userDeviceService.setDefaultDevice(ImmutableMap.of(Keys.DEVICE_ID, devBindReq.getDeviceId(), Keys.OPER_FLAG, Constant.DevDefaultTag.YES, Keys.TEAMAN_ID, user.getMemberId()));
+			}
+		} else {
+			// 保存用户与设备之间的关系
+			this.userDeviceService.save(devBindReq, user.getMemberId());
+		}
 		// 更新设备状态信息
 		this.deviceStateInfoService.saveOrUpdate(devBindReq);
 
@@ -198,15 +205,18 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
     /**
      * 验证是否已经绑定
+	 * update by dz 20190515 不需要校验用户是否已经绑定设备
      * @param deviceId
      * @param userId
      * @return
      */
-    private void checkedHasBinded(String deviceId, Long userId) {
+    private UserDeviceEntity checkedHasBinded(String deviceId, Long userId) {
         List<UserDeviceEntity> userDeviceRelas = this.userDeviceService.queryList(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.TEAMAN_ID, userId));
         if (ValidateUtils.isNotEmptyCollection(userDeviceRelas)) {
-            throw new CommonException("用户已绑定了该设备");
+            log.info("用户已绑定了该设备");
+            return userDeviceRelas.get(0);
         }
+        return null;
     }
 
     private UserVipEntity getUser(DeviceBindReqDTO devBindReq) {
