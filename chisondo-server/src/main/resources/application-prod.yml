@@ -6,9 +6,9 @@ spring:
   redis:
       open: true  # 是否开启redis缓存  true开启   false关闭
       database: 0
-      host: localhost
+      host: 10.116.24.171
       port: 6379
-      password:    # 密码（默认为空）
+      password: sj!@G)1D3_D&12   # 密码（默认为空）
       timeout: 6000  # 连接超时时长（毫秒）
       pool:
           max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
@@ -22,13 +22,13 @@ spring:
       driverClassName: com.mysql.jdbc.Driver
       druid:
           first:  #数据源1
-              url: jdbc:mysql://47.111.167.92:3306/chisondo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              url: jdbc:mysql://10.116.149.236:3306/chisondo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
               username: teaman
-              password: AE6y@dNf
+              password: qsd-a123
           second:  #数据源2
-              url: jdbc:mysql://47.111.167.92:3306/chisondo_app?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-              username: teaapp
-              password: G*x8IyCs1$
+              url: jdbc:mysql://10.116.24.171:3306/chisondo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              username: teaman
+              password: qsd-a123
           initial-size: 10
           max-active: 100
           min-idle: 10
