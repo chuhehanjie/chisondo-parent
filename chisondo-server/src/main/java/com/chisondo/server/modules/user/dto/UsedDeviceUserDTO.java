@@ -40,4 +40,5 @@ public class UsedDeviceUserDTO implements Serializable {
     public void setLastUseTime(String lastUseTime) {
         this.lastUseTime = lastUseTime;
     }
+
 }

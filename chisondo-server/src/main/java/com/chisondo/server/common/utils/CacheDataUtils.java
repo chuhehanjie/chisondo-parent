@@ -69,6 +69,15 @@ public class CacheDataUtils {
         return allChapuList;
     }
 
+    public static AppChapuEntity getChapuById(Integer chapuId) {
+        for (AppChapuEntity item : allChapuList) {
+            if (ValidateUtils.equals(item.getChapuId(), chapuId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public static String getImgPathPrefix() {
         return imgPathPrefix;
     }

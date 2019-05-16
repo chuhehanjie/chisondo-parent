@@ -10,8 +10,8 @@
         <result property="schemeNo" column="scheme_no"/>
         <result property="heatTemp" column="heat_temp"/>
         <result property="powerLevel" column="power_level"/>
-        <result property="makeTemp" column="make_temp"/>
-        <result property="makeDura" column="make_dura"/>
+        <result property="temperature" column="make_temp"/>
+        <result property="soak" column="make_dura"/>
         <result property="warmTemp" column="warm_temp"/>
         <result property="warmDura" column="warm_dura"/>
     </resultMap>
@@ -37,11 +37,11 @@
 				<if test="powerLevel != null and powerLevel !='' ">
 				AND power_level = #{powerLevel}
 			</if>
-				<if test="makeTemp != null and makeTemp !='' ">
-				AND make_temp = #{makeTemp}
+				<if test="temperature != null and temperature !='' ">
+				AND make_temp = #{temperature}
 			</if>
-				<if test="makeDura != null and makeDura !='' ">
-				AND make_dura = #{makeDura}
+				<if test="soak != null and soak !='' ">
+				AND make_dura = #{soak}
 			</if>
 				<if test="warmTemp != null and warmTemp !='' ">
 				AND warm_temp = #{warmTemp}
@@ -79,11 +79,11 @@
 				<if test="powerLevel != null and powerLevel !='' ">
                 AND power_level = #{powerLevel}
             </if>
-				<if test="makeTemp != null and makeTemp !='' ">
-                AND make_temp = #{makeTemp}
+				<if test="temperature != null and temperature !='' ">
+                AND make_temp = #{temperature}
             </if>
-				<if test="makeDura != null and makeDura !='' ">
-                AND make_dura = #{makeDura}
+				<if test="soak != null and soak !='' ">
+                AND make_dura = #{soak}
             </if>
 				<if test="warmTemp != null and warmTemp !='' ">
                 AND warm_temp = #{warmTemp}
@@ -111,8 +111,8 @@
 			#{schemeNo}, 
 			#{heatTemp}, 
 			#{powerLevel}, 
-			#{makeTemp}, 
-			#{makeDura}, 
+			#{temperature},
+			#{soak},
 			#{warmTemp}, 
 			#{warmDura}
 		)
@@ -125,8 +125,8 @@
 			<if test="schemeNo != null">`scheme_no` = #{schemeNo}, </if>
 			<if test="heatTemp != null">`heat_temp` = #{heatTemp}, </if>
 			<if test="powerLevel != null">`power_level` = #{powerLevel}, </if>
-			<if test="makeTemp != null">`make_temp` = #{makeTemp}, </if>
-			<if test="makeDura != null">`make_dura` = #{makeDura}, </if>
+			<if test="temperature != null">`make_temp` = #{temperature}, </if>
+			<if test="soak != null">`make_dura` = #{soak}, </if>
 			<if test="warmTemp != null">`warm_temp` = #{warmTemp}, </if>
 			<if test="warmDura != null">`warm_dura` = #{warmDura}</if>
 		</set>

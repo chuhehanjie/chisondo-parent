@@ -29,6 +29,10 @@ spring:
               url: jdbc:mysql://47.111.167.92:3306/chisondo_app?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
               username: teaapp
               password: G*x8IyCs1$
+          third:  #数据源3
+              url: jdbc:mysql://47.111.167.92:3306/zxindb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              username: teaapp
+              password: G*x8IyCs1$
           initial-size: 10
           max-active: 100
           min-idle: 10

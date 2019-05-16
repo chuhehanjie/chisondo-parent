@@ -13,9 +13,10 @@ public class UserMakeTeaReservationDTO implements Serializable {
     private	String	chapuImage; // 茶谱图像	可为空
     private	Integer	teaSortId; // 茶类ID
     private	String	teaSortName; // 茶类名称
-    private	Integer	makeDura; // 设定沏茶时间	0 - 不浸泡，1~600  浸泡时间(单位:秒)
+    private	Integer soak; // 设定沏茶时间	0 - 不浸泡，1~600  浸泡时间(单位:秒)
+    private	Integer warm; // 保温
     private	Integer	waterlv; // 设定出水量	8个档次(单位：毫升ml)
-    private	Integer	makeTemp; // 设定加热温度	1:ON; 0:OFF; 60‐100
+    private	Integer temperature; // 设定加热温度	1:ON; 0:OFF; 60‐100
     private	Integer	valid; // 有效标识	0-有效; 1-已成功执行; 2-已取消; 3-已过期且未成功执行
 
     public String getReservNo() {
@@ -90,12 +91,12 @@ public class UserMakeTeaReservationDTO implements Serializable {
         this.teaSortName = teaSortName;
     }
 
-    public Integer getMakeDura() {
-        return makeDura;
+    public Integer getSoak() {
+        return soak;
     }
 
-    public void setMakeDura(Integer makeDura) {
-        this.makeDura = makeDura;
+    public void setSoak(Integer soak) {
+        this.soak = soak;
     }
 
     public Integer getWaterlv() {
@@ -106,12 +107,12 @@ public class UserMakeTeaReservationDTO implements Serializable {
         this.waterlv = waterlv;
     }
 
-    public Integer getMakeTemp() {
-        return makeTemp;
+    public Integer getTemperature() {
+        return temperature;
     }
 
-    public void setMakeTemp(Integer makeTemp) {
-        this.makeTemp = makeTemp;
+    public void setTemperature(Integer temperature) {
+        this.temperature = temperature;
     }
 
     public Integer getValid() {
@@ -120,5 +121,13 @@ public class UserMakeTeaReservationDTO implements Serializable {
 
     public void setValid(Integer valid) {
         this.valid = valid;
+    }
+
+    public Integer getWarm() {
+        return warm;
+    }
+
+    public void setWarm(Integer warm) {
+        this.warm = warm;
     }
 }

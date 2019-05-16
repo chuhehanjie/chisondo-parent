@@ -22,5 +22,6 @@ public class QueryReservationValidator implements BusiValidator {
         } else {
             ParamValidatorUtils.validateByBeanId("devExistenceValidator", req);
         }
+        req.addAttr(Keys.REQ, jsonObj);
     }
 }

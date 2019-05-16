@@ -192,7 +192,7 @@
 		</foreach>
 	</delete>
 
-	<select id="countUserReservation" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+	<!--<select id="countUserReservation" parameterType="java.util.HashMap" resultType="java.lang.Integer">
 		SELECT count(1)
 		FROM tb_user_book b
 		INNER JOIN t_data_vip u ON b.teaman_id = u.MEMBER_ID
@@ -200,12 +200,12 @@
 		<if test="phoneNum !=null and phoneNum !='' ">
 			AND u.PHONE = #{phoneNum}
 		</if>
-	</select>
+	</select>-->
 
-	<select id="queryUserReservation" parameterType="java.util.HashMap" resultType="com.chisondo.server.modules.user.dto.UserMakeTeaReservationDTO">
+	<!--<select id="queryUserReservation" parameterType="java.util.HashMap" resultType="com.chisondo.server.modules.user.dto.UserMakeTeaReservationDTO">
 		SELECT
 			b.reserv_no AS reservNo,
-			u.PHONE AS phoneNum,
+			&#45;&#45; u.PHONE AS phoneNum,
 			b.process_time AS reservTime,
 			b.log_time AS startTime,
 			b.chapu_id AS chapuId,
@@ -213,19 +213,18 @@
 			'茶谱图像' AS chapuImage,
 			b.tea_sort_id AS teasortId,
 			b.tea_sort_name AS teaSortName,
-			50 AS makeDura,
+			50 AS soak,
 			280 AS waterlv,
-			666 AS makeTemp,
+			666 AS temperature,
 			b.valid_flag AS valid
 		FROM tb_user_book b
-		INNER JOIN t_data_vip u ON b.teaman_id = u.MEMBER_ID
 		WHERE b.device_id = #{deviceId}
-		<if test="phoneNum !=null and phoneNum !='' ">
-			AND u.PHONE = #{phoneNum}
+		<if test="teamanId !=null and teamanId !='' ">
+			AND b.teaman_id = #{teamanId}
 		</if>
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
-	</select>
+	</select>-->
 
 </mapper>

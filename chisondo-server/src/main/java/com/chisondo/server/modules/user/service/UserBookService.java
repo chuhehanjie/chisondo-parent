@@ -1,5 +1,6 @@
 package com.chisondo.server.modules.user.service;
 
+import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
 
 import java.util.List;
@@ -28,5 +29,5 @@ public interface UserBookService {
 	
 	void deleteBatch(Integer[] ids);
 
-    Map<String,Object> queryUserReservation(Map<String, Object> params);
+    Map<String,Object> queryUserReservation(CommonReq req);
 }

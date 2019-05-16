@@ -15,6 +15,7 @@ import com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO;
 import com.chisondo.server.modules.user.dto.UsedDeviceUserDTO;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,12 +39,18 @@ public class UserVipServiceImpl implements UserVipService {
 	
 	@Override
 	public UserVipEntity queryObject(Long memberId){
-		return userVipDao.queryObject(memberId);
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+		UserVipEntity user = userVipDao.queryObject(memberId);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+		return user;
 	}
 	
 	@Override
 	public List<UserVipEntity> queryList(Map<String, Object> map){
-		return userVipDao.queryList(map);
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+		List<UserVipEntity> userList = userVipDao.queryList(map);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+		return userList;
 	}
 
 	@Override
@@ -54,52 +61,77 @@ public class UserVipServiceImpl implements UserVipService {
 	
 	@Override
 	public int queryTotal(Map<String, Object> map){
-		return userVipDao.queryTotal(map);
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+		int total = userVipDao.queryTotal(map);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+		return total;
 	}
 	
 	@Override
 	public void save(UserVipEntity dataVip){
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
 		userVipDao.save(dataVip);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 	}
 	
 	@Override
 	public void update(UserVipEntity dataVip){
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
 		userVipDao.update(dataVip);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 	}
 	
 	@Override
 	public void delete(Long memberId){
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
 		userVipDao.delete(memberId);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 	}
 	
 	@Override
 	public void deleteBatch(Long[] memberIds){
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
 		userVipDao.deleteBatch(memberIds);
+		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 	}
 
 	@Override
 	public UserVipEntity queryUserByMemberId(Long memberId) {
-		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
-		return this.userVipDao.queryObject(memberId);
+		return this.queryObject(memberId);
 	}
 
 	@Override
 	public List<UserVipEntity> queryUserListByUserIds(List<Long> userIds) {
+		DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+		List<UserVipEntity> userList = this.userVipDao.queryUserListByUserIds(userIds);
 		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
-		return this.userVipDao.queryUserListByUserIds(userIds);
+		return userList;
 	}
 
 	@Override
 	public Map<String, Object> queryAllUsersOfDevice(String deviceId) {
 		Map<String, Object> resultMap = Maps.newHashMap();
-		List<UsedDeviceUserDTO> usedDeviceUsers = this.userVipDao.queryAllUsersOfDevice(deviceId);
-		if (ValidateUtils.isNotEmptyCollection(usedDeviceUsers)) {
-			for (UsedDeviceUserDTO usedDeviceUser : usedDeviceUsers) {
-				usedDeviceUser.setUserImg(CommonUtils.plusFullImgPath(usedDeviceUser.getUserImg()));
+		List<UsedDeviceUserDTO> usedDevUserList = Lists.newArrayList();
+		List<Map<String, Object>> resultList = this.userVipDao.queryAllUsersOfDevice(deviceId);
+		if (ValidateUtils.isNotEmptyCollection(resultList)) {
+			DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+			for (Map<String, Object> item : resultList) {
+				long userId = Long.valueOf(item.get("teaman_id").toString());
+				UserVipEntity user = this.userVipDao.queryObject(userId);
+				if (ValidateUtils.isNotEmpty(user)) {
+					UsedDeviceUserDTO usedDevUser = new UsedDeviceUserDTO();
+					usedDevUser.setLastUseTime(ValidateUtils.isNotEmpty(item.get("last_link_time")) ? item.get("last_link_time").toString() : null);
+					usedDevUser.setUserImg(CommonUtils.plusFullImgPath(user.getVipHeadImg()));
+					usedDevUser.setPhoneNum(user.getPhone());
+					usedDevUser.setUserName(ValidateUtils.isNotEmptyString(user.getWechatNickname()) ? user.getWechatNickname() : user.getVipNickname());
+					usedDevUserList.add(usedDevUser);
+				}
 			}
+			DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+
 		}
-		resultMap.put(Keys.COUNT, ValidateUtils.isEmptyCollection(usedDeviceUsers) ? 0 : usedDeviceUsers.size());
-		resultMap.put(Keys.USER_INFO, usedDeviceUsers);
+		resultMap.put(Keys.COUNT, ValidateUtils.isEmptyCollection(usedDevUserList) ? 0 : resultMap.size());
+		resultMap.put(Keys.USER_INFO, usedDevUserList);
 		return resultMap;
 	}
 

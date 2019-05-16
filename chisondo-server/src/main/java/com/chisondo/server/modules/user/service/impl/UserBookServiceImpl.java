@@ -1,13 +1,16 @@
 package com.chisondo.server.modules.user.service.impl;
 
-import com.chisondo.model.http.req.DeviceHttpReq;
-import com.chisondo.model.http.resp.DeviceHttpResp;
-import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.Query;
-import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
-import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
-import com.chisondo.server.modules.user.service.UserMakeTeaService;
+import com.alibaba.fastjson.JSONObject;
+import com.chisondo.server.common.http.CommonReq;
+import com.chisondo.server.common.utils.*;
+import com.chisondo.server.datasources.DataSourceNames;
+import com.chisondo.server.datasources.DynamicDataSource;
+import com.chisondo.server.modules.device.dto.req.StartOrReserveMakeTeaReqDTO;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.user.dto.UserMakeTeaReservationDTO;
+import com.chisondo.server.modules.user.entity.UserVipEntity;
+import com.chisondo.server.modules.user.service.UserVipService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,9 @@ import com.chisondo.server.modules.user.service.UserBookService;
 public class UserBookServiceImpl implements UserBookService {
 	@Autowired
 	private UserBookDao userBookDao;
+
+	@Autowired
+	private UserVipService userVipService;
 
 	@Override
 	public UserBookEntity queryObject(Integer id){
@@ -62,10 +68,68 @@ public class UserBookServiceImpl implements UserBookService {
 	}
 
 	@Override
-	public Map<String, Object> queryUserReservation(Map<String, Object> params) {
+	public Map<String, Object> queryUserReservation(CommonReq req) {
 		Map<String, Object> resultMap = Maps.newHashMap();
-		resultMap.put(Keys.COUNT, this.userBookDao.countUserReservation(params));
-		resultMap.put(Keys.RESERV_INFO, this.userBookDao.queryUserReservation(new Query(params)));
+		Map<String, Object> qryParams = this.buildQryParams(req);
+		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
+		if (ValidateUtils.isNotEmpty(user)) {
+			qryParams.put(Keys.TEAMAN_ID, user.getMemberId());
+		}
+		int count = this.queryTotal(qryParams);
+		resultMap.put(Keys.COUNT, count);
+		if (count > 0) {
+			List<UserMakeTeaReservationDTO> userMakeTeaResvList = Lists.newArrayList();
+			List<UserBookEntity> userBookList = this.queryList(new Query(qryParams));
+			if (ValidateUtils.isNotEmpty(user)) {
+				userBookList.forEach(userBook -> {
+					UserMakeTeaReservationDTO userMakeTeaResv = this.buildUserMakeTeaResv(user, userBook);
+					userMakeTeaResvList.add(userMakeTeaResv);
+				});
+			} else {
+				DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+				for (UserBookEntity userBook : userBookList) {
+					UserVipEntity userVip = this.userVipService.queryObject(Long.valueOf(userBook.getTeamanId()));
+					UserMakeTeaReservationDTO userMakeTeaResv = this.buildUserMakeTeaResv(userVip, userBook);
+					userMakeTeaResvList.add(userMakeTeaResv);
+				}
+				DynamicDataSource.setDataSource(DataSourceNames.FIRST);
+			}
+			resultMap.put(Keys.RESERV_INFO, userMakeTeaResvList);
+		} else {
+			resultMap.put(Keys.RESERV_INFO, Lists.newArrayList());
+		}
 		return resultMap;
+	}
+
+	private Map<String, Object> buildQryParams(CommonReq req) {
+		JSONObject jsonObj = (JSONObject) req.getAttrByKey(Keys.REQ);
+		Map<String, Object> qryParams = Maps.newHashMap();
+		qryParams.put(Query.LIMIT, ValidateUtils.isEmpty(jsonObj.get(Query.NUM)) ? 10 : jsonObj.get(Query.NUM));
+		qryParams.put(Query.PAGE, ValidateUtils.isEmpty(jsonObj.get(Query.PAGE)) ? 1 : jsonObj.get(Query.PAGE));
+		qryParams.put(Keys.DEVICE_ID, req.getAttrByKey(Keys.DEVICE_ID));
+		return qryParams;
+	}
+
+	private UserMakeTeaReservationDTO buildUserMakeTeaResv(UserVipEntity user, UserBookEntity userBook) {
+		UserMakeTeaReservationDTO userMakeTeaResv = new UserMakeTeaReservationDTO();
+		userMakeTeaResv.setReservNo(userBook.getReservNo());
+		userMakeTeaResv.setPhoneNum(user.getPhone());
+		userMakeTeaResv.setReservTime(DateUtils.format(userBook.getLogTime(), DateUtils.DATE_TIME_PATTERN));
+		userMakeTeaResv.setStartTime(ValidateUtils.isNotEmpty(userBook.getProcessTime()) ? DateUtils.format(userBook.getProcessTime(), DateUtils.DATE_TIME_PATTERN) : null);
+		userMakeTeaResv.setChapuId(userBook.getChapuId());
+		AppChapuEntity teaSpectrum = CacheDataUtils.getChapuById(userBook.getChapuId());
+		userMakeTeaResv.setChapuName(ValidateUtils.isEmpty(teaSpectrum) ? userBook.getChapuName() : teaSpectrum.getName());
+		userMakeTeaResv.setChapuImage(ValidateUtils.isEmpty(teaSpectrum) ? null : CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+		userMakeTeaResv.setTeaSortId(userBook.getTeaSortId());
+		userMakeTeaResv.setTeaSortName(userBook.getTeaSortName());
+		userMakeTeaResv.setValid(userBook.getValidFlag());
+		if (ValidateUtils.isNotEmptyString(userBook.getReserveParam())) {
+            StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = JSONObject.parseObject(userBook.getReserveParam(), StartOrReserveMakeTeaReqDTO.class);
+            userMakeTeaResv.setSoak(startOrReserveTeaReq.getSoak());
+            userMakeTeaResv.setTemperature(startOrReserveTeaReq.getTemperature());
+            userMakeTeaResv.setWarm(startOrReserveTeaReq.getWarm());
+            userMakeTeaResv.setWaterlv(startOrReserveTeaReq.getWaterlevel());
+        }
+		return userMakeTeaResv;
 	}
 }

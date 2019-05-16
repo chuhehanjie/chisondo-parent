@@ -19,12 +19,12 @@
         <result property="city" column="city"/>
         <result property="district" column="district"/>
         <result property="address" column="address"/>
-        <result property="makeTemp" column="make_temp"/>
+        <result property="temperature" column="make_temp"/>
         <result property="temp" column="temp"/>
         <result property="warm" column="warm"/>
         <result property="density" column="density"/>
         <result property="waterlv" column="waterlv"/>
-        <result property="makeDura" column="make_dura"/>
+        <result property="soak" column="make_dura"/>
         <result property="reamin" column="reamin"/>
         <result property="tea" column="tea"/>
         <result property="water" column="water"/>
@@ -82,8 +82,8 @@
 				<if test="address != null and address !='' ">
 				AND address = #{address}
 			</if>
-				<if test="makeTemp != null and makeTemp !='' ">
-				AND make_temp = #{makeTemp}
+				<if test="temperature != null and temperature !='' ">
+				AND make_temp = #{temperature}
 			</if>
 				<if test="temp != null and temp !='' ">
 				AND temp = #{temp}
@@ -97,8 +97,8 @@
 				<if test="waterlv != null and waterlv !='' ">
 				AND waterlv = #{waterlv}
 			</if>
-				<if test="makeDura != null and makeDura !='' ">
-				AND make_dura = #{makeDura}
+				<if test="soak != null and soak !='' ">
+				AND make_dura = #{soak}
 			</if>
 				<if test="reamin != null and reamin !='' ">
 				AND reamin = #{reamin}
@@ -184,8 +184,8 @@
 				<if test="address != null and address !='' ">
                 AND address = #{address}
             </if>
-				<if test="makeTemp != null and makeTemp !='' ">
-                AND make_temp = #{makeTemp}
+				<if test="temperature != null and temperature !='' ">
+                AND make_temp = #{temperature}
             </if>
 				<if test="temp != null and temp !='' ">
                 AND temp = #{temp}
@@ -199,8 +199,8 @@
 				<if test="waterlv != null and waterlv !='' ">
                 AND waterlv = #{waterlv}
             </if>
-				<if test="makeDura != null and makeDura !='' ">
-                AND make_dura = #{makeDura}
+				<if test="soak != null and soak !='' ">
+                AND make_dura = #{soak}
             </if>
 				<if test="reamin != null and reamin !='' ">
                 AND reamin = #{reamin}
@@ -284,12 +284,12 @@
 			#{city}, 
 			#{district}, 
 			#{address}, 
-			#{makeTemp}, 
+			#{temperature},
 			#{temp}, 
 			#{warm}, 
 			#{density}, 
 			#{waterlv}, 
-			#{makeDura}, 
+			#{soak},
 			#{reamin}, 
 			#{tea}, 
 			#{water}, 
@@ -319,12 +319,12 @@
 			<if test="city != null">`city` = #{city}, </if>
 			<if test="district != null">`district` = #{district}, </if>
 			<if test="address != null">`address` = #{address}, </if>
-			<if test="makeTemp != null">`make_temp` = #{makeTemp}, </if>
+			<if test="temperature != null">`make_temp` = #{temperature}, </if>
 			<if test="temp != null">`temp` = #{temp}, </if>
 			<if test="warm != null">`warm` = #{warm}, </if>
 			<if test="density != null">`density` = #{density}, </if>
 			<if test="waterlv != null">`waterlv` = #{waterlv}, </if>
-			<if test="makeDura != null">`make_dura` = #{makeDura}, </if>
+			<if test="soak != null">`make_dura` = #{soak}, </if>
 			<if test="reamin != null">`reamin` = #{reamin}, </if>
 			<if test="tea != null">`tea` = #{tea}, </if>
 			<if test="water != null">`water` = #{water}, </if>

@@ -10,4 +10,5 @@ package com.chisondo.server.datasources;
 public interface DataSourceNames {
     String FIRST = "first";
     String SECOND = "second";
+    String THIRD = "third";
 }

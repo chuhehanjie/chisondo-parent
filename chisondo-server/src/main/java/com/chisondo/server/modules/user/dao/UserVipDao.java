@@ -1,11 +1,11 @@
 package com.chisondo.server.modules.user.dao;
 
-import com.chisondo.server.modules.user.dto.UsedDeviceUserDTO;
-import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.sys.dao.BaseDao;
+import com.chisondo.server.modules.user.entity.UserVipEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 会员信息
@@ -19,5 +19,5 @@ public interface UserVipDao extends BaseDao<UserVipEntity> {
 
     List<UserVipEntity> queryUserListByUserIds(List<Long> userIds);
 
-    List<UsedDeviceUserDTO> queryAllUsersOfDevice(String deviceId);
+    List<Map<String, Object>> queryAllUsersOfDevice(String deviceId);
 }
