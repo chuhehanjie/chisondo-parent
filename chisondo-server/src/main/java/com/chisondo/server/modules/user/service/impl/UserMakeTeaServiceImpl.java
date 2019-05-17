@@ -9,6 +9,7 @@ import com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO;
 import com.chisondo.server.modules.user.dao.UserMakeTeaDao;
 import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,7 @@ public class UserMakeTeaServiceImpl implements UserMakeTeaService {
 
 	@Override
 	public int countMakeTeaRecordsByDeviceId(String deviceId) {
-		return this.userMakeTeaDao.countMakeTeaRecordsByDeviceId(deviceId);
+		return this.queryTotal(ImmutableMap.of(Keys.DEVICE_ID, deviceId));
 	}
 
 	@Override
@@ -70,13 +71,8 @@ public class UserMakeTeaServiceImpl implements UserMakeTeaService {
 	}
 
 	@Override
-	public int countMakeTeaRecordsByUserMobile(String userMobile) {
-		return this.userMakeTeaDao.countMakeTeaRecordsByUserMobile(userMobile);
-	}
-
-	@Override
-	public List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserMobile(Map<String, Object> params) {
-		return this.userMakeTeaDao.queryMakeTeaRecordsByUserMobile(params);
+	public List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserId(Map<String, Object> params) {
+		return this.userMakeTeaDao.queryMakeTeaRecordsByUserId(params);
 	}
 
 }

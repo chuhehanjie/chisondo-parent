@@ -14,6 +14,11 @@ public class DevQueryRespDTO implements Serializable {
         this.count = devInfoList.size();
     }
 
+    public DevQueryRespDTO(int count, List<DeviceInfoRespDTO> deviceInfo) {
+        this.count = count;
+        this.deviceInfo = deviceInfo;
+    }
+
     public DevQueryRespDTO() {
     }
 

@@ -30,19 +30,15 @@
 	<sql id="queryMakeTeaRecordsByCondition">
 		SELECT
 			umt.id as makeId,
+			umt.teaman_id AS teamanId,
 			dev.device_id AS deviceId,
 			dev.device_name AS deviceName,
-			dv.PHONE as phoneNum,
-			dv.VIP_NAME as userName,
-			dv.VIP_HEAD_IMG as userImg,
 			umt.add_time as startTime,
 			umt.last_time as endTime,
 			umt.make_type as makeType,
-			0 as makeMode,
+			IF(umt.make_type=2,1,0) as makeMode,
 			umt.chapu_id as chapuId,
-			c.name as chapuName,
 			umt.make_index as chapuIndex,
-			c.image as chapuImage,
 			umt.tea_sort_id as teaSortId,
 			umt.tea_sort_name as teaSortName,
 			umt.temperature as temperature,
@@ -50,8 +46,6 @@
 			umt.soak as soak
 		FROM tb_user_make_tea umt
 		INNER JOIN tb_actived_device_info dev ON dev.device_id = umt.device_id
-		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
-		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
 		WHERE 1=1
 	</sql>
 
@@ -276,15 +270,6 @@
 		</foreach>
 	</delete>
 
-	<select id="countMakeTeaRecordsByDeviceId" parameterType="java.lang.String" resultType="java.lang.Integer">
-		SELECT
-			count(1)
-		FROM tb_user_make_tea umt
-		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
-		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
-		where umt.device_id = #{deviceId}
-	</select>
-
 	<select id="queryMakeTeaRecordsByDeviceId" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
 		<include refid="queryMakeTeaRecordsByCondition"></include>
 		AND umt.device_id = #{deviceId}
@@ -294,18 +279,9 @@
 		</if>
 	</select>
 
-	<select id="countMakeTeaRecordsByUserMobile" parameterType="java.lang.String" resultType="java.lang.Integer">
-		SELECT
-			count(1)
-		FROM tb_user_make_tea umt
-		INNER JOIN t_data_vip dv ON dv.member_id = umt.teaman_id
-		LEFT JOIN v_app_chapu c ON c.chapu_id = umt.chapu_id
-		where dv.PHONE = #{userMobile}
-	</select>
-
-	<select id="queryMakeTeaRecordsByUserMobile" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
+	<select id="queryMakeTeaRecordsByUserId" resultType="com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO">
 		<include refid="queryMakeTeaRecordsByCondition"></include>
-		AND dv.PHONE = #{userMobile}
+		AND umt.teaman_id = #{teamanId}
 		ORDER BY umt.add_time desc
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}

@@ -419,6 +419,7 @@
 
 	<select id="queryTeaSpectrumDetailById" parameterType="java.lang.Integer" resultType="com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO">
 		select
+			t.chapu_id AS chapuId,
 			t.user_id AS userId,
 			t.name AS chapuName,
 			t.image AS chapuImg,
@@ -470,6 +471,9 @@
 		where 1=1
 		<if test="sortId != null">
 			AND t.sort = #{sortId}
+		</if>
+		<if test="temp != null">
+			AND t.temp = #{temp}
 		</if>
 		<if test="qryMyChapuFlag == true">
 			AND m.user_id = #{userId}

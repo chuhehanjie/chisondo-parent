@@ -431,30 +431,4 @@
 		</foreach>
 	</select>
 
-	<select id="queryAllUsersOfDevice" parameterType="java.lang.String" resultType="java.util.HashMap">
-		/*SELECT
-			t.PHONE AS phoneNum,
-			IFNULL(t.WECHAT_NICKNAME,t.VIP_NICKNAME) AS userName,
-			t.VIP_HEAD_IMG AS userImg,
-			u.last_link_time AS lastUseTime
-		FROM t_data_vip t
-		INNER JOIN
-		(
-			SELECT teaman_id,device_id,max(last_link_time) AS last_link_time
-			FROM tb_user_device
-			GROUP BY teaman_id,device_id
-		) u ON u.teaman_id = t.MEMBER_ID
-		WHERE 1=1
-		AND u.device_id = #{deviceId}
-		ORDER BY u.last_link_time DESC*/
-		SELECT
-			teaman_id,
-			device_id,
-			max(last_link_time) AS last_link_time
-		FROM tb_user_device
-		WHERE device_id = #{deviceId}
-		GROUP BY teaman_id,device_id
-		ORDER BY last_link_time DESC
-	</select>
-
 </mapper>

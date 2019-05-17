@@ -12,7 +12,7 @@ public class MakeTeaRowRespDTO implements Serializable {
     private	String	endTime; // 结束时间
     private	Integer	makeType; // 沏茶类型	0-普通沏茶；1-茶谱沏茶；2-洗茶；3-烧水
     private	Integer	makeMode; // 沏茶方式	0-手机终端操作；1-设备面板操作
-    private	int	chapuId; // 茶谱ID
+    private	Integer	chapuId; // 茶谱ID
     private	String	chapuName; // 茶谱名称
     private	Integer	chapuIndex; // 执行的是第几泡
     private	String	chapuImage; // 茶谱图像	可为空
@@ -23,6 +23,8 @@ public class MakeTeaRowRespDTO implements Serializable {
     private	Integer	soak; // 沏茶时间
     private String deviceId;
     private String deviceName;
+
+    private Long teamanId;
 
     public Integer getMakeId() {
         return makeId;
@@ -88,11 +90,11 @@ public class MakeTeaRowRespDTO implements Serializable {
         this.makeMode = makeMode;
     }
 
-    public int getChapuId() {
+    public Integer getChapuId() {
         return chapuId;
     }
 
-    public void setChapuId(int chapuId) {
+    public void setChapuId(Integer chapuId) {
         this.chapuId = chapuId;
     }
 
@@ -174,5 +176,13 @@ public class MakeTeaRowRespDTO implements Serializable {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
+    }
+
+    public Long getTeamanId() {
+        return teamanId;
+    }
+
+    public void setTeamanId(Long teamanId) {
+        this.teamanId = teamanId;
     }
 }

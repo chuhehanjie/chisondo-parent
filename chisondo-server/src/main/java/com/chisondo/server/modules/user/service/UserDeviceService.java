@@ -38,4 +38,6 @@ public interface UserDeviceService {
     void setDefaultDevice(Map<String, Object> params);
 
     void setNoneDefaultDev(Long userId);
+
+    Map<String, Object> queryAllUsersOfDevice(String deviceId);
 }

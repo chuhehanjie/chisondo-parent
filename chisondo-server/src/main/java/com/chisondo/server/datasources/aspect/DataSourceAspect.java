@@ -6,9 +6,7 @@ import com.chisondo.server.datasources.DataSourceNames;
 import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.datasources.annotation.DataSource;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,30 +26,52 @@ import java.lang.reflect.Method;
 public class DataSourceAspect implements Ordered {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Pointcut("@annotation(com.chisondo.server.datasources.annotation.DataSource)")
+   /* @Pointcut("@annotation(com.chisondo.server.datasources.annotation.DataSource)")
     public void dataSourcePointCut() {
 
+    }*/
+
+    @Pointcut("execution(* com.chisondo.server.modules.user.dao.UserVipDao.*(..))")
+    public void setThirdDataSource() {
     }
 
-    @Around("dataSourcePointCut()")
-    public Object around(ProceedingJoinPoint point) throws Throwable {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        Method method = signature.getMethod();
+    @Pointcut("execution(* com.chisondo.server.modules.tea.dao.*.*(..))")
+    public void setSecondDataSource() {
+    }
 
-        DataSource ds = method.getAnnotation(DataSource.class);
-        if(ds == null){
-            DynamicDataSource.setDataSource(DataSourceNames.FIRST);
-            logger.debug("set datasource is " + DataSourceNames.FIRST);
-        }else {
-            DynamicDataSource.setDataSource(ds.name());
-            logger.debug("set datasource is " + ds.name());
-        }
+    /*@Before("execution(* com.chisondo.server.modules.user.dao.UserVipDao.*(..))")
+    public void setThirdDataSource() {
+        DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+        logger.error("dataSource切换到：third");
+    }
 
+    @After("execution(* com.chisondo.server.modules.user.dao.UserVipDao.*(..))")
+    public void clearThirdDataSource() {
+        DynamicDataSource.clearDataSource();
+        logger.error("清除数据源：third");
+    }*/
+
+    @Around("setSecondDataSource()")
+    public Object around4SecondDS(ProceedingJoinPoint point) throws Throwable {
         try {
+            DynamicDataSource.setDataSource(DataSourceNames.SECOND);
+            logger.debug("dataSource切换到：second");
             return point.proceed();
         } finally {
             DynamicDataSource.clearDataSource();
-            logger.debug("clean datasource");
+            logger.debug("clean second datasource");
+        }
+    }
+
+    @Around("setThirdDataSource()")
+    public Object around4ThirdDS(ProceedingJoinPoint point) throws Throwable {
+        try {
+            DynamicDataSource.setDataSource(DataSourceNames.THIRD);
+            logger.debug("dataSource切换到：third");
+            return point.proceed();
+        } finally {
+            DynamicDataSource.clearDataSource();
+            logger.debug("clean third datasource");
         }
     }
 

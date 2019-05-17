@@ -32,7 +32,7 @@ public interface ActivedDeviceInfoService {
 	
 	void deleteBatch(Integer[] deviceIds);
 
-    List<DeviceInfoRespDTO> queryHisConnectDevOfUser(String userMobile);
+    List<DeviceInfoRespDTO> queryHisConnectDevOfUser(Long userId);
 
     ActivedDeviceInfoEntity getDeviceInfoById(String deviceId);
 

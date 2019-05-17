@@ -51,7 +51,7 @@ public class SysConfigController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/qrystartbanner")
-	@DataSource(name = DataSourceNames.SECOND)
+//	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp queryStartAdBanner(@RequestBody CommonReq req){
 		JSONObject jsonObject = JSONObject.parseObject(req.getBizBody());
 		Map<String, Object> params = Maps.newHashMap();
@@ -71,7 +71,7 @@ public class SysConfigController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/api/rest/qryconfiginfo")
-	@DataSource(name = DataSourceNames.SECOND)
+//	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp queryConfigInfo(@RequestBody CommonReq req){
 		JSONObject jsonObject = JSONObject.parseObject(req.getBizBody());
 		if (ValidateUtils.isEmpty(jsonObject.get("companyId"))) {

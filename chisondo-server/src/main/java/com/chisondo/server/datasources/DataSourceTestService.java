@@ -21,7 +21,7 @@ public class DataSourceTestService {
         return userService.queryObject(id);
     }
 
-    @DataSource(name = DataSourceNames.SECOND)
+//    @DataSource(name = DataSourceNames.SECOND)
     public UserSchemeEntity queryObject2(Integer id){
         return userService.queryObject(id);
     }

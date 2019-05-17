@@ -137,4 +137,15 @@
 		update tb_user_device set default_tag = 0 where teaman_id = #{userId}
 	</update>
 
+	<select id="queryAllUsersOfDevice" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		teaman_id,
+		device_id,
+		max(last_link_time) AS last_link_time
+		FROM tb_user_device
+		WHERE device_id = #{deviceId}
+		GROUP BY teaman_id,device_id
+		ORDER BY last_link_time DESC
+	</select>
+
 </mapper>

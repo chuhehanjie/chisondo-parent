@@ -44,6 +44,5 @@ public interface AppChapuService {
 
     CommonResp delOrFinishTeaSpectrum(CommonReq req);
 
-    @Transactional
     CommonResp saveTeaSpectrum(CommonReq req);
 }

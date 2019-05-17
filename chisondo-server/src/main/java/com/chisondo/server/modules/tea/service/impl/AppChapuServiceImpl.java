@@ -245,6 +245,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put(Query.LIMIT, ValidateUtils.isEmpty(qryTeaSpectrumReq.getNum()) ? 10 : qryTeaSpectrumReq.getNum());
 		params.put(Query.PAGE, ValidateUtils.isEmpty(qryTeaSpectrumReq.getPage()) ? 1 : qryTeaSpectrumReq.getPage());
+		params.put("temp", 0); //  查询 temp 为标准茶谱（即已经创建的）
 		if (ValidateUtils.isNotEmpty(qryTeaSpectrumReq.getSortId()) && ValidateUtils.notEquals(TeaSpectrumConstant.QUERY_ALL, qryTeaSpectrumReq.getSortId())) {
 			params.put("sortId", qryTeaSpectrumReq.getSortId());
 		}
@@ -284,6 +285,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		params.put(Query.LIMIT, ValidateUtils.isEmpty(jsonObj.get(Query.NUM)) ? 10 : jsonObj.get(Query.NUM));
 		params.put(Query.PAGE, ValidateUtils.isEmpty(jsonObj.get(Query.PAGE)) ? 1 : jsonObj.get(Query.PAGE));
 		params.put("keyword", jsonObj.getString("keyword"));
+		params.put("temp", 0); //  查询 temp 为标准茶谱（即已经创建的
 		return params;
 	}
 
@@ -293,6 +295,8 @@ public class AppChapuServiceImpl implements AppChapuService {
 		params.put(Query.PAGE, ValidateUtils.isEmpty(qryMyTeaSpectrumReq.getPage()) ? 1 : qryMyTeaSpectrumReq.getPage());
 		params.put(Keys.USER_ID, qryMyTeaSpectrumReq.getUserId());
 		params.put("qryMyChapuFlag", true);
+		params.put(Query.SIDX, "public_time");
+		params.put(Query.ORDER, "desc");
 		if (ValidateUtils.isNotEmpty(qryMyTeaSpectrumReq.getType())) {
 			List<Integer> types = Lists.newArrayList();
 			if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuType.CREATED, qryMyTeaSpectrumReq.getType())) {

@@ -21,7 +21,7 @@ import java.util.Map;
 @Mapper
 public interface ActivedDeviceInfoDao extends BaseDao<ActivedDeviceInfoEntity> {
 
-    List<DeviceInfoRespDTO> queryHisConnectDevOfUserByPhone(String userMobile);
+    List<DeviceInfoRespDTO> queryHisConnectDevOfUserByUserId(Long userId);
 
     void updateDevPwd(SetDevPwdReqDTO setDevPwdReq);
 

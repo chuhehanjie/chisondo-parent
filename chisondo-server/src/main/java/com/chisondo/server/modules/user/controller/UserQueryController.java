@@ -10,6 +10,7 @@ import com.chisondo.server.modules.device.validator.QueryReservationValidator;
 import com.chisondo.server.modules.olddevice.service.OldDeviceCtrlService;
 import com.chisondo.server.modules.user.dto.UserMakeTeaReservationDTO;
 import com.chisondo.server.modules.user.service.UserBookService;
+import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.chisondo.server.modules.user.service.UserVipService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -39,6 +40,9 @@ public class UserQueryController {
 	private UserVipService userVipService;
 
 	@Autowired
+	private UserDeviceService userDeviceService;
+
+	@Autowired
 	private OldDeviceCtrlService oldDevCtrlService;
 
 	/**
@@ -66,7 +70,7 @@ public class UserQueryController {
 	public CommonResp queryAllUsersOfDevice(@RequestBody CommonReq req){
 		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
 		// TODO this.validate(jsonObj);
-		Map<String, Object> resultMap = this.userVipService.queryAllUsersOfDevice(jsonObj.getString(Keys.DEVICE_ID));
+		Map<String, Object> resultMap = this.userDeviceService.queryAllUsersOfDevice(jsonObj.getString(Keys.DEVICE_ID));
 		return CommonResp.ok(resultMap);
 	}
 

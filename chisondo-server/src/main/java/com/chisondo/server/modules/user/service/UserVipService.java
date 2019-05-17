@@ -36,7 +36,5 @@ public interface UserVipService {
 
     List<UserVipEntity> queryUserListByUserIds(List<Long> userIds);
 
-    Map<String,Object> queryAllUsersOfDevice(String string);
-
     CommonResp queryMakeTeaRecordsOfUser(CommonReq req);
 }

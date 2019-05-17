@@ -140,13 +140,13 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		userBook.setDeviceId(Integer.valueOf(startOrReserveTeaReq.getDeviceId()));
 		userBook.setConfigCmd("AA0B012C0F89025A023CCC"); // TODO 需要确定这个值怎么取
 		userBook.setProcessTime(DateUtils.parseDate(startOrReserveTeaReq.getStartTime(), DateUtils.DATE_TIME_PATTERN3));
-		userBook.setLogTime(new Date());
+		userBook.setLogTime(DateUtils.currentDate());
 		userBook.setValidFlag(Constant.UserBookStatus.VALID);
 		userBook.setChapuId(0);
 		userBook.setInformFlag(0);
 		userBook.setTeaSortId(startOrReserveTeaReq.getTeaSortId());
 		userBook.setTeaSortName(startOrReserveTeaReq.getTeaSortName());
-		userBook.setReservNo(UUID.randomUUID().toString());
+		userBook.setReservNo(DateUtils.currentDateStr(DateUtils.DATE_TIME_PATTERN2));
 		userBook.setReserveParam(JSONObject.toJSONString(startOrReserveTeaReq));
 		return userBook;
 	}

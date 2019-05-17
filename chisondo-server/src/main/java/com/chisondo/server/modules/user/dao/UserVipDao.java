@@ -18,6 +18,4 @@ import java.util.Map;
 public interface UserVipDao extends BaseDao<UserVipEntity> {
 
     List<UserVipEntity> queryUserListByUserIds(List<Long> userIds);
-
-    List<Map<String, Object>> queryAllUsersOfDevice(String deviceId);
 }

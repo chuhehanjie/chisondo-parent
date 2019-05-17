@@ -21,13 +21,10 @@ public interface DeviceCtrlService {
 	 * @param req
 	 * @return
 	 */
-	@Transactional
 	CommonResp startOrReserveMakeTea(CommonReq req);
 
-	@Transactional
 	DeviceBindRespDTO bindDevice(CommonReq devBindReq);
 
-	@Transactional
 	CommonResp makeTeaByTeaSpectrum(CommonReq req);
 
 	/**
@@ -35,31 +32,22 @@ public interface DeviceCtrlService {
 	 * @param req
 	 * @return
 	 */
-	@Transactional
     CommonResp washTea(CommonReq req);
 
-	@Transactional
 	CommonResp boilWater(CommonReq req);
 
-	@Transactional
 	CommonResp stopWorking(CommonReq req);
 
-	@Transactional
 	CommonResp cancelTeaSpectrum(CommonReq req);
 
-	@Transactional
 	CommonResp keepWarmCtrl(CommonReq req);
 
-	@Transactional
 	void delDevConnectRecord(CommonReq devCommonReq);
 
-	@Transactional
     CommonResp setDevicePassword(CommonReq req);
 
-	@Transactional
     CommonResp setDeviceNameOrDesc(CommonReq req);
 
-	@Transactional
     CommonResp setDeviceSound(CommonReq req);
 
 	@Transactional
@@ -68,12 +56,9 @@ public interface DeviceCtrlService {
 
     CommonResp changeDevTeaSpectrum(CommonReq req);
 
-    @Transactional
     CommonResp cancelReservation(CommonReq req);
 
-    @Transactional
     void processReverseMakeTea(List<UserBookEntity> userBookList);
 
-    @Transactional
     void updateMakeType4Dev(int makeType, String deviceId);
 }

@@ -4,6 +4,7 @@ import com.chisondo.server.modules.user.entity.UserDeviceEntity;
 import com.chisondo.server.modules.sys.dao.BaseDao;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,4 +22,6 @@ public interface UserDeviceDao extends BaseDao<UserDeviceEntity> {
     void setDefaultDevice(Map<String, Object> params);
 
     void setNoneDefaultDev(String userId);
+
+    List<Map<String, Object>> queryAllUsersOfDevice(String deviceId);
 }

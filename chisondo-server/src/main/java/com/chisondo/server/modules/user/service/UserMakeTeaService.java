@@ -33,8 +33,6 @@ public interface UserMakeTeaService {
 
     int countMakeTeaRecordsByDeviceId(String deviceId);
 
-    int countMakeTeaRecordsByUserMobile(String userMobile);
-
-    List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserMobile(Map<String, Object> params);
+    List<MakeTeaRowRespDTO> queryMakeTeaRecordsByUserId(Map<String, Object> params);
 
 }

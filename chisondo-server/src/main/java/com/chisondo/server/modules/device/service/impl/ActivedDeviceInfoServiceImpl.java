@@ -63,8 +63,8 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	}
 
 	@Override
-	public List<DeviceInfoRespDTO> queryHisConnectDevOfUser(String userMobile) {
-		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoDao.queryHisConnectDevOfUserByPhone(userMobile);
+	public List<DeviceInfoRespDTO> queryHisConnectDevOfUser(Long userId) {
+		List<DeviceInfoRespDTO> devInfoList = this.deviceInfoDao.queryHisConnectDevOfUserByUserId(userId);
 		CommonUtils.processDevTypeAndOnlineStatus(devInfoList);
 		return devInfoList;
 	}
