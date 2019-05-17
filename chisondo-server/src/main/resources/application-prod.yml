@@ -29,6 +29,10 @@ spring:
               url: jdbc:mysql://10.116.24.171:3306/chisondo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
               username: teaman
               password: qsd-a123
+          third:  #数据源3
+              url: jdbc:mysql://10.116.24.171:3306/zxindb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              username: teaman
+              password: qsd-a123
           initial-size: 10
           max-active: 100
           min-idle: 10
