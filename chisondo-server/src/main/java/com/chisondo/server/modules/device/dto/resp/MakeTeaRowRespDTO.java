@@ -1,5 +1,9 @@
 package com.chisondo.server.modules.device.dto.resp;
 
+import com.chisondo.server.common.utils.CommonUtils;
+import com.chisondo.server.common.utils.Constant;
+import com.chisondo.server.common.utils.ValidateUtils;
+
 import java.io.Serializable;
 
 public class MakeTeaRowRespDTO implements Serializable {
@@ -59,7 +63,7 @@ public class MakeTeaRowRespDTO implements Serializable {
     }
 
     public String getStartTime() {
-        return startTime;
+        return CommonUtils.convertDateStr(this.startTime);
     }
 
     public void setStartTime(String startTime) {
@@ -67,7 +71,7 @@ public class MakeTeaRowRespDTO implements Serializable {
     }
 
     public String getEndTime() {
-        return endTime;
+        return CommonUtils.convertDateStr(this.endTime);
     }
 
     public void setEndTime(String endTime) {
@@ -184,5 +188,22 @@ public class MakeTeaRowRespDTO implements Serializable {
 
     public void setTeamanId(Long teamanId) {
         this.teamanId = teamanId;
+    }
+
+    public void processMakeTypeAndMakeMode() {
+        // 数据库里的 make_type 字段定义：0-茶谱沏茶；1-快速沏茶；2-面板操作
+        // 接口返回的 makeType 字段定义：0-普通沏茶；1-茶谱沏茶；2-洗茶；3-烧水
+        if (ValidateUtils.equals(Constant.MakeTeaType4Db.NORMAL, this.getMakeType())) {
+            //  普通沏茶
+            this.setMakeType(Constant.MakeTeaType.NORMAL);
+            this.setMakeMode(Constant.MakeTeaMode.MOBILE_TERMINAL);
+        } else if (ValidateUtils.equals(Constant.MakeTeaType4Db.TEA_SPECTRUM, this.getMakeType())) {
+            //  茶谱沏茶
+            this.setMakeType(Constant.MakeTeaType.TEA_SPECTRUM);
+            this.setMakeMode(Constant.MakeTeaMode.MOBILE_TERMINAL);
+        } else if (ValidateUtils.equals(Constant.MakeTeaType4Db.PANEL, this.getMakeType())) {
+            // 面板操作
+            this.setMakeMode(Constant.MakeTeaMode.DEV_PANNEL);
+        }
     }
 }

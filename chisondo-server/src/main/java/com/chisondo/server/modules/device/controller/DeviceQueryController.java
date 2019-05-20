@@ -52,14 +52,14 @@ public class DeviceQueryController extends AbstractController {
 		if (req.isOldDev()) {
 			String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 			JSONObject result = this.oldDeviceCtrlService.queryDevStatus(deviceId);
-			DevStatusRespDTO devStatusResp = this.buildDevStatusResp(result);
+			DevStatusRespDTO devStatusResp = this.buildDevStatusResp4OldDev(result);
 			CommonResp resp = new CommonResp(result.getInteger("STATE"), result.getString("STATE_INFO"), JSONObject.toJSONString(devStatusResp));
 			return resp;
 		}
 		return this.deviceQueryService.queryDevStateInfo(req);
 	}
 
-	private DevStatusRespDTO buildDevStatusResp(JSONObject result) {
+	private DevStatusRespDTO buildDevStatusResp4OldDev(JSONObject result) {
 		DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
 		devStatusResp.setConnStatus(result.getInteger("connStatus"));
 		devStatusResp.setOnlineStatus(result.getInteger("onlineStatus"));
@@ -68,7 +68,8 @@ public class DeviceQueryController extends AbstractController {
 		devStatusResp.setWarm(result.getInteger("warm"));
 		devStatusResp.setDensity(result.getInteger("density"));
 		devStatusResp.setWaterlv(0);
-		devStatusResp.setMakeDura(result.getInteger("makeDura"));
+		// 老设备 makeDura 要乘以5
+		devStatusResp.setMakeDura(ValidateUtils.isNotEmpty(result.getInteger("makeDura")) ? result.getInteger("makeDura") * 5 : null);
 		devStatusResp.setReamin(result.getInteger("reamin"));
 		devStatusResp.setTea(result.getInteger("tea"));
 		devStatusResp.setWater(result.getInteger("water"));

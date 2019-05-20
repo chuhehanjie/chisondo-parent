@@ -8,10 +8,7 @@ import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.annotation.DataSource;
 import com.chisondo.server.modules.device.validator.QryMyTeaSpectrumValidator;
-import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumDetailDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortQryDTO;
 import com.chisondo.server.modules.tea.dto.TeaSortRowDTO;
@@ -45,7 +42,6 @@ public class TeaQueryController {
 	 * 查询所有茶类信息
 	 */
 	@PostMapping("/api/rest/chapu/getsorts")
-//	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp queryAllTeaSort(@RequestBody CommonReq req){
 		List<TeaSortRowDTO> teaSorts = this.appTeaSortService.queryAllTeaSorts();
 		TeaSortQryDTO teaSortQryDTO = new TeaSortQryDTO();
@@ -67,7 +63,6 @@ public class TeaQueryController {
 	 * 查询茶谱详情
 	 */
 	@PostMapping("/api/rest/chapu/detail")
-//	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp queryTeaSpectrumDetail(@RequestBody CommonReq req){
 		JSONObject jsonObj = JSONObject.parseObject(req.getBizBody());
 		Integer chapuId = jsonObj.getInteger(Keys.CHAPU_ID);
@@ -82,7 +77,6 @@ public class TeaQueryController {
 	 * 根据条件查询茶谱列表
 	 */
 	@PostMapping("/api/rest/chapu/list")
-//	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp queryTeaSpectrumListByCondition(@RequestBody CommonReq req){
 		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.queryTeaSpectrumListByCondition(req);
 		return CommonResp.ok(ImmutableMap.of("rows", teaSpectrumDetails));
@@ -92,7 +86,6 @@ public class TeaQueryController {
 	 * 搜索茶谱
 	 */
 	@PostMapping("/api/rest/chapu/search")
-//	@DataSource(name = DataSourceNames.SECOND)
 	public CommonResp searchTeaSpectrum(@RequestBody CommonReq req){
 		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.searchTeaSpectrum(req);
 		return CommonResp.ok(ImmutableMap.of("rows", teaSpectrumDetails));
@@ -102,7 +95,6 @@ public class TeaQueryController {
 	 * 我的茶谱
 	 */
 	@PostMapping("/api/rest/chapu/mine")
-//	@DataSource(name = DataSourceNames.SECOND)
 	@ParamValidator(value = {QryMyTeaSpectrumValidator.class}, isQuery = true)
 	public CommonResp queryMyTeaSpectrum(@RequestBody CommonReq req){
 		List<QryTeaSpectrumDetailDTO> teaSpectrumDetails = this.appChapuService.queryMyTeaSpectrum(req);

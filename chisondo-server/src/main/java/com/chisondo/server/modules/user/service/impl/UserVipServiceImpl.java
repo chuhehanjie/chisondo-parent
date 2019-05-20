@@ -4,18 +4,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
-import com.chisondo.server.common.utils.CommonUtils;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.Query;
-import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.resp.MakeTeaRespDTO;
 import com.chisondo.server.modules.device.dto.resp.MakeTeaRowRespDTO;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.chisondo.server.modules.user.dao.UserVipDao;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.chisondo.server.modules.user.service.UserVipService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,9 @@ public class UserVipServiceImpl implements UserVipService {
 
 	@Autowired
 	private UserMakeTeaService userMakeTeaService;
+
+	@Autowired
+	private AppChapuService appChapuService;
 	
 	@Override
 	public UserVipEntity queryObject(Long memberId){
@@ -113,11 +116,33 @@ public class UserVipServiceImpl implements UserVipService {
 			params.put(Query.LIMIT, ValidateUtils.isEmpty(jsonObj.get(Query.NUM)) ? 10 : jsonObj.get(Query.NUM));
 			List<MakeTeaRowRespDTO> rows = this.userMakeTeaService.queryMakeTeaRecordsByUserId(new Query(params));
 			if (ValidateUtils.isNotEmptyCollection(rows)) {
+				Map<Integer, AppChapuEntity> cacheChapuMap = Maps.newHashMap();
 				for (MakeTeaRowRespDTO makeTeaRow : rows) {
 					makeTeaRow.setPhoneNum(user.getPhone());
 					makeTeaRow.setUserName(user.getVipNickname());
-					makeTeaRow.setChapuImage(CommonUtils.plusFullImgPath(makeTeaRow.getChapuImage()));
 					makeTeaRow.setUserImg(CommonUtils.plusFullImgPath(makeTeaRow.getUserImg()));
+					makeTeaRow.processMakeTypeAndMakeMode();
+					if (ValidateUtils.equals(Constant.MakeTeaType4Db.TEA_SPECTRUM, makeTeaRow.getMakeType())) {
+						// 茶谱沏茶时才返回茶谱相关信息
+						AppChapuEntity teaSpectrum = cacheChapuMap.containsKey(makeTeaRow.getChapuId()) ? cacheChapuMap.get(makeTeaRow.getChapuId()) : this.appChapuService.queryTeaSpectrumById(makeTeaRow.getChapuId());
+						if (ValidateUtils.isNotEmpty(teaSpectrum)) {
+							if (!cacheChapuMap.containsKey(teaSpectrum.getChapuId())) {
+								cacheChapuMap.put(teaSpectrum.getChapuId(), teaSpectrum);
+							}
+							makeTeaRow.setChapuName(teaSpectrum.getName());
+							makeTeaRow.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+							makeTeaRow.setTeaSortId(null);
+							makeTeaRow.setTeaSortName(null);
+							makeTeaRow.setTemperature(null);
+							makeTeaRow.setWaterlevel(null);
+						}
+					} else {
+						// 非茶谱沏茶
+						makeTeaRow.setChapuId(null);
+						makeTeaRow.setChapuIndex(null);
+						makeTeaRow.setChapuName(null);
+						makeTeaRow.setChapuImage(null);
+					}
 				}
 			}
 			return CommonResp.ok(new MakeTeaRespDTO(count, rows));

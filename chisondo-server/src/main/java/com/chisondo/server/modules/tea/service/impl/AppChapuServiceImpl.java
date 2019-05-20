@@ -1,21 +1,20 @@
 package com.chisondo.server.modules.tea.service.impl;
-import java.util.Date;
-import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.*;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
+import com.chisondo.server.modules.tea.dao.AppChapuDao;
 import com.chisondo.server.modules.tea.dto.*;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuMineEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
 import com.chisondo.server.modules.tea.service.AppChapuMineService;
 import com.chisondo.server.modules.tea.service.AppChapuParaService;
+import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.chisondo.server.modules.user.entity.UserDeviceEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.user.service.UserDeviceService;
@@ -27,11 +26,8 @@ import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
 import java.util.stream.Collectors;
-
-import com.chisondo.server.modules.tea.dao.AppChapuDao;
-import com.chisondo.server.modules.tea.entity.AppChapuEntity;
-import com.chisondo.server.modules.tea.service.AppChapuService;
 
 
 @Service("appChapuService")
@@ -56,13 +52,11 @@ public class AppChapuServiceImpl implements AppChapuService {
 	
 	@Override
 	public AppChapuEntity queryObject(Integer chapuId){
-		DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		return appChapuDao.queryObject(chapuId);
 	}
 	
 	@Override
 	public List<AppChapuEntity> queryList(Map<String, Object> map){
-		DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		return appChapuDao.queryList(map);
 	}
 	
@@ -93,7 +87,6 @@ public class AppChapuServiceImpl implements AppChapuService {
 
 	@Override
 	public AppChapuEntity queryTeaSpectrumById(Integer id) {
-		DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		return this.appChapuDao.queryTeaSpectrumById(id);
 	}
 
@@ -159,13 +152,11 @@ public class AppChapuServiceImpl implements AppChapuService {
 		Map<String, Object> params = this.buildQryParams(jsonObj);
 		// 如果关键字是手机号，则根据茶谱创建人手机号查询对应的茶谱
 		if (RegexUtils.isMobile(jsonObj.getString("keyword"))) {
-			DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 			UserVipEntity user = this.userVipService.getUserByMobile(jsonObj.getString("keyword"));
 			if (ValidateUtils.isNotEmpty(user)) {
 				params.put(Keys.USER_ID, user.getMemberId());
 				params.remove("keyword");
 			}
-			DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 		}
 		// TODO 待确认 关键字查询的范围
 		List<QryTeaSpectrumDetailDTO> detailList = this.appChapuDao.queryTeaSpectrumListByCondition(new Query(params));
@@ -181,10 +172,8 @@ public class AppChapuServiceImpl implements AppChapuService {
 	@Override
 	public List<QryTeaSpectrumDetailDTO> queryMyTeaSpectrum(CommonReq req) {
 		QryMyTeaSpectrumReqDTO qryMyTeaSpectrumReq = (QryMyTeaSpectrumReqDTO) req.getAttrByKey(Keys.REQ);
-		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 		UserVipEntity user = this.userVipService.getUserByMobile(qryMyTeaSpectrumReq.getPhoneNum());
 		if (ValidateUtils.isNotEmpty(user)) {
-			DynamicDataSource.setDataSource(DataSourceNames.SECOND);
 			qryMyTeaSpectrumReq.setUserId(user.getMemberId());
 			Map<String, Object> params = this.buildQryParams(qryMyTeaSpectrumReq);
 			List<QryTeaSpectrumDetailDTO> detailList = this.appChapuDao.queryTeaSpectrumListByCondition(new Query(params));
@@ -199,6 +188,14 @@ public class AppChapuServiceImpl implements AppChapuService {
 			// 按 userId 分组
 			Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap = Maps.newHashMap();
             for (QryTeaSpectrumDetailDTO detailItem : detailList) {
+            	// flag 0-创建的；1-保存（未创建）；2-我使用过的
+				if (ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuFlag.CREATED, detailItem.getFlag())) {
+					if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuFlag.USED, detailItem.getFlag())) {
+						detailItem.setFlag(TeaSpectrumConstant.MyChapuType.USED);
+					} else {
+						detailItem.setFlag(TeaSpectrumConstant.MyChapuType.SAVED);
+					}
+				}
                 detailItem.setAvatar(CommonUtils.plusFullImgPath(detailItem.getAvatar()));
                 detailItem.setChapuImg(CommonUtils.plusFullImgPath(detailItem.getChapuImg()));
                 if (groupMap.containsKey(detailItem.getUserId())) {
@@ -338,7 +335,6 @@ public class AppChapuServiceImpl implements AppChapuService {
 	}
 
 	private void doFinishTeaSpectrum(Long memberId, Integer chapuId) {
-		DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 		List<UserDeviceEntity> userDeviceRelas = this.userDeviceService.queryList(ImmutableMap.of(Keys.TEAMAN_ID, memberId));
 		if (ValidateUtils.isNotEmptyCollection(userDeviceRelas)) {
 			List<Integer> deviceIds = userDeviceRelas.stream().map(item -> item.getDeviceId()).collect(Collectors.toList());

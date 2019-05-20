@@ -67,12 +67,57 @@ public class Constant {
     }
 
     /**
-     * 沏茶类型：0-茶谱沏茶；1-快速沏茶；2-面板操作
+     * 数据库沏茶类型
+     */
+    public interface MakeTeaType4Db {
+        /**
+         * 茶谱沏茶
+         */
+        int TEA_SPECTRUM = 0;
+        /**
+         * 快速沏茶（普通沏茶）
+         */
+        int NORMAL = 1;
+        /**
+         * 面板操作
+         */
+        int PANEL = 2;
+    }
+
+    /**
+     * 接口返回沏茶类型
      */
     public interface MakeTeaType {
-        int TEA_SPECTRUM = 0;
-        int FAST = 1;
-        int PANEL = 2;
+        /**
+         * 0-普通沏茶
+         */
+        int NORMAL = 0;
+        /**
+         * 1-茶谱沏茶
+         */
+        int TEA_SPECTRUM = 1;
+        /**
+         * 2-洗茶
+         */
+        int WASH_TEA = 2;
+        /**
+         * 3-烧水
+         */
+        int BOIL_WATER = 3;
+    }
+
+    /**
+     * 沏茶模式
+     */
+    public interface MakeTeaMode {
+        /**
+         * 手机终端操作
+         */
+        int MOBILE_TERMINAL = 0;
+        /**
+         * 设备面板
+         */
+        int DEV_PANNEL = 1;
     }
 
     public interface RespResult {

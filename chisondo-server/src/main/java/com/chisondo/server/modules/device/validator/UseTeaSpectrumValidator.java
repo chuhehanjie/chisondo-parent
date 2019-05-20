@@ -6,8 +6,6 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.common.validator.BusiValidator;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.dto.req.UseTeaSpectrumReqDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
@@ -36,7 +34,6 @@ public class UseTeaSpectrumValidator implements BusiValidator {
         if (ValidateUtils.isEmpty(useTeaSpectrumReq.getChapuId())) {
             throw new CommonException("茶谱ID为空");
         }
-        DynamicDataSource.setDataSource(DataSourceNames.SECOND);
         AppChapuEntity teaSpectrum = this.appChapuService.queryObject(useTeaSpectrumReq.getChapuId());
         if (ValidateUtils.isEmpty(teaSpectrum)) {
             throw new CommonException("茶谱信息不存在");
@@ -50,7 +47,6 @@ public class UseTeaSpectrumValidator implements BusiValidator {
         req.addAttr(Keys.REQ, useTeaSpectrumReq);
         req.addAttr(Keys.TEA_SPECTRUM_INFO, teaSpectrum);
         req.addAttr(Keys.TEA_SPECTRUM_PARAM_INFO, teaSpectrumParams.get(0));
-        DynamicDataSource.setDataSource(DataSourceNames.FIRST);
         // 使用茶谱泡茶，应该校验茶谱存在不存在，而不是校验用户沏茶记录是否存在
         /*UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
         // 根据设备ID和茶谱ID获取最近的用户沏茶记录

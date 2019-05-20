@@ -1,5 +1,4 @@
 package com.chisondo.server.common.aspect;
-import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.annotation.DevOperateLog;
@@ -8,8 +7,6 @@ import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
 import com.chisondo.server.modules.device.service.DeviceOperateLogService;
@@ -26,8 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -104,12 +100,9 @@ public class DevOperateLogAspect {
 			devOperateLog.setEndTime(new Date(endTime));
 			devOperateLog.setDesc(methodDesc);
 			devOperateLog.setOperResult(resp.getRetn() == HttpStatus.SC_OK ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
-			DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 			this.devOperateLogService.save(devOperateLog);
 		} catch (Exception e) {
 			log.error("保存设备操作日志异常", e);
-		} finally {
-			DynamicDataSource.clearDataSource();
 		}
 	}
 }

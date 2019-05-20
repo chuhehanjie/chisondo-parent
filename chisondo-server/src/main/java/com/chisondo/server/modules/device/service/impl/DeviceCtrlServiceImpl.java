@@ -7,7 +7,6 @@ import com.chisondo.model.http.resp.DevParamMsg;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
@@ -166,7 +165,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		userMakeTea.setSoak(startOrReserveTeaReq.getSoak());
 		userMakeTea.setTeaSortId(startOrReserveTeaReq.getTeaSortId());
 		userMakeTea.setTeaSortName(startOrReserveTeaReq.getTeaSortName());
-		userMakeTea.setMakeType(Constant.MakeTeaType.TEA_SPECTRUM);
+		userMakeTea.setMakeType(Constant.MakeTeaType4Db.NORMAL);
 		userMakeTea.setBarcode("");
 		userMakeTea.setDensity(0);
 		return userMakeTea;
@@ -324,7 +323,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			useMakeTea.setSoak(teaSpectrumParam.getDura());
 			useMakeTea.setTeaSortId(teaSpectrum.getSortId());
 			useMakeTea.setTeaSortName(teaSpectrum.getSortName());
-			useMakeTea.setMakeType(Constant.MakeTeaType.TEA_SPECTRUM);
+			useMakeTea.setMakeType(Constant.MakeTeaType4Db.TEA_SPECTRUM);
 			this.userMakeTeaService.save(useMakeTea);
 			this.updateChapuInfo2Redis(teaSpectrum, newDeviceId, useMakeTea);
 		}

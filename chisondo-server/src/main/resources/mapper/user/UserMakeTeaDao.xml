@@ -36,7 +36,6 @@
 			umt.add_time as startTime,
 			umt.last_time as endTime,
 			umt.make_type as makeType,
-			IF(umt.make_type=2,1,0) as makeMode,
 			umt.chapu_id as chapuId,
 			umt.make_index as chapuIndex,
 			umt.tea_sort_id as teaSortId,

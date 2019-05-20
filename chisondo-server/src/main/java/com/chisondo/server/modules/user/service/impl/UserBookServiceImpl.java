@@ -3,12 +3,13 @@ package com.chisondo.server.modules.user.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.*;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.dto.req.StartOrReserveMakeTeaReqDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.user.dao.UserBookDao;
 import com.chisondo.server.modules.user.dto.UserMakeTeaReservationDTO;
+import com.chisondo.server.modules.user.entity.UserBookEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
+import com.chisondo.server.modules.user.service.UserBookService;
 import com.chisondo.server.modules.user.service.UserVipService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -17,10 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import com.chisondo.server.modules.user.dao.UserBookDao;
-import com.chisondo.server.modules.user.entity.UserBookEntity;
-import com.chisondo.server.modules.user.service.UserBookService;
 
 
 
@@ -86,13 +83,11 @@ public class UserBookServiceImpl implements UserBookService {
 					userMakeTeaResvList.add(userMakeTeaResv);
 				});
 			} else {
-				DynamicDataSource.setDataSource(DataSourceNames.THIRD);
 				for (UserBookEntity userBook : userBookList) {
 					UserVipEntity userVip = this.userVipService.queryObject(Long.valueOf(userBook.getTeamanId()));
 					UserMakeTeaReservationDTO userMakeTeaResv = this.buildUserMakeTeaResv(userVip, userBook);
 					userMakeTeaResvList.add(userMakeTeaResv);
 				}
-				DynamicDataSource.setDataSource(DataSourceNames.FIRST);
 			}
 			resultMap.put(Keys.RESERV_INFO, userMakeTeaResvList);
 		} else {

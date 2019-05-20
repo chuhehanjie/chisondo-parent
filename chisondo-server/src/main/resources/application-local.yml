@@ -1,0 +1,60 @@
+chisondo:
+  server:
+    http2DevURL: http://127.0.0.1:8099/
+#    oldDevReqURL: http://entrypoint.teamanworld.com:9090/TeamanAccServ/wxaccess?api=
+spring:
+  redis:
+      open: true  # 是否开启redis缓存  true开启   false关闭
+      database: 0
+      host: 10.116.24.171
+      port: 6379
+      password: sj!@G)1D3_D&12   # 密码（默认为空）
+      timeout: 6000  # 连接超时时长（毫秒）
+      pool:
+          max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+          max-wait: -1      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-idle: 10      # 连接池中的最大空闲连接
+          min-idle: 5       # 连接池中的最小空闲连接
+  transaction:
+      rollback-on-commit-failure: true
+  datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      druid:
+          first:  #数据源1
+              url: jdbc:mysql://120.25.158.168:3306/chisondo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              username: teaman
+              password: qsd-a123
+          second:  #数据源2
+              url: jdbc:mysql://112.74.127.178:3306/chisondo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              username: teaman
+              password: qsd-a123
+          third:  #数据源3
+              url: jdbc:mysql://112.74.127.178:3306/zxindb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+              username: teaman
+              password: qsd-a123
+          initial-size: 10
+          max-active: 100
+          min-idle: 10
+          max-wait: 60000
+          pool-prepared-statements: true
+          max-pool-prepared-statement-per-connection-size: 20
+          time-between-eviction-runs-millis: 60000
+          min-evictable-idle-time-millis: 300000
+          validation-query: SELECT 1 FROM DUAL
+          test-while-idle: true
+          test-on-borrow: false
+          test-on-return: false
+          stat-view-servlet:
+              enabled: true
+              url-pattern: /druid/*
+              #login-username: teaman
+              #login-password: teaman
+          filter:
+              stat:
+                  log-slow-sql: true
+                  slow-sql-millis: 1000
+                  merge-sql: true
+              wall:
+                  config:
+                      multi-statement-allow: true

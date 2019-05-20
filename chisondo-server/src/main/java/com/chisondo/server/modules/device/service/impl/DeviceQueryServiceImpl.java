@@ -130,10 +130,12 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 				if (!cacheUserMap.containsKey(user.getMemberId())) {
 					cacheUserMap.put(user.getMemberId(), user);
 				}
+				makeTeaRow.processMakeTypeAndMakeMode();
+
 				makeTeaRow.setPhoneNum(user.getPhone());
 				makeTeaRow.setUserName(ValidateUtils.isEmptyString(user.getVipNickname()) ? user.getVipName() : user.getVipNickname());
 				makeTeaRow.setUserImg(CommonUtils.plusFullImgPath(user.getVipHeadImg()));
-				if (ValidateUtils.equals(1, makeTeaRow.getMakeType())) {
+				if (ValidateUtils.equals(Constant.MakeTeaType4Db.TEA_SPECTRUM, makeTeaRow.getMakeType())) {
 					// 茶谱沏茶时才返回茶谱相关信息
 					AppChapuEntity teaSpectrum = cacheChapuMap.containsKey(makeTeaRow.getChapuId()) ? cacheChapuMap.get(makeTeaRow.getChapuId()) : this.appChapuService.queryTeaSpectrumById(makeTeaRow.getChapuId());
 					if (ValidateUtils.isNotEmpty(teaSpectrum)) {

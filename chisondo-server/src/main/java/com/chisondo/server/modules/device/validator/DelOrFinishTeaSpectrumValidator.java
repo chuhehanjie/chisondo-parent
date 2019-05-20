@@ -4,17 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.ParamValidatorUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.common.validator.BusiValidator;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.dto.DelOrFinishTeaSpectrumReqDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +35,6 @@ public class DelOrFinishTeaSpectrumValidator implements BusiValidator {
                 ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuOperFlag.FINISH, delOrFinishTeaSpectrumReq.getOperFlag())) {
             throw new CommonException("无效的操作标识，只能是[0,1]");
         }
-        DynamicDataSource.setDataSource(DataSourceNames.SECOND);
         AppChapuEntity teaSpectrum = this.appChapuService.queryObject(delOrFinishTeaSpectrumReq.getChapuId());
         if (ValidateUtils.isEmpty(teaSpectrum)) {
             throw new CommonException("茶谱信息不存在");

@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.HttpStatus;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.*;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.dto.req.DeviceCtrlReqDTO;
 import com.chisondo.server.modules.device.dto.req.StopWorkReqDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
@@ -18,7 +16,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +52,6 @@ public class OldDeviceCtrlServiceImpl implements OldDeviceCtrlService {
 
     private void validate(CommonReq req) {
         if (ValidateUtils.isEmpty(req.getAttrByKey(Keys.DEVICE_INFO)) && ValidateUtils.isEmpty(req.getAttrByKey(Keys.USER_INFO))) {
-            DynamicDataSource.setDataSource(DataSourceNames.FIRST);
             ParamValidatorUtils.validateByBeanId("devExistenceValidator", req);
             ParamValidatorUtils.validateByBeanId("userExistenceValidator", req);
         }

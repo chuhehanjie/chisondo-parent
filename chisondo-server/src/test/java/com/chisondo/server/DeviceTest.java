@@ -2,8 +2,6 @@ package com.chisondo.server;
 
 import com.chisondo.ServerApplication;
 import com.chisondo.server.common.utils.ValidateUtils;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.google.common.collect.Maps;
@@ -24,7 +22,6 @@ public class DeviceTest {
 
     @Test
     public void queryDeviceList() {
-        DynamicDataSource.setDataSource(DataSourceNames.FIRST);
         List<ActivedDeviceInfoEntity> deviceList = this.activedDeviceInfoService.queryList(Maps.newHashMap());
         if (ValidateUtils.isNotEmptyCollection(deviceList)) {
             System.out.println("deviceList size = " + deviceList.size());

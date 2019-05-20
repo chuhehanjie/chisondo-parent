@@ -204,4 +204,8 @@ public final class CommonUtils {
     public static boolean isOldDevice(String deviceId) {
         return deviceId.length() <= 8;
     }
+
+    public static String convertDateStr(String dateStr) {
+        return ValidateUtils.isNotEmptyString(dateStr) && dateStr.length() > 19 ? dateStr.substring(0, 19) : dateStr;
+    }
 }

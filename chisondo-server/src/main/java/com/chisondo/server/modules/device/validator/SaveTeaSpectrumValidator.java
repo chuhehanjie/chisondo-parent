@@ -6,10 +6,7 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.common.validator.BusiValidator;
-import com.chisondo.server.datasources.DataSourceNames;
-import com.chisondo.server.datasources.DynamicDataSource;
 import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
-import com.chisondo.server.modules.tea.dto.DelOrFinishTeaSpectrumReqDTO;
 import com.chisondo.server.modules.tea.dto.QryTeaSpectrumParamDTO;
 import com.chisondo.server.modules.tea.dto.SaveTeaSpectrumReqDTO;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
@@ -52,7 +49,6 @@ public class SaveTeaSpectrumValidator implements BusiValidator {
             throw new CommonException("茶品牌名称为空");
         }
         this.validateMakeTeaParam(saveTeaSpectrumReq);
-        DynamicDataSource.setDataSource(DataSourceNames.SECOND);
         if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuOperFlag.MODIFY, saveTeaSpectrumReq.getOperFlag())) {
             if (ValidateUtils.isEmpty(saveTeaSpectrumReq.getChapuId())) {
                 throw new CommonException("茶谱ID为空");
