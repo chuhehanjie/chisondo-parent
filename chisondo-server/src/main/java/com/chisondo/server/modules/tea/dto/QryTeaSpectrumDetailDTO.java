@@ -1,5 +1,7 @@
 package com.chisondo.server.modules.tea.dto;
 
+import com.chisondo.server.common.utils.CommonUtils;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -118,7 +120,7 @@ public class QryTeaSpectrumDetailDTO implements Serializable {
     }
 
     public String getCreateTime() {
-        return createTime;
+        return CommonUtils.convertDateStr(this.createTime);
     }
 
     public void setCreateTime(String createTime) {
