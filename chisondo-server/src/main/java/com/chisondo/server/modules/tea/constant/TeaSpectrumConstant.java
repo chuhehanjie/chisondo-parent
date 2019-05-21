@@ -27,13 +27,14 @@ public class TeaSpectrumConstant {
     }
 
     public interface MyChapuFlag {
-        // 0-创建的；1-收藏的；2-我编辑的；4-我点赞的；5-我评论的；6-我使用过的
+        // 0-创建的；1-收藏的；2-我编辑的；4-我点赞的；5-我评论的；6-我使用过的；7-保存的
         int CREATED = 0;
         int FAVORITE = 1;
         int EDITED = 2;
         int LIKED = 4;
         int COMMENTED = 5;
         int USED = 6;
+        int SAVED = 7;
     }
 
     public interface MyChapuOperFlag {

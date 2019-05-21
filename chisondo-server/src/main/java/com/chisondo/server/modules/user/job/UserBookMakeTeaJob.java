@@ -24,7 +24,7 @@ public class UserBookMakeTeaJob {
     private DeviceCtrlService deviceCtrlService;
 
 //    @Scheduled(cron = "0 0 0/1 * * ?")//一小时一次
-    @Scheduled(cron = "0 0/5 * * * ?") // 每3分钟一次
+    @Scheduled(cron = "0 0/1 * * * ?") // 每3分钟一次
     public void exectue(){
         if (log.isDebugEnabled()) {
             log.debug("查询用户沏茶预约记录开始");

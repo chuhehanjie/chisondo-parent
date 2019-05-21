@@ -1,16 +1,12 @@
 package com.chisondo.server.modules.device.service.impl;
+
+import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.constant.DevConstant;
+import com.chisondo.model.http.req.DeviceHttpReq;
 import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
 import com.chisondo.model.http.req.SetDevOtherParamHttpReq;
 import com.chisondo.model.http.req.StopWorkHttpReq;
 import com.chisondo.model.http.resp.DevParamMsg;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.alibaba.fastjson.JSONObject;
-import com.chisondo.model.http.req.DeviceHttpReq;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.model.http.resp.DeviceHttpResp;
 import com.chisondo.server.common.exception.CommonException;
@@ -24,25 +20,31 @@ import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
-import com.chisondo.server.modules.device.service.DeviceOperateLogService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.tea.entity.AppChapuMineEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuParaEntity;
+import com.chisondo.server.modules.tea.service.AppChapuMineService;
 import com.chisondo.server.modules.tea.service.AppChapuParaService;
 import com.chisondo.server.modules.user.entity.UserBookEntity;
 import com.chisondo.server.modules.user.entity.UserDeviceEntity;
 import com.chisondo.server.modules.user.entity.UserMakeTeaEntity;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.user.service.UserBookService;
+import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.chisondo.server.modules.user.service.UserVipService;
-import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -80,7 +82,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	private AppChapuParaService appChapuParaService;
 
 	@Autowired
-	private DeviceOperateLogService devOperateLogService;
+	private AppChapuMineService appChapuMineService;
 
 	@Autowired
 	private RedisUtils redisUtils;
@@ -326,8 +328,22 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			useMakeTea.setMakeType(Constant.MakeTeaType4Db.TEA_SPECTRUM);
 			this.userMakeTeaService.save(useMakeTea);
 			this.updateChapuInfo2Redis(teaSpectrum, newDeviceId, useMakeTea);
+			this.updateMyTeaSpectrum(useMakeTea);
+
 		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	private void updateMyTeaSpectrum(UserMakeTeaEntity useMakeTea) {
+		// 更新我的茶谱
+		List<AppChapuMineEntity> myTeaSpectrumList = this.appChapuMineService.queryList(ImmutableMap.of(Keys.CHAPU_ID, useMakeTea.getChapuId(), Keys.USER_ID, useMakeTea.getTeamanId()));
+		if (ValidateUtils.isNotEmptyCollection(myTeaSpectrumList)) {
+            AppChapuMineEntity myTeaSpectrum = myTeaSpectrumList.get(0);
+            myTeaSpectrum.setLastUseTime(myTeaSpectrum.getOperTime());
+            myTeaSpectrum.setOperTime(DateUtils.currentDate());
+            myTeaSpectrum.setUseTimes(ValidateUtils.isEmpty(myTeaSpectrum.getUseTimes()) ? 1 : myTeaSpectrum.getUseTimes() + 1);
+            this.appChapuMineService.update(myTeaSpectrum);
+        }
 	}
 
 	private void updateChapuInfo2Redis(AppChapuEntity teaSpectrum, String newDeviceId, UserMakeTeaEntity useMakeTea) {

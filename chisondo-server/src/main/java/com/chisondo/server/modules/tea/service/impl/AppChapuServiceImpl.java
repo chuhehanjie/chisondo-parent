@@ -304,6 +304,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 				types.add(TeaSpectrumConstant.MyChapuFlag.EDITED);
 				types.add(TeaSpectrumConstant.MyChapuFlag.LIKED);
 				types.add(TeaSpectrumConstant.MyChapuFlag.COMMENTED);
+				types.add(TeaSpectrumConstant.MyChapuFlag.SAVED);
 			} else if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuType.USED, qryMyTeaSpectrumReq.getType())) {
 				types.add(TeaSpectrumConstant.MyChapuFlag.USED);
 			}
@@ -385,6 +386,13 @@ public class AppChapuServiceImpl implements AppChapuService {
             }
         }
         this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum, teaSpectrumParams.size() + 1);
+        // 修改我的茶谱
+		AppChapuMineEntity myTeaSpectrum = new AppChapuMineEntity();
+		myTeaSpectrum.setFlag(TeaSpectrumConstant.MyChapuFlag.FAVORITE);
+		myTeaSpectrum.setChapuId(teaSpectrum.getChapuId());
+		myTeaSpectrum.setUserId(teaSpectrum.getUserId());
+		myTeaSpectrum.setOperTime(DateUtils.currentDate());
+		this.appChapuMineService.update(myTeaSpectrum);
         return teaSpectrum.getChapuId();
     }
 
@@ -422,15 +430,15 @@ public class AppChapuServiceImpl implements AppChapuService {
         this.save(teaSpectrum);
         this.saveTeaSpectrumParams(saveTeaSpectrumReq, teaSpectrum, 1);
         // 查询我的茶谱是否有对应记录，如果没有则创建
-		this.saveMyTeaSpectrum(user, teaSpectrum);
+		this.saveMyTeaSpectrum(user, teaSpectrum, saveTeaSpectrumReq.getOperFlag());
         return teaSpectrum.getChapuId();
     }
 
-	private void saveMyTeaSpectrum(UserVipEntity user, AppChapuEntity teaSpectrum) {
+	private void saveMyTeaSpectrum(UserVipEntity user, AppChapuEntity teaSpectrum, Integer operFlag) {
 		AppChapuMineEntity myTeaSpecrum = new AppChapuMineEntity();
 		myTeaSpecrum.setUserId(Integer.valueOf(user.getMemberId().toString()));
 		myTeaSpecrum.setChapuId(teaSpectrum.getChapuId());
-		myTeaSpecrum.setFlag(TeaSpectrumConstant.MyChapuFlag.CREATED);
+		myTeaSpecrum.setFlag(ValidateUtils.equals(TeaSpectrumConstant.MyChapuOperFlag.CREATE, operFlag) ? TeaSpectrumConstant.MyChapuFlag.CREATED : TeaSpectrumConstant.MyChapuFlag.SAVED);
 		myTeaSpecrum.setOperTime(DateUtils.currentDate());
 		myTeaSpecrum.setUseTimes(0);
 		myTeaSpecrum.setLastUseTime(null);

@@ -135,7 +135,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 				makeTeaRow.setPhoneNum(user.getPhone());
 				makeTeaRow.setUserName(ValidateUtils.isEmptyString(user.getVipNickname()) ? user.getVipName() : user.getVipNickname());
 				makeTeaRow.setUserImg(CommonUtils.plusFullImgPath(user.getVipHeadImg()));
-				if (ValidateUtils.equals(Constant.MakeTeaType4Db.TEA_SPECTRUM, makeTeaRow.getMakeType())) {
+				if (ValidateUtils.equals(Constant.MakeTeaType.TEA_SPECTRUM, makeTeaRow.getMakeType())) {
 					// 茶谱沏茶时才返回茶谱相关信息
 					AppChapuEntity teaSpectrum = cacheChapuMap.containsKey(makeTeaRow.getChapuId()) ? cacheChapuMap.get(makeTeaRow.getChapuId()) : this.appChapuService.queryTeaSpectrumById(makeTeaRow.getChapuId());
 					if (ValidateUtils.isNotEmpty(teaSpectrum)) {

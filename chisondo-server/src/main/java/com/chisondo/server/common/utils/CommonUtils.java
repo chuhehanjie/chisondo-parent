@@ -153,8 +153,10 @@ public final class CommonUtils {
 
     public static String plusFullImgPath(String srcImg) {
         String imgPrefix = CacheDataUtils.getImgPathPrefix();
-        if (ValidateUtils.isNotEmptyString(srcImg) && (!srcImg.startsWith("http://") || !srcImg.startsWith("https://"))) {
-            return imgPrefix + srcImg;
+        if (ValidateUtils.isNotEmptyString(srcImg)) {
+            if (!srcImg.startsWith("http://") && !srcImg.startsWith("https://")) {
+                return imgPrefix + srcImg;
+            }
         }
         return srcImg;
     }
