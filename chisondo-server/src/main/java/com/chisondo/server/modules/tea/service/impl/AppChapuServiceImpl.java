@@ -98,6 +98,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 			teaSpectrumDetail.setParameter(this.convertEntities2DTOs(teaSpectrumParams));
 			teaSpectrumDetail.setChapuImg(CommonUtils.plusFullImgPath(teaSpectrumDetail.getChapuImg()));
 			UserVipEntity user = this.userVipService.queryUserByMemberId(teaSpectrumDetail.getUserId());
+			this.setChapuFlag(teaSpectrumDetail);
 			if (ValidateUtils.isNotEmpty(user)) {
 				this.doSetUserRelaAttrs(teaSpectrumDetail, user);
 			}
@@ -188,15 +189,9 @@ public class AppChapuServiceImpl implements AppChapuService {
 			// 按 userId 分组
 			Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap = Maps.newHashMap();
             for (QryTeaSpectrumDetailDTO detailItem : detailList) {
-            	// flag 0-创建的；1-保存（未创建）；2-我使用过的
-				if (ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuFlag.CREATED, detailItem.getFlag())) {
-					if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuFlag.USED, detailItem.getFlag())) {
-						detailItem.setFlag(TeaSpectrumConstant.MyChapuType.USED);
-					} else {
-						detailItem.setFlag(TeaSpectrumConstant.MyChapuType.SAVED);
-					}
-				}
-                detailItem.setAvatar(CommonUtils.plusFullImgPath(detailItem.getAvatar()));
+				this.setChapuFlag(detailItem);
+
+				detailItem.setAvatar(CommonUtils.plusFullImgPath(detailItem.getAvatar()));
                 detailItem.setChapuImg(CommonUtils.plusFullImgPath(detailItem.getChapuImg()));
                 if (groupMap.containsKey(detailItem.getUserId())) {
                     groupMap.get(detailItem.getUserId()).add(detailItem);
@@ -221,7 +216,18 @@ public class AppChapuServiceImpl implements AppChapuService {
 		}
 	}
 
-    private List<Long> getUserIds(Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap) {
+	private void setChapuFlag(QryTeaSpectrumDetailDTO detailItem) {
+		// flag 0-创建的；1-保存（未创建）；2-我使用过的
+		if (ValidateUtils.notEquals(TeaSpectrumConstant.MyChapuFlag.CREATED, detailItem.getFlag())) {
+            if (ValidateUtils.equals(TeaSpectrumConstant.MyChapuFlag.USED, detailItem.getFlag())) {
+                detailItem.setFlag(TeaSpectrumConstant.MyChapuType.USED);
+            } else {
+                detailItem.setFlag(TeaSpectrumConstant.MyChapuType.SAVED);
+            }
+        }
+	}
+
+	private List<Long> getUserIds(Map<Long, List<QryTeaSpectrumDetailDTO>> groupMap) {
 		List<Long> userIds = Lists.newArrayList();
 		groupMap.forEach((k, v) -> {
             userIds.add(k);
