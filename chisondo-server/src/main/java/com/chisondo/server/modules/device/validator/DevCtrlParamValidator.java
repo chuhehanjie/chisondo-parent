@@ -28,10 +28,10 @@ public class DevCtrlParamValidator implements BusiValidator {
                 || devParamMsg.getSoak() > Constant.SoakTime.MAX) {
             throw new CommonException(String.format("浸泡时间必须在%d至%d之间", Constant.SoakTime.MIN, Constant.SoakTime.MAX));
         }
-
-        if (!CacheDataUtils.getWaterLevels().contains(devParamMsg.getWaterlevel())) {
+        // 出水量不需要校验 update by dz 20190522
+        /*if (!CacheDataUtils.getWaterLevels().contains(devParamMsg.getWaterlevel())) {
             throw new CommonException(String.format("出水量必须在%s档次之间", CacheDataUtils.getWaterLevels()));
-        }
+        }*/
 
     }
 }
