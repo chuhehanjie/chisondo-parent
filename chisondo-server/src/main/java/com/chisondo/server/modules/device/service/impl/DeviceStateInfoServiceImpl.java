@@ -125,6 +125,9 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		if (ValidateUtils.isEmpty(existedDevState)) {
 			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
 			devStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());
+			if (ValidateUtils.isEmpty(devStateInfo.getConnectState())) {
+				devStateInfo.setConnectState(Constant.ConnectState.NOT_CONNECTED);
+			}
 			// 不存在则添加
 			this.save(devStateInfo);
 			log.info("add device state success");
@@ -149,7 +152,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			for (int i = remainTime; i >= 0; i--) {
 				try {
 					DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
-					if (tempDevStatusResp.getReamin() == 0) {
+					if (ValidateUtils.isNotEmpty(tempDevStatusResp) && tempDevStatusResp.getReamin() == 0) {
 						needUpdate = false;
 						break;
 					}
