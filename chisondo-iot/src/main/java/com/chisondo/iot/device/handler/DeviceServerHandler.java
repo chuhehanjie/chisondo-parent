@@ -266,7 +266,8 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         Channel incoming = ctx.channel();
-        log.debug("SimpleChatClient:" + incoming.remoteAddress() + "异常,总人数:" + channels.size() + "\n");
+        // TODO 是否需要写异常日志？
+        log.error("SimpleChatClient:" + incoming.remoteAddress() + "异常, 总人数:" + channels.size() + "\n");
         // 当出现异常就关闭连接
         cause.printStackTrace();
         ctx.close();

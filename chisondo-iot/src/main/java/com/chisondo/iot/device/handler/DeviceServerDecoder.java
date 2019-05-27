@@ -29,7 +29,7 @@ public class DeviceServerDecoder extends StringDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         String json = IOTUtils.convertByteBufToString(msg);
-        log.debug("decoder msg = " + json);
+        log.error("decoder msg = " + json);
         json = this.filterCloseSymbol(json);
         if (this.isDevStatusReportReq(json)) {
             // 设备状态上报请求
