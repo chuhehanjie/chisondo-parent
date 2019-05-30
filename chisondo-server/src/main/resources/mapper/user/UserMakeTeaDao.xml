@@ -31,7 +31,7 @@
 		SELECT
 			umt.id as makeId,
 			umt.teaman_id AS teamanId,
-			dev.device_id AS deviceId,
+			IFNULL(dev.new_device_id,dev.device_id) AS deviceId,
 			dev.device_name AS deviceName,
 			umt.add_time as startTime,
 			umt.last_time as endTime,
