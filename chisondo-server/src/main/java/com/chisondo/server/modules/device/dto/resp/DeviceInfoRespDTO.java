@@ -1,7 +1,7 @@
 package com.chisondo.server.modules.device.dto.resp;
 
 public class DeviceInfoRespDTO {
-    private Integer	deviceId; // 	设备ID
+    private String deviceId; // 	设备ID
     private String	deviceName; // 	设备名称
     private String	deviceDesc; // 	设备描述
     private Integer	connStatus; // 	连接状态	0:未连接, 非0:已有用户连接上
@@ -22,11 +22,11 @@ public class DeviceInfoRespDTO {
     private String WiFiSSID; // 当Wi-Fi在线时 返回
     private String newDeviceId;
 
-    public Integer getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(Integer deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 
