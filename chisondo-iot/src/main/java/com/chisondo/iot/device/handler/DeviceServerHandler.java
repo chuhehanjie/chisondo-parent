@@ -151,7 +151,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         devStatusResp.setDensity(devMsg.getTaststatus());
         devStatusResp.setWaterlv(devMsg.getWaterlevel());
         devStatusResp.setMakeDura(devMsg.getSoak());
-        devStatusResp.setReamin(Integer.valueOf(devMsg.getRemaintime()));
+        devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()));
         devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusResp.setWork(devMsg.getWorkstatus());
@@ -250,7 +250,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     public void channelInactive(ChannelHandlerContext ctx) throws Exception { // (6)
         Channel deviceChannel = ctx.channel();
         String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
-        log.info("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
+        log.error("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
         DevHttpChannelManager.removeByDeviceId(deviceId);
         DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
         devStatusResp.setOnlineStatus(0);

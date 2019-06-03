@@ -65,7 +65,6 @@ public class RestTemplateUtils {
     }
 
    public <T> T httpPostMediaTypeJson(String url, Class<T> respType, Object obj, Map<String, String> headerMap){
-        log.info("Http Post请求   MediaType  application/json  \n\rUrl={}  \r\nparam={}", new String[]{url, JSON.toJSONString(obj)});
         long start = System.currentTimeMillis();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -77,7 +76,7 @@ public class RestTemplateUtils {
         }
         HttpEntity<String> formEntity = new HttpEntity<>(JSON.toJSONString(obj), headers);
         T result = restTemplate.postForObject(url, formEntity, respType);
-        log.info("Http Post请求   MediaType  application/json  \r\nUrl={}  \r\nparam={} \r\nresult={} \r\ndelayTime={}ms", new String[]{url, JSON.toJSONString(obj), JSON.toJSONString(result), (System.currentTimeMillis() - start) + ""});
+        log.info("Http Post请求   MediaType = application/json  \r\nurl = {}  \r\nparam = {} \r\nresult = {} \r\n请求耗时 = {}ms", new String[]{url, JSON.toJSONString(obj), JSON.toJSONString(result), (System.currentTimeMillis() - start) + ""});
         return result;
     }
     /**
