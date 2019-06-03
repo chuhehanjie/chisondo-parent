@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.annotation.DevOperateLog;
 import com.chisondo.server.common.annotation.ParamValidator;
 import com.chisondo.server.common.core.AbstractController;
+import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.CommonUtils;
@@ -257,5 +258,20 @@ public class DeviceCtrlController extends AbstractController {
 			return CommonUtils.buildOldDevResp(result);
 		}
 		return this.deviceCtrlService.cancelReservation(req);
+	}
+
+	/**
+     * 锁定或解锁设备
+     * @param req
+     * @return
+     */
+	@RequestMapping("/api/rest/devicelock")
+	@DevOperateLog("锁定或解锁设备")
+	@ParamValidator({DevExistenceValidator.class, LockOrUnlockDevValidator.class})
+	public CommonResp lockOrUnlockDev(@RequestBody CommonReq req) {
+		if (req.isOldDev()) {
+			throw new CommonException("老设备不支持此功能");
+		}
+		return this.deviceCtrlService.lockOrUnlockDev(req);
 	}
 }

@@ -225,4 +225,18 @@ public class Constant {
         int STOP_KEEP_WARM = 0;
         int START_KEEP_WARM = 1;
     }
+
+    public interface LockOrUnlockDevOperFalg {
+        int LOCK = 0;
+        int UNLOCK = 1;
+    }
+
+    /**
+     * 1-电源键（全部功能）2-启动键（只保留停止沏茶功能）3-启动键（只保留启动键功能）
+     */
+    public interface LockOrUnlockDevActionFalg {
+        int POWER_KEY = 1;
+        int ENABLE_KEY_4_STOP_MAKE_TEA = 2;
+        int ENABLE_KEY = 3;
+    }
 }

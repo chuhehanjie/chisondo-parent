@@ -61,4 +61,6 @@ public interface DeviceCtrlService {
     void processReverseMakeTea(List<UserBookEntity> userBookList);
 
     void updateMakeType4Dev(int makeType, String deviceId);
+
+    CommonResp lockOrUnlockDev(CommonReq req);
 }

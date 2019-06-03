@@ -94,7 +94,7 @@ public class DevOperateLogAspect {
 			devOperateLog.setTeamanId(ValidateUtils.isEmpty(user) ? "" : user.getMemberId() + "");
 			devOperateLog.setUserMobileNo(ValidateUtils.isEmpty(user) ? "" :user.getPhone());
 			devOperateLog.setOperType(0); // TODO 操作类型未定义
-			devOperateLog.setReqContent(JSONObject.toJSONString(req));
+			devOperateLog.setReqContent(this.buildReqContent(req));
 			devOperateLog.setResContent(JSONObject.toJSONString(resp));
 			devOperateLog.setStartTime(new Date(startTime));
 			devOperateLog.setEndTime(new Date(endTime));
@@ -104,5 +104,18 @@ public class DevOperateLogAspect {
 		} catch (Exception e) {
 			log.error("保存设备操作日志异常", e);
 		}
+	}
+
+	private String buildReqContent(CommonReq req) {
+		String reqContent = JSONObject.toJSONString(req);
+		if (ValidateUtils.isNotEmpty(req.getAttrByKey(Keys.DEV_REQ))) {
+			reqContent = reqContent.substring(0, reqContent.length() - 1);
+			reqContent += ",\"" + Keys.DEV_REQ + "\":" + JSONObject.toJSONString(req.getAttrByKey(Keys.DEV_REQ)) + "}";
+		}
+		if (ValidateUtils.isNotEmpty(req.getAttrByKey(Keys.DEV_REQ_2))) {
+			reqContent = reqContent.substring(0, reqContent.length() - 1);
+			reqContent += ",\"" + Keys.DEV_REQ_2 + "\":" + JSONObject.toJSONString(req.getAttrByKey(Keys.DEV_REQ_2)) + "}";
+		}
+		return reqContent;
 	}
 }

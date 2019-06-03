@@ -49,6 +49,8 @@ public class Keys {
 
     public static final String ACTION = "action";
 
+    public static final String ACTION_FLAG = "actionFlag";
+
     public static final String CHAPU_ID = "chapuId";
 
     public static final String USER_MAKTE_TEA_INFO = "userMakeTeaInfo";
@@ -72,5 +74,8 @@ public class Keys {
     public static final String SET_COOKIE = "Set-Cookie";
 
     public static final String COOKIE = "Cookie";
+
+    public static final String DEV_REQ = "devReq";
+    public static final String DEV_REQ_2 = "devReq2";
 
 }

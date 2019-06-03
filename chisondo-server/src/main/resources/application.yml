@@ -8,7 +8,7 @@ server:
     connection-timeout: 5000
 
 spring:
-    # 环境 dev|test|pro
+    # 环境 dev|test|prod
     profiles:
         active: dev
     # jackson时间格式化
