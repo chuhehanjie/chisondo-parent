@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -116,7 +117,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             log.error("设备ID为空");
             return;
         }
-        log.debug("设备控件响应信息 = {}", JSONObject.toJSONString(resp));
+        log.debug("设备控制响应信息 = {}", JSONObject.toJSONString(resp));
         this.sendTCPResp2Http(resp, resp.getDeviceID());
         // 同时更新设备状态
         this.updateDevState2Redis(resp);
@@ -146,15 +147,27 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             return;
         }
         DeviceMsgResp devMsg = resp.getMsg();
-        devStatusResp.setTemp(devMsg.getTemperature());
-        devStatusResp.setWarm(devMsg.getWarmstatus());
-        devStatusResp.setDensity(devMsg.getTaststatus());
-        devStatusResp.setWaterlv(devMsg.getWaterlevel());
-        devStatusResp.setMakeDura(devMsg.getSoak());
+        if (null != devMsg.getTemperature()) {
+            devStatusResp.setTemp(devMsg.getTemperature());
+        }
+        if (null != devMsg.getWarmstatus()) {
+            devStatusResp.setWarm(devMsg.getWarmstatus());
+        }
+        if (null != devMsg.getTaststatus()) {
+            devStatusResp.setDensity(devMsg.getTaststatus());
+        }
+        if (null != devMsg.getWaterlevel()) {
+            devStatusResp.setWaterlv(devMsg.getWaterlevel());
+        }
+        if (null != devMsg.getSoak()) {
+            devStatusResp.setMakeDura(devMsg.getSoak());
+        }
         devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()));
         devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
-        devStatusResp.setWork(devMsg.getWorkstatus());
+        if (null != devMsg.getWorkstatus()) {
+            devStatusResp.setWork(devMsg.getWorkstatus());
+        }
         this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
     }
 
@@ -197,7 +210,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     private void processDevStatusReport(Channel deviceChannel, Object msg) {
         // 设备心跳上报请求
         DevStatusReportResp reportResp = (DevStatusReportResp) msg;
-        log.debug("接收设备[{}]心跳上报请求!", reportResp.getDeviceID());
+        log.debug("接收设备[{}]状态上报请求!", reportResp.getDeviceID());
         String deviceId = reportResp.getDeviceID();
         if (null == DevTcpChannelManager.getChannelByDeviceId(deviceId)) {
             DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);

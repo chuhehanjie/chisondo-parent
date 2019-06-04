@@ -97,8 +97,7 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	}
 
 	@Override
-	public ActivedDeviceInfoEntity getNewDeviceByNewDevId(String deviceId) {
-		List<ActivedDeviceInfoEntity> deviceList = this.queryList(ImmutableMap.of(Keys.NEW_DEVICE_ID, deviceId));
-		return ValidateUtils.isNotEmptyCollection(deviceList) ? deviceList.get(0) : null;
+	public ActivedDeviceInfoEntity getNewDeviceByNewDevId(String newDevId) {
+		return this.deviceInfoDao.queryByNewDevId(newDevId);
 	}
 }

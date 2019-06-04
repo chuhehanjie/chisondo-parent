@@ -40,8 +40,8 @@ public class DeviceStatusReportController extends AbstractController {
 	 */
 	@RequestMapping("/api/rest/updateDevStateFromRedis")
 	public CommonResp updateDevStateFromRedis(@RequestBody Map<String, Object> params) {
-		String deviceId = params.get(Keys.DEVICE_ID).toString();
-		this.deviceStateInfoService.updateDevStateFromRedis(deviceId);
+		String newDevId = params.get(Keys.DEVICE_ID).toString();
+		this.deviceStateInfoService.updateDevStateFromRedis(newDevId);
 		return CommonResp.ok();
 	}
 
@@ -69,7 +69,7 @@ public class DeviceStatusReportController extends AbstractController {
 			this.addDeviceStateInfo(devStatusReportResp, newDevice);
 		} else {
 			String newDeviceId = devStatusReportResp.getDeviceID();
-			devStatusReportResp.setDeviceID(deviceInfo.getDeviceId());
+			devStatusReportResp.setDbDeviceId(deviceInfo.getDeviceId());
 			this.deviceStateInfoService.updateDevStatus(devStatusReportResp, newDeviceId);
 		}
 		return CommonResp.ok();
@@ -117,15 +117,16 @@ public class DeviceStatusReportController extends AbstractController {
 		ActivedDeviceInfoEntity deviceInfo = new ActivedDeviceInfoEntity();
 		deviceInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
 		deviceInfo.setDeviceId(this.buildDeviceId(devStatusReportResp.getDeviceID()));
+		devStatusReportResp.setDbDeviceId(deviceInfo.getDeviceId());
 		deviceInfo.setDeviceName(Constant.DEF_DEV_NAME);
 		deviceInfo.setDeviceTypeId(3); // 3 表示新设备
 		deviceInfo.setActivedTime(DateUtils.currentDate());
 		deviceInfo.setPassword(Constant.DEF_PWD);
 		deviceInfo.setDevColor(1); // 默认颜色
-			/*deviceInfo.setTermId("");
-			deviceInfo.setDevDesc("");
-			deviceInfo.setAdminName("");
-			deviceInfo.setAdminPhone("");*/
+		/*deviceInfo.setTermId("");
+		deviceInfo.setDevDesc("");
+		deviceInfo.setAdminName("");
+		deviceInfo.setAdminPhone("");*/
 		deviceInfo.setRestId(0);
 		deviceInfo.setLockPanel(0);
 		deviceInfo.setCompanyId(-1);

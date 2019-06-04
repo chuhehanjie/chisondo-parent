@@ -30,4 +30,6 @@ public interface ActivedDeviceInfoDao extends BaseDao<ActivedDeviceInfoEntity> {
     void updateDevSound(SetDevSoundReqDTO setDevSoundReq);
 
     List<DeviceInfoRespDTO> queryDeviceDetail(Map<String, Object> params);
+
+    ActivedDeviceInfoEntity queryByNewDevId(String newDevId);
 }

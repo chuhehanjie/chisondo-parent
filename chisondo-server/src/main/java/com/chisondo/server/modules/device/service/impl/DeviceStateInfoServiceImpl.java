@@ -1,23 +1,21 @@
 package com.chisondo.server.modules.device.service.impl;
-import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.resp.DevStatusReportResp;
-import com.chisondo.server.common.utils.*;
-import com.chisondo.server.modules.device.dto.req.DeviceBindReqDTO;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
+import com.chisondo.server.common.utils.*;
+import com.chisondo.server.modules.device.dao.DeviceStateInfoDao;
+import com.chisondo.server.modules.device.dto.req.DeviceBindReqDTO;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
+import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
+import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import com.chisondo.server.modules.device.dao.DeviceStateInfoDao;
-import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
-import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 
 
 
@@ -152,7 +150,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			for (int i = remainTime; i >= 0; i--) {
 				try {
 					DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
-					if (ValidateUtils.isNotEmpty(tempDevStatusResp) && tempDevStatusResp.getReamin() == 0) {
+					if (ValidateUtils.isNotEmpty(tempDevStatusResp) && ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
 						needUpdate = false;
 						break;
 					}
@@ -174,14 +172,15 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
         DeviceStateInfoEntity devStateInfo = this.convert2DevStatusInfo(devStatusReportResp);
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
 //		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
-		devStateInfo.setUpdateTime(new Date());
-		devStateInfo.setLastConnTime(new Date());
+		devStateInfo.setUpdateTime(DateUtils.currentDate());
+		devStateInfo.setLastConnTime(DateUtils.currentDate());
 		return devStateInfo;
 	}
 
 	public DeviceStateInfoEntity convert2DevStatusInfo(DevStatusReportResp devStatusReportResp) {
 		DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
-		devStateInfo.setDeviceId(devStatusReportResp.getDeviceID());
+		devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
+		devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
 //		devStateInfo.setDeviceStateInfo("");
 		devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
 		devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
@@ -203,13 +202,13 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	@Override
-	public void updateDevStateFromRedis(String deviceId) {
-		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(deviceId);
+	public void updateDevStateFromRedis(String newDevId) {
+		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(newDevId);
 		if (ValidateUtils.isEmpty(deviceInfo)) {
-			log.error("新设备[{}]信息不存在！", deviceId);
+			log.error("新设备[{}]信息不存在！", newDevId);
 			return;
 		}
-		DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+		DevStatusRespDTO devStatusResp = this.redisUtils.get(newDevId, DevStatusRespDTO.class);
 		DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
 		deviceState.setDeviceId(deviceInfo.getDeviceId());
 		deviceState.setUpdateTime(DateUtils.currentDate());
@@ -224,7 +223,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		deviceState.setTea(devStatusResp.getTea());
 		deviceState.setWater(devStatusResp.getWater());
 		deviceState.setWork(devStatusResp.getWork());
-		if (devStatusResp.getReamin() > 0) {
+		if (ValidateUtils.isNotEmpty(devStatusResp.getReamin()) && devStatusResp.getReamin() > 0) {
 			this.processDevWorkingRemainTime(devStatusResp, deviceState);
 		} else {
 			this.update(deviceState);

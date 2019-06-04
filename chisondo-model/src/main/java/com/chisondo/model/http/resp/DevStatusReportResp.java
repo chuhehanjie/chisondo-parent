@@ -31,6 +31,8 @@ public class DevStatusReportResp extends CommonHttpResp {
 
     private String clientIP;
 
+    private String dbDeviceId;
+
     public String getAction() {
         return action;
     }
@@ -77,5 +79,13 @@ public class DevStatusReportResp extends CommonHttpResp {
 
     public String getClientIP() {
         return clientIP;
+    }
+
+    public String getDbDeviceId() {
+        return dbDeviceId;
+    }
+
+    public void setDbDeviceId(String dbDeviceId) {
+        this.dbDeviceId = dbDeviceId;
     }
 }

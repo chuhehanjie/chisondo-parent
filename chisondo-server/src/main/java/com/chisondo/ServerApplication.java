@@ -10,6 +10,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
@@ -33,6 +34,9 @@ public class ServerApplication extends SpringBootServletInitializer {
 
 	@Bean
 	public RestTemplate restTemplate(){
-		return new RestTemplate();
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(3000);
+		requestFactory.setReadTimeout(15000);
+		return new RestTemplate(requestFactory);
 	}
 }

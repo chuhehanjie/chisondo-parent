@@ -31,7 +31,7 @@ public class DevHttpChannelManager {
         Channel target = httpChannelMap.get(deviceId);
         if (!ObjectUtils.isEmpty(target) && ObjectUtils.nullSafeEquals(channel.id(), target.id())) {
             httpChannelMap.remove(deviceId);
-            log.info("remove http channel deviceId = {}", deviceId);
+            log.info("移除 HTTP 通道， deviceId = {}", deviceId);
         }
     }
 

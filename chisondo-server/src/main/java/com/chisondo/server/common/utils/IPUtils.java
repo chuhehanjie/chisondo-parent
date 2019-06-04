@@ -51,8 +51,11 @@ public class IPUtils {
 //				ip = ip.substring(0, ip.indexOf(","));
 //			}
 //		}
-        
         return ip;
+    }
+
+    public static String getIpAddr() {
+	    return getIpAddr(HttpContextUtils.getHttpServletRequest());
     }
 	
 }

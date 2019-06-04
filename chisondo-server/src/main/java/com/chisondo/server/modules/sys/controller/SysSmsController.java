@@ -7,6 +7,7 @@ import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.*;
+import com.chisondo.server.modules.sys.dto.SmsCacheDTO;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -23,6 +25,8 @@ import java.util.Map;
  */
 @RestController
 public class SysSmsController extends AbstractController {
+
+    private static final long SMS_EXP_TIME = 180;
 
     @Autowired
     private RestTemplateUtils restTemplateUtils;
@@ -47,6 +51,7 @@ public class SysSmsController extends AbstractController {
 //        int companyId = ValidateUtils.isEmpty("companyId") ? -1 : jsonObj.getIntValue("companyId");
 //        int source = jsonObj.getIntValue("source"); 0-小程序，1-android,2-ios.
         String mobile = jsonObj.getString(Keys.PHONE);
+        this.validateSms(mobile);
         String message = this.generateMessage(mobile);
         Map<String, Object> params = ImmutableMap.of("operid", "chisondo", "operpass", "q6uHtfVBfJU=",
                 "appendid", "001", "desmobile", mobile, "content", message);
@@ -54,6 +59,26 @@ public class SysSmsController extends AbstractController {
         JSONObject resp = JSONObject.parseObject(result);
         int code = resp.getIntValue("code");
         return new CommonResp(0 == code ? HttpStatus.SC_OK : HttpStatus.SC_INTERNAL_SERVER_ERROR, this.parseRetCode(code));
+    }
+
+    private void validateSms(String mobile) {
+        SmsCacheDTO existedSmsCacheDTO = this.getSmsCacheDTO(mobile);
+        Date curDate = DateUtils.currentDate();
+        if (ValidateUtils.isNotEmpty(existedSmsCacheDTO)) {
+            // 同一手机号一分钟只能下发一次短信
+            if (DateUtils.getBetweenMinutes(existedSmsCacheDTO.getSendDate(), curDate) < 1) {
+                throw new CommonException("同一手机号1分钟只能下发一次短信");
+            }
+        }
+        String ipAddr = IPUtils.getIpAddr();
+        logger.error("手机号 = {}, IP地址 = {}", mobile, ipAddr);
+        existedSmsCacheDTO = this.redisUtils.get(VERIFY_CODE_PREFIX + ipAddr, SmsCacheDTO.class, SMS_EXP_TIME);
+        if (ValidateUtils.isNotEmpty(existedSmsCacheDTO)) {
+            // 同一手机号一分钟只能下发一次短信
+            if (DateUtils.getBetweenMinutes(existedSmsCacheDTO.getSendDate(), curDate) < 1) {
+                throw new CommonException("同一IP地址1分钟只能下发一次短信");
+            }
+        }
     }
 
     private String parseRetCode(int code) {
@@ -110,17 +135,23 @@ public class SysSmsController extends AbstractController {
     }
 
     private void saveVerifyCode2Redis(String mobile, String verifyCode) {
-        this.redisUtils.set(VERIFY_CODE_PREFIX + mobile, verifyCode, 180);
+        SmsCacheDTO smsCacheDTO = new SmsCacheDTO(mobile, verifyCode, DateUtils.currentDate(), IPUtils.getIpAddr());
+        this.redisUtils.set(VERIFY_CODE_PREFIX + mobile, smsCacheDTO, SMS_EXP_TIME);
+        this.redisUtils.set(VERIFY_CODE_PREFIX + smsCacheDTO.getIpAddr(), smsCacheDTO, SMS_EXP_TIME);
     }
 
     private void checkVerifyCodeFromRedis(String mobile, String verifyCode) {
-        String cachedVerifyCode = this.redisUtils.get(VERIFY_CODE_PREFIX + mobile);
-        if (ValidateUtils.isEmpty(cachedVerifyCode)) {
+        SmsCacheDTO smsCacheDTO = this.getSmsCacheDTO(mobile);
+        if (ValidateUtils.isEmpty(smsCacheDTO)) {
             throw new CommonException("错误的验证码");
         }
-        if (ValidateUtils.notEquals(verifyCode, cachedVerifyCode)) {
+        if (ValidateUtils.notEquals(verifyCode, smsCacheDTO.getVerifyCode())) {
             throw new CommonException("错误的验证码");
         }
+    }
+
+    private SmsCacheDTO getSmsCacheDTO(String mobile) {
+        return this.redisUtils.get(VERIFY_CODE_PREFIX + mobile, SmsCacheDTO.class, SMS_EXP_TIME);
     }
 
 

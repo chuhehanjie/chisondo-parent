@@ -112,6 +112,13 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		if (ValidateUtils.isEmptyString(deviceId)) {
 			throw new CommonException("设备ID为空");
 		}
+		if (!CommonUtils.isOldDevice(deviceId)) {
+			ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(deviceId);
+			if (ValidateUtils.isEmpty(deviceInfo)) {
+				return CommonResp.ok(new MakeTeaRespDTO(0, Lists.newArrayList()));
+			}
+			deviceId = deviceInfo.getDeviceId();
+		}
 		Map<String, Object> params = CommonUtils.getPageParams(jsonObj);
 		params.put(Keys.DEVICE_ID, deviceId);
 		params.put(Query.PAGE, ValidateUtils.isEmpty(jsonObj.get(Query.PAGE)) ? 1 : jsonObj.get(Query.PAGE));
@@ -192,7 +199,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		UserVipEntity user = this.userVipService.getUserByMobile(phoneNum);
 		List<DeviceInfoRespDTO> devInfoList = Lists.newArrayList();
 		if (ValidateUtils.isNotEmpty(user)) {
-			devInfoList = this.deviceInfoService.queryDeviceDetail(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.USER_ID, user.getMemberId()));
+			devInfoList = this.deviceInfoService.queryDeviceDetail(ImmutableMap.of(Keys.DEVICE_ID, deviceId, Keys.USER_ID, user.getMemberId(), "oldDevFlag", CommonUtils.isOldDevice(deviceId)));
 		}
 		return ValidateUtils.isNotEmptyCollection(devInfoList) ? CommonResp.ok(devInfoList.get(0)) : CommonResp.ok();
 	}

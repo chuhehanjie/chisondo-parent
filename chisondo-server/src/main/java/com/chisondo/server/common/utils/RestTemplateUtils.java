@@ -88,7 +88,6 @@ public class RestTemplateUtils {
      * @return
      */
     public <T> T httpPostMediaTypeJson(String url, Class<T> respType, Object obj){
-        log.info("Http Post请求   MediaType  application/json  \n\rUrl={}  \r\nparam={}", new String[]{url, JSON.toJSONString(obj)});
         long start = System.currentTimeMillis();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);

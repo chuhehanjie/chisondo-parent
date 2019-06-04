@@ -128,7 +128,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
             DevSettingHttpResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + DevReqURIConstant.QRY_DEV_PARAM, DevSettingHttpResp.class, req);
             return resp;
         } catch (Exception e) {
-            log.error("设备控制请求异常！", e);
+            log.error("查询设备参数设置信息异常！", e);
             return new DevSettingHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "查询设备参数设置信息异常！");
         }
     }

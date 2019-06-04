@@ -1,36 +1,39 @@
 package com.chisondo.model.http.resp;
 
-public class DevStatusMsgResp {
+import java.io.Serializable;
+
+public class DevStatusMsgResp implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * 工作状态
      * 0 -空闲 1-沏茶中 2-洗茶中 3-烧水中
      */
-    private int workstatus;
+    private Integer workstatus;
     /**
      * 温度状态
      * 0-未保温 1-保温中
      */
-    private int warmstatus;
+    private Integer warmstatus;
     /**
      * 浓度状态
      * 1-浓 2-中 3淡
      */
-    private int taststatus;
+    private Integer taststatus;
     /**
      * 温度值
      * 需大于60度小于100度
      */
-    private int temperature;
+    private Integer temperature;
     /**
      * 沏茶时间
      * 0 - 不浸泡，1~600  沏茶时间(单位:秒)
      */
-    private int soak;
+    private Integer soak;
     /**
      * 出水量
      * 取值为：150 200 250 300 350 400 450 550  8个档次 (单位：毫升ml)
      */
-    private int waterlevel;
+    private Integer waterlevel;
     /**
      * 	面板剩余时间
      */
@@ -44,53 +47,53 @@ public class DevStatusMsgResp {
      * 实时温度	60-100
      * 当前发热管的温度
      */
-    private int nowwarm;
+    private Integer nowwarm;
 
-    public int getWorkstatus() {
+    public Integer getWorkstatus() {
         return workstatus;
     }
 
-    public void setWorkstatus(int workstatus) {
+    public void setWorkstatus(Integer workstatus) {
         this.workstatus = workstatus;
     }
 
-    public int getWarmstatus() {
+    public Integer getWarmstatus() {
         return warmstatus;
     }
 
-    public void setWarmstatus(int warmstatus) {
+    public void setWarmstatus(Integer warmstatus) {
         this.warmstatus = warmstatus;
     }
 
-    public int getTaststatus() {
+    public Integer getTaststatus() {
         return taststatus;
     }
 
-    public void setTaststatus(int taststatus) {
+    public void setTaststatus(Integer taststatus) {
         this.taststatus = taststatus;
     }
 
-    public int getTemperature() {
+    public Integer getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(Integer temperature) {
         this.temperature = temperature;
     }
 
-    public int getSoak() {
+    public Integer getSoak() {
         return soak;
     }
 
-    public void setSoak(int soak) {
+    public void setSoak(Integer soak) {
         this.soak = soak;
     }
 
-    public int getWaterlevel() {
+    public Integer getWaterlevel() {
         return waterlevel;
     }
 
-    public void setWaterlevel(int waterlevel) {
+    public void setWaterlevel(Integer waterlevel) {
         this.waterlevel = waterlevel;
     }
 
@@ -110,11 +113,11 @@ public class DevStatusMsgResp {
         this.errorstatus = errorstatus;
     }
 
-    public int getNowwarm() {
+    public Integer getNowwarm() {
         return nowwarm;
     }
 
-    public void setNowwarm(int nowwarm) {
+    public void setNowwarm(Integer nowwarm) {
         this.nowwarm = nowwarm;
     }
 }

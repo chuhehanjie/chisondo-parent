@@ -20,13 +20,13 @@
         <result property="companyId" column="company_id"/>
         <result property="volFlag" column="vol_flag"/>
         <result property="gmsFlag" column="gms_flag"/>
-		<result property="newDeviceId" column="new_device_id"/>
+		<result property="dbDeviceId" column="new_device_id"/>
     </resultMap>
 
 	<sql id="queryDevInfoOfUser">
 		SELECT
 			IFNULL(dev.new_device_id,dev.device_id) AS deviceId,
-			dev.new_device_id AS newDeviceId,
+			dev.new_device_id AS dbDeviceId,
 			dev.device_name AS deviceName,
 			dev.dev_desc AS deviceDesc,
 			a.connect_state AS connStatus,
@@ -55,7 +55,11 @@
 	</sql>
 
 	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity">
-		select * from tb_actived_device_info where device_id = #{value}
+		select * from tb_actived_device_info where device_id = #{value} limit 1
+	</select>
+
+	<select id="queryByNewDevId" resultType="com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity">
+		select * from tb_actived_device_info where new_device_id = #{newDevId} limit 1
 	</select>
 
 	<select id="queryList" resultType="com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity">
@@ -63,8 +67,8 @@
 			<if test="deviceId != null and deviceId !='' ">
 				AND device_id = #{deviceId}
 			</if>
-			<if test="newDeviceId != null and newDeviceId !='' ">
-				AND new_device_id = #{newDeviceId}
+			<if test="dbDeviceId != null and dbDeviceId !='' ">
+				AND new_device_id = #{dbDeviceId}
 			</if>
 				<if test="deviceName != null and deviceName !='' ">
 				AND device_name = #{deviceName}
@@ -126,8 +130,8 @@
 			<if test="deviceId != null and deviceId !='' ">
                 AND device_id = #{deviceId}
             </if>
-			<if test="newDeviceId != null and newDeviceId !='' ">
-				AND new_device_id = #{newDeviceId}
+			<if test="dbDeviceId != null and dbDeviceId !='' ">
+				AND new_device_id = #{dbDeviceId}
 			</if>
 				<if test="deviceName != null and deviceName !='' ">
                 AND device_name = #{deviceName}
@@ -210,7 +214,7 @@
 			#{companyId}, 
 			#{volFlag}, 
 			#{gmsFlag},
-			#{newDeviceId}
+			#{dbDeviceId}
 		)
 	</insert>
 	 
@@ -230,7 +234,7 @@
 			<if test="lockPanel != null">`lock_panel` = #{lockPanel}, </if>
 			<if test="companyId != null">`company_id` = #{companyId}, </if>
 			<if test="volFlag != null">`vol_flag` = #{volFlag}, </if>
-			<if test="newDeviceId != null">`new_device_id` = #{newDeviceId}, </if>
+			<if test="dbDeviceId != null">`new_device_id` = #{dbDeviceId}, </if>
 			<if test="gmsFlag != null">`gms_flag` = #{gmsFlag}</if>
 		</set>
 		where device_id = #{deviceId}
@@ -256,7 +260,12 @@
 	<select id="queryDeviceDetail" parameterType="java.util.HashMap" resultType="com.chisondo.server.modules.device.dto.resp.DeviceInfoRespDTO" >
 		<include refid="queryDevInfoOfUser"></include>
 		where b.teaman_id = #{userId}
-		and a.device_id = #{deviceId}
+		<if test="oldDevFlag != null and oldDevFlag == true">
+			and a.device_id = #{deviceId}
+		</if>
+		<if test="oldDevFlag != null and oldDevFlag == false">
+			and dev.new_device_id = #{deviceId}
+		</if>
 	</select>
 
 	<update id="updateDevPwd" parameterType="com.chisondo.server.modules.device.dto.req.SetDevPwdReqDTO">
