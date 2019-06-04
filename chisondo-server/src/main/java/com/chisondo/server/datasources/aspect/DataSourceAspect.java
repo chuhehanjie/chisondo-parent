@@ -35,7 +35,7 @@ public class DataSourceAspect implements Ordered {
     public void setThirdDataSource() {
     }
 
-    @Pointcut("execution(* com.chisondo.server.modules.tea.dao.*.*(..))")
+    @Pointcut("execution(* com.chisondo.server.modules.tea.dao.*.*(..)) || execution(* com.chisondo.server.modules.sys.dao.StarbannerDao.*(..))")
     public void setSecondDataSource() {
     }
 
