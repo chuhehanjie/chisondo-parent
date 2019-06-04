@@ -1,7 +1,8 @@
 package com.chisondo.server.modules.sys.entity;
 
+import com.chisondo.server.common.utils.CommonUtils;
+
 import java.io.Serializable;
-import java.util.Date;
 
 
 /**
@@ -25,9 +26,9 @@ public class StarbannerEntity  implements Serializable {
 	//
 	private String linkUrl;
 	//
-	private Date startTime;
+	private String startTime;
 	//
-	private Date endTime;
+	private String endTime;
 	//
 	private Integer showTime;
 
@@ -66,19 +67,19 @@ public class StarbannerEntity  implements Serializable {
 	public String getLinkUrl() {
 		return linkUrl;
 	}
-	public void setStartTime(Date startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 
-	public Date getStartTime() {
-		return startTime;
+	public String getStartTime() {
+		return CommonUtils.convertDateStr(startTime);
 	}
-	public void setEndTime(Date endTime) {
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 
-	public Date getEndTime() {
-		return endTime;
+	public String getEndTime() {
+		return CommonUtils.convertDateStr(endTime);
 	}
 	public void setShowTime(Integer showTime) {
 		this.showTime = showTime;
