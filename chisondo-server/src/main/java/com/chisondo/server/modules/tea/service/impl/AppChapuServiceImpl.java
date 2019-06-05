@@ -398,7 +398,7 @@ public class AppChapuServiceImpl implements AppChapuService {
 		myTeaSpectrum.setChapuId(teaSpectrum.getChapuId());
 		myTeaSpectrum.setUserId(teaSpectrum.getUserId());
 		myTeaSpectrum.setOperTime(DateUtils.currentDate());
-		this.appChapuMineService.update(myTeaSpectrum);
+		this.appChapuMineService.updateMyTeaSpectrum(myTeaSpectrum);
         return teaSpectrum.getChapuId();
     }
 

@@ -44,7 +44,7 @@ public class DeviceServerDecoder extends StringDecoder {
             DevSettingHttpResp devSettingResp = JSONObject.parseObject(json, DevSettingHttpResp.class);
             out.add(devSettingResp);
         } else if (this.isStartWorkResp(json) || this.isStopWorkResp(json) || this.isLockOrUnlockDevResp(json) || this.isKeepWarmCtrlResp(json)
-                || this.isSetChapuParamResp(json) || this.isSetOtherParamResp(json) || this.isErrorResp(json)) {
+                || this.isSetChapuParamResp(json) || this.isSetOtherParamResp(json) || this.isSetParamResp(json) || this.isErrorResp(json)) {
             DeviceHttpResp deviceResp = JSONObject.parseObject(json, DeviceHttpResp.class);
             out.add(deviceResp);
         } else {
@@ -188,6 +188,14 @@ public class DeviceServerDecoder extends StringDecoder {
      */
     private boolean isSetOtherParamResp(String json) {
         return json.contains("\"action\":\"setotherparmok\"");
+    }
+ /**
+     * 是否设置洗茶/烧水参数响应
+     * @param json
+     * @return
+     */
+    private boolean isSetParamResp(String json) {
+        return json.contains("\"action\":\"setdevparmok\"");
     }
 
     private boolean isErrorResp(String json) {

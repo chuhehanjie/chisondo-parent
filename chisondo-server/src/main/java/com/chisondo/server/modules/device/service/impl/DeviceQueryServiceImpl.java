@@ -177,8 +177,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	@Override
 	public CommonResp queryDevStateInfo(CommonReq req) {
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
 		// 首先从 redis 取
-		DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+		DevStatusRespDTO devStatusResp = this.redisUtils.get(newDeviceId, DevStatusRespDTO.class);
 		if (ValidateUtils.isNotEmpty(devStatusResp)) {
 			return CommonResp.ok(devStatusResp);
 		} else {

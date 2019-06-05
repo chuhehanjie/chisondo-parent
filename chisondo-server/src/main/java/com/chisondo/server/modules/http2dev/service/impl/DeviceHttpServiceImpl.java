@@ -83,6 +83,17 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     }
 
     /**
+     * 设置洗茶/烧水参数
+     * @param req
+     * @return
+     */
+    @Override
+    public DeviceHttpResp setWashTeaOrBoilWaterParam(DeviceHttpReq req) {
+        req.setAction("setdevparm");
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.SET_DEV_PARAM, req, req.getDeviceID());
+    }
+
+    /**
      * 停止沏茶/烧水/洗茶/保温
      * actionFalg 1-停止沏茶 2-停止烧水 3-停止洗茶 4-停止保温
      * @param req

@@ -104,6 +104,17 @@
 		</set>
 		where user_id = #{userId}
 	</update>
+
+	<update id="updateMyTeaSpectrum" parameterType="com.chisondo.server.modules.tea.entity.AppChapuMineEntity">
+		update t_app_chapu_mine
+		<set>
+			<if test="flag != null">`flag` = #{flag}, </if>
+			<if test="operTime != null">`oper_time` = #{operTime}, </if>
+			<if test="useTimes != null">`use_times` = #{useTimes}, </if>
+			<if test="lastUseTime != null">`last_use_time` = #{lastUseTime}</if>
+		</set>
+		where user_id = #{userId} and `chapu_id` = #{chapuId}
+	</update>
 	
 	<delete id="delete">
 		delete from t_app_chapu_mine where user_id = #{value}

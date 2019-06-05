@@ -17,4 +17,6 @@ import java.util.Map;
 public interface AppChapuMineDao extends BaseDao<AppChapuMineEntity> {
 
     void deleteByCondition(Map<String, Object> params);
+
+    void updateMyTeaSpectrum(AppChapuMineEntity myTeaSpectrum);
 }

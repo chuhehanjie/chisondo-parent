@@ -29,4 +29,6 @@ public interface AppChapuMineService {
 	void deleteBatch(Integer[] userIds);
 
     void deleteByCondition(Map<String, Object> params);
+
+    void updateMyTeaSpectrum(AppChapuMineEntity myTeaSpectrum);
 }

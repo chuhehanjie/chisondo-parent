@@ -16,4 +16,6 @@ public interface DevReqURIConstant {
     String LOCK_OR_UNLOCK_DEV = "lockOrUnlockDev";
 
     String SET_DEV_OTHER_PARAM = "setDevOtherParam";
+
+    String SET_DEV_PARAM = "setDevParam";
 }

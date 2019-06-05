@@ -56,4 +56,9 @@ public class AppChapuMineServiceImpl implements AppChapuMineService {
 	public void deleteByCondition(Map<String, Object> params) {
 		this.appChapuMineDao.deleteByCondition(params);
 	}
+
+	@Override
+	public void updateMyTeaSpectrum(AppChapuMineEntity myTeaSpectrum) {
+		this.appChapuMineDao.updateMyTeaSpectrum(myTeaSpectrum);
+	}
 }

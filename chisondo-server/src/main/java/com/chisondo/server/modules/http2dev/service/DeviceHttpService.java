@@ -12,6 +12,8 @@ public interface DeviceHttpService {
 
     DeviceHttpResp boilWaterCtrl(DeviceHttpReq req);
 
+    DeviceHttpResp setWashTeaOrBoilWaterParam(DeviceHttpReq req);
+
     DeviceHttpResp stopWork(StopWorkHttpReq req);
 
     DeviceHttpResp startKeeWarm(DeviceHttpReq req);

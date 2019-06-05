@@ -242,23 +242,65 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	@Override
 	public CommonResp washTea(CommonReq req) {
+		/**
+		 * isSave
+		 * 0 -执行洗茶功能
+		 * 1-执行洗茶并修改液晶屏洗茶按钮参数
+		 * 2-只修改液晶屏洗茶按钮参数，不执行洗茶操作（为空则默认：0）
+		 */
 		WashTeaReqDTO washTeaReq = JSONObject.parseObject(req.getBizBody(), WashTeaReqDTO.class);
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
-		DeviceHttpReq devHttpReq = this.buildWashTeaHttpReq(washTeaReq, newDeviceId);
-		DeviceHttpResp devHttpResp = this.deviceHttpService.washTeaCtrl(devHttpReq);
-		req.addAttr(Keys.DEV_REQ, devHttpReq);
-		log.info("调用洗茶 HTTP 服务响应：{}", devHttpResp);
+		DeviceHttpResp devHttpResp = null;
+		if (ValidateUtils.equals(Constant.WashTeaIsSaveFlag.DO_WASH_TEA, washTeaReq.getIsSave()) ||
+				ValidateUtils.equals(Constant.WashTeaIsSaveFlag.WASH_TEA_AND_UPDATE_BTN_PARAM, washTeaReq.getIsSave())) {
+			DeviceHttpReq devHttpReq = this.buildWashTeaHttpReq(washTeaReq, newDeviceId);
+			devHttpResp = this.deviceHttpService.washTeaCtrl(devHttpReq);
+			req.addAttr(Keys.DEV_REQ, devHttpReq);
+			log.info("调用洗茶 HTTP 服务响应：{}", devHttpResp);
+
+		}
+		if (ValidateUtils.equals(Constant.WashTeaIsSaveFlag.WASH_TEA_AND_UPDATE_BTN_PARAM, washTeaReq.getIsSave()) ||
+				ValidateUtils.equals(Constant.WashTeaIsSaveFlag.UPDATE_BTN_PARAM, washTeaReq.getIsSave())) {
+			// 同时需要修改液晶屏洗茶按钮参数
+			DeviceHttpReq devHttpReq2 = new DeviceHttpReq();
+			devHttpReq2.setActionflag(Constant.SetParamActionFlag.WASH_TEA_PRESS_BUTTON);
+			devHttpReq2.setDeviceID(newDeviceId);
+			devHttpReq2.setMsg(new DevParamMsg(washTeaReq.getTemperature(), washTeaReq.getSoak(), washTeaReq.getWaterlevel()));
+			devHttpResp = this.deviceHttpService.setWashTeaOrBoilWaterParam(devHttpReq2);
+			req.addAttr(Keys.DEV_REQ_2, devHttpReq2);
+			log.info("调用设置洗茶参数 HTTP 服务响应：{}", devHttpResp);
+		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
 	@Override
 	public CommonResp boilWater(CommonReq req) {
+		/**
+		 * 0-执行烧水功能 1-执行烧水并修改液晶屏烧水按钮参数 2-只修改液晶屏烧水按钮参数，不执行烧水操作（为空则默认：0）
+		 */
 		BoilWaterReqDTO boilWaterReq = JSONObject.parseObject(req.getBizBody(), BoilWaterReqDTO.class);
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
-		DeviceHttpReq devHttpReq = this.buildDevHttpReq(boilWaterReq, newDeviceId);
-		DeviceHttpResp devHttpResp = this.deviceHttpService.boilWaterCtrl(devHttpReq);
-		req.addAttr(Keys.DEV_REQ, devHttpReq);
-		log.info("调用烧水 HTTP 服务响应：{}", devHttpResp);
+		DeviceHttpResp devHttpResp = null;
+		if (ValidateUtils.equals(Constant.BoilWaterIsSaveFlag.DO_BOIL_WATER, boilWaterReq.getIsSave()) ||
+				ValidateUtils.equals(Constant.BoilWaterIsSaveFlag.BOIL_WATER_AND_UPDATE_BTN_PARAM, boilWaterReq.getIsSave())) {
+			DeviceHttpReq devHttpReq = this.buildDevHttpReq(boilWaterReq, newDeviceId);
+			devHttpResp = this.deviceHttpService.boilWaterCtrl(devHttpReq);
+			req.addAttr(Keys.DEV_REQ, devHttpReq);
+			log.info("调用烧水 HTTP 服务响应：{}", devHttpResp);
+
+		}
+		if (ValidateUtils.equals(Constant.BoilWaterIsSaveFlag.BOIL_WATER_AND_UPDATE_BTN_PARAM, boilWaterReq.getIsSave()) ||
+				ValidateUtils.equals(Constant.BoilWaterIsSaveFlag.UPDATE_BTN_PARAM, boilWaterReq.getIsSave())) {
+			// 同时需要修改液晶屏烧水按钮参数
+			DeviceHttpReq devHttpReq2 = new DeviceHttpReq();
+			devHttpReq2.setActionflag(Constant.SetParamActionFlag.BOILT_WATER_PRESS_BUTTON);
+			devHttpReq2.setDeviceID(newDeviceId);
+			devHttpReq2.setMsg(new DevParamMsg(boilWaterReq.getTemperature(), boilWaterReq.getSoak(), boilWaterReq.getWaterlevel()));
+			devHttpResp = this.deviceHttpService.setWashTeaOrBoilWaterParam(devHttpReq2);
+			req.addAttr(Keys.DEV_REQ_2, devHttpReq2);
+			log.info("调用设置烧水参数 HTTP 服务响应：{}", devHttpResp);
+		}
+
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 

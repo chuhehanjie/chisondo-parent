@@ -32,6 +32,7 @@ public final class IOTUtils {
         reqUriList.add(DevReqURIConstant.SET_DEV_OTHER_PARAM);
         reqUriList.add(DevReqURIConstant.STOP_WORK);
         reqUriList.add(DevReqURIConstant.LOCK_OR_UNLOCK_DEV);
+        reqUriList.add(DevReqURIConstant.SET_DEV_PARAM);
     }
 
     public static List<String> getReqUriList() {

@@ -239,4 +239,21 @@ public class Constant {
         int ENABLE_KEY_4_STOP_MAKE_TEA = 2;
         int ENABLE_KEY = 3;
     }
+
+    public interface WashTeaIsSaveFlag {
+        int DO_WASH_TEA = 0;
+        int WASH_TEA_AND_UPDATE_BTN_PARAM = 1;
+        int UPDATE_BTN_PARAM = 2;
+    }
+
+    public interface BoilWaterIsSaveFlag {
+        int DO_BOIL_WATER = 0;
+        int BOIL_WATER_AND_UPDATE_BTN_PARAM = 1;
+        int UPDATE_BTN_PARAM = 2;
+    }
+
+    public interface SetParamActionFlag {
+        int WASH_TEA_PRESS_BUTTON = 1;
+        int BOILT_WATER_PRESS_BUTTON = 2;
+    }
 }
