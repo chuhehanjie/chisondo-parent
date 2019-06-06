@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * 日期处理
@@ -154,6 +155,20 @@ public class DateUtils {
         Calendar cd = Calendar.getInstance();
         cd.setTime(date);
         return cd.get(Calendar.DAY_OF_WEEK) - 1;
+    }
+
+    public static void showAllTimeZone() {
+        String [] timeZoneIds = TimeZone.getAvailableIDs();
+        for(int i = 0; i < timeZoneIds.length;i++){
+            TimeZone timeZone = TimeZone.getTimeZone(timeZoneIds[i]);
+            if (timeZone.getRawOffset() == 28800000L) {
+                System.out.println("时区ID = " + timeZoneIds[i] + ", 偏移值 = " + timeZone.getRawOffset());
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        showAllTimeZone();
     }
 
 }
