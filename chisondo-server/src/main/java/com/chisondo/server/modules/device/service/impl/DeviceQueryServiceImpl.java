@@ -63,7 +63,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	public CommonResp queryDevSettingInfo(CommonReq req) {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 
-		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.DEVICE_ID).toString()));
+		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.NEW_DEVICE_ID).toString()));
 		if (!httpResp.isOK()) {
 			return new CommonResp(httpResp.getRetn(), httpResp.getDesc());
 		}
