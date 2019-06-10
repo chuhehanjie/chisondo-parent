@@ -31,7 +31,7 @@ public class UserBookMakeTeaJob {
         }
         // 查询当前要处理的沏茶预约数据
         Map<String, Object> params = Maps.newHashMap();
-        params.put(Keys.VALID_FLAG, Constant.UserBookStatus.VALID);
+        params.put(Keys.VALID_FLAG, Constant.UserBookStatus.VALID + "");
         params.put(Query.PAGE, 1);
         params.put(Query.LIMIT, 10);
         params.put("notNull4ReservNo", true);
