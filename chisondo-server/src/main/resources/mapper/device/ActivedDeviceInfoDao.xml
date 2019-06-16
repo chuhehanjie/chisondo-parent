@@ -20,7 +20,7 @@
         <result property="companyId" column="company_id"/>
         <result property="volFlag" column="vol_flag"/>
         <result property="gmsFlag" column="gms_flag"/>
-		<result property="dbDeviceId" column="new_device_id"/>
+		<result property="newDeviceId" column="new_device_id"/>
     </resultMap>
 
 	<sql id="queryDevInfoOfUser">
@@ -214,7 +214,7 @@
 			#{companyId}, 
 			#{volFlag}, 
 			#{gmsFlag},
-			#{dbDeviceId}
+			#{newDeviceId}
 		)
 	</insert>
 	 
@@ -234,7 +234,7 @@
 			<if test="lockPanel != null">`lock_panel` = #{lockPanel}, </if>
 			<if test="companyId != null">`company_id` = #{companyId}, </if>
 			<if test="volFlag != null">`vol_flag` = #{volFlag}, </if>
-			<if test="dbDeviceId != null">`new_device_id` = #{dbDeviceId}, </if>
+			<if test="newDeviceId != null">`new_device_id` = #{newDeviceId}, </if>
 			<if test="gmsFlag != null">`gms_flag` = #{gmsFlag}</if>
 		</set>
 		where device_id = #{deviceId}

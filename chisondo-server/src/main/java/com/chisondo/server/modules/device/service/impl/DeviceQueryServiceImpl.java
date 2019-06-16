@@ -2,8 +2,9 @@ package com.chisondo.server.modules.device.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
-import com.chisondo.model.http.resp.DevSettingHttpResp;
+import com.chisondo.model.http.resp.DevChapuHttpResp;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
+import com.chisondo.model.http.resp.TeaSpectrumMsgResp;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
@@ -20,10 +21,10 @@ import com.chisondo.server.modules.tea.service.AppChapuService;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.chisondo.server.modules.user.service.UserVipService;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ import java.util.Map;
 
 
 @Service("deviceQueryService")
+@Slf4j
 public class DeviceQueryServiceImpl implements DeviceQueryService {
 	@Autowired
 	private ActivedDeviceInfoService deviceInfoService;
@@ -63,7 +65,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	public CommonResp queryDevSettingInfo(CommonReq req) {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 
-		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.NEW_DEVICE_ID).toString()));
+		DevChapuHttpResp httpResp = this.deviceHttpService.queryDevChapuInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.NEW_DEVICE_ID).toString()));
 		if (!httpResp.isOK()) {
 			return new CommonResp(httpResp.getRetn(), httpResp.getDesc());
 		}
@@ -71,26 +73,35 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		return CommonResp.ok(devSettingResp);
 	}
 
-	private DevSettingRespDTO buildDevSettingResp(ActivedDeviceInfoEntity deviceInfo, DevSettingHttpResp httpResp) {
+	private DevSettingRespDTO buildDevSettingResp(ActivedDeviceInfoEntity deviceInfo, DevChapuHttpResp httpResp) {
 		DevSettingRespDTO devSettingResp = new DevSettingRespDTO();
 		devSettingResp.setDeviceName(deviceInfo.getDeviceName());
 		devSettingResp.setDevicePwd(deviceInfo.getPassword());
 		devSettingResp.setIsOpenSound(ValidateUtils.equals(deviceInfo.getVolFlag(), Constant.DevVolumeCtrl.OPEN) ? Constant.DevVolumeFlag.YES : Constant.DevVolumeFlag.NO);
-		devSettingResp.setWaterHeat(new WaterHeatInfo(httpResp.getWashteamsg().getTemperature(), httpResp.getWashteamsg().getSoak(), httpResp.getWashteamsg().getWaterlevel()));
-		TeaSpectrumInfo chapuInfo = new TeaSpectrumInfo();
-		chapuInfo.setIndex(httpResp.getChapumsg().getIndex());
-		chapuInfo.setChapuId(httpResp.getChapumsg().getChapuid());
-		chapuInfo.setChapuName(httpResp.getChapumsg().getChapuname());
-		chapuInfo.setMakeTimes(httpResp.getChapumsg().getMaketimes());
-		//  根据茶谱ID获取茶类信息
-		AppChapuEntity teaSpectrum = this.appChapuService.queryTeaSpectrumById(chapuInfo.getChapuId());
-		if (ValidateUtils.isNotEmpty(teaSpectrum)) {
-			chapuInfo.setSortId(teaSpectrum.getSortId());
-			chapuInfo.setSortName(teaSpectrum.getSortName());
-			chapuInfo.setBrandName(teaSpectrum.getBrand());
-			chapuInfo.setChapuImg(teaSpectrum.getImage());
+		//devSettingResp.setWaterHeat(new WaterHeatInfo(httpResp.getWashteamsg().getTemperature(), httpResp.getWashteamsg().getSoak(), httpResp.getWashteamsg().getWaterlevel()));
+		if (ValidateUtils.isNotEmptyCollection(httpResp.getChapumsg())) {
+			List<TeaSpectrumDTO> chapuList = Lists.newArrayList();
+			for (TeaSpectrumMsgResp teaSpectrumMsgResp : httpResp.getChapumsg()) {
+				TeaSpectrumDTO chapuDTO = new TeaSpectrumDTO(teaSpectrumMsgResp.getChapuid());
+				if (chapuList.contains(chapuDTO)) {
+					continue;
+				}
+				AppChapuEntity teaSpectrum = this.appChapuService.queryTeaSpectrumById(teaSpectrumMsgResp.getChapuid());
+				if (ValidateUtils.isEmpty(teaSpectrum)) {
+					log.error("茶谱[id={}]不存在！", teaSpectrumMsgResp.getChapuid());
+					continue;
+				}
+				chapuDTO.setIndex(teaSpectrumMsgResp.getIndex());
+				chapuDTO.setChapuName(teaSpectrum.getName());
+				chapuDTO.setMakeTimes(ValidateUtils.isEmpty(teaSpectrum.getMakeTimes()) ? 0 : teaSpectrum.getMakeTimes());
+				chapuDTO.setSortId(ValidateUtils.isEmpty(teaSpectrum.getSortId()) ? 0 : teaSpectrum.getSortId());
+				chapuDTO.setSortName(teaSpectrum.getSortName());
+				chapuDTO.setBrandName(teaSpectrum.getBrand());
+				chapuDTO.setChapuImg(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+				chapuList.add(chapuDTO);
+			}
+			devSettingResp.setChapuInfo(chapuList);
 		}
-		devSettingResp.setChapuInfo(ImmutableList.of(chapuInfo));
 		return devSettingResp;
 	}
 

@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.http2dev.service;
 
 import com.chisondo.model.http.req.*;
+import com.chisondo.model.http.resp.DevChapuHttpResp;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
@@ -19,6 +20,8 @@ public interface DeviceHttpService {
     DeviceHttpResp startKeeWarm(DeviceHttpReq req);
 
     DevSettingHttpResp queryDevSettingInfo(QryDeviceInfoHttpReq req);
+
+    DevChapuHttpResp queryDevChapuInfo(QryDeviceInfoHttpReq req);
 
     DevStatusReportResp queryDevStateInfo(QryDeviceInfoHttpReq req);
 

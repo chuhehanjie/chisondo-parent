@@ -1,7 +1,5 @@
 package com.chisondo.server.modules.device.dto.resp;
 
-import io.swagger.models.auth.In;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -13,7 +11,7 @@ public class DevSettingRespDTO implements Serializable {
     private Integer isOpenSound; // 是否静音	0-有提示音；1-无提音
     private WaterHeatInfo waterHeat; // 烧水参数
 
-    private List<TeaSpectrumInfo> chapuInfo; // 茶谱信息
+    private List<TeaSpectrumDTO> chapuInfo; // 茶谱信息
 
     public DevSettingRespDTO() {
     }
@@ -55,11 +53,11 @@ public class DevSettingRespDTO implements Serializable {
         this.waterHeat = waterHeat;
     }
 
-    public List<TeaSpectrumInfo> getChapuInfo() {
+    public List<TeaSpectrumDTO> getChapuInfo() {
         return chapuInfo;
     }
 
-    public void setChapuInfo(List<TeaSpectrumInfo> chapuInfo) {
+    public void setChapuInfo(List<TeaSpectrumDTO> chapuInfo) {
         this.chapuInfo = chapuInfo;
     }
 }

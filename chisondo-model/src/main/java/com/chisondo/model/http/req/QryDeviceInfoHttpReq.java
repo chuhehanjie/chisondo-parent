@@ -9,6 +9,7 @@ public class QryDeviceInfoHttpReq implements Serializable {
      * 动作
      * cancelwarm 查询设备状态
      * qrydevparm 查询设备参数
+     * qrychapuparm 查询设备茶谱信息
      */
     private String action;
     /**

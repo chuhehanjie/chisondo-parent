@@ -2,6 +2,7 @@ package com.chisondo.server.modules.http2dev.service.impl;
 
 import com.chisondo.model.constant.DevReqURIConstant;
 import com.chisondo.model.http.req.*;
+import com.chisondo.model.http.resp.DevChapuHttpResp;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
@@ -129,10 +130,12 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
 
     /**
      * 查询设备参数设置信息
+     * 该方法已过期，改为调用 queryDevChapuInfo 方法，update by dz 20190616
      * @param req
      * @return
      */
     @Override
+    @Deprecated
     public DevSettingHttpResp queryDevSettingInfo(QryDeviceInfoHttpReq req) {
         req.setAction("qrydevparm");
         try {
@@ -143,6 +146,25 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
             return new DevSettingHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "查询设备参数设置信息异常！");
         }
     }
+
+    /**
+     * 查询设备茶谱信息
+     * @param req
+     * @return
+     */
+    @Override
+    public DevChapuHttpResp queryDevChapuInfo(QryDeviceInfoHttpReq req) {
+        req.setAction("qrychapuparm");
+        try {
+            DevChapuHttpResp resp = this.restTemplateUtils.httpPostMediaTypeJson(this.http2DevURL + DevReqURIConstant.QRY_DEV_CHAPU, DevChapuHttpResp.class, req);
+            return resp;
+        } catch (Exception e) {
+            log.error("查询设备茶谱信息异常！", e);
+            return new DevChapuHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "查询设备茶谱信息异常！");
+        }
+    }
+
+
 
     /**
      * 查询设备状态信息

@@ -7,6 +7,8 @@ public interface DevReqURIConstant {
 
     String QRY_DEV_PARAM = "qryDevSetting";
 
+    String QRY_DEV_CHAPU = "qryDevChapu";
+
     String QRY_DEV_STATUS = "qryDevStatus";
 
     String SET_DEV_CHAPU_PARAM = "setDevChapuParam";

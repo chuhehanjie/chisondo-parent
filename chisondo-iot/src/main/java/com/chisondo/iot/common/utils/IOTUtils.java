@@ -26,6 +26,7 @@ public final class IOTUtils {
         reqUriList = new ArrayList<>();
         reqUriList.add(DevReqURIConstant.START_WORK);
         reqUriList.add(DevReqURIConstant.QRY_DEV_PARAM);
+        reqUriList.add(DevReqURIConstant.QRY_DEV_CHAPU);
         reqUriList.add(DevReqURIConstant.QRY_DEV_STATUS);
         reqUriList.add(DevReqURIConstant.START_KEEP_WARM);
         reqUriList.add(DevReqURIConstant.SET_DEV_CHAPU_PARAM);

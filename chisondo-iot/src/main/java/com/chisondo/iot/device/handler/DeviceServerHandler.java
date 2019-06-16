@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -99,6 +98,9 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         } else if (msg instanceof DevSettingHttpResp) {
             // 处理查询设备内置参数响应
             this.processQryDevSetParamResp(deviceChannel, msg);
+        } else if (msg instanceof DevChapuHttpResp) {
+            // 处理查询设备茶谱参数响应
+            this.processQryDevChapuInfoResp(deviceChannel, msg);
         } else {
             log.error("未找到对应的TCP响应");
         }
@@ -113,10 +115,6 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         // DeviceHttpResp 包含启动设备沏茶/洗茶/烧水响应
         // 接收设备发送的响应，并将响应发送到 http server
         DeviceHttpResp resp = (DeviceHttpResp) msg;
-        if (null == resp.getDeviceID()) {
-            log.error("设备ID为空");
-            return;
-        }
         log.debug("设备控制响应信息 = {}", JSONObject.toJSONString(resp));
         this.sendTCPResp2Http(resp, resp.getDeviceID());
         // 同时更新设备状态
@@ -190,15 +188,24 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
      * @param deviceChannel
      * @param msg
      */
+    @Deprecated
     private void processQryDevSetParamResp(Channel deviceChannel, Object msg) {
         // DeviceHttpResp 包含启动设备沏茶/洗茶/烧水响应
         // 接收设备发送的响应，并将响应发送到 http server
         DevSettingHttpResp resp = (DevSettingHttpResp) msg;
-        if (null == resp.getDeviceID()) {
-            log.error("设备ID为空");
-            return;
-        }
         log.debug("查询设备设置内置参数 = {}", JSONObject.toJSONString(resp));
+        this.sendTCPResp2Http(resp, resp.getDeviceID());
+    }
+
+    /**
+     * 处理查询设备茶谱信息响应
+     * @param deviceChannel
+     * @param msg
+     */
+    private void processQryDevChapuInfoResp(Channel deviceChannel, Object msg) {
+        // 接收设备发送的响应，并将响应发送到 http server
+        DevChapuHttpResp resp = (DevChapuHttpResp) msg;
+        log.debug("查询设备茶谱信息 = {}", JSONObject.toJSONString(resp));
         this.sendTCPResp2Http(resp, resp.getDeviceID());
     }
 

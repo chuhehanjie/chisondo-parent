@@ -1,6 +1,8 @@
 package com.chisondo.server.modules.device.dto.resp;
 
-public class TeaSpectrumInfo {
+import java.util.Objects;
+
+public class TeaSpectrumDTO {
     private	Integer	index	; // 	面板位置	液晶屏中的茶谱顺序
     private	Integer	chapuId	; // 	茶谱ID
     private	String	chapuName	; // 	茶谱名称
@@ -9,6 +11,13 @@ public class TeaSpectrumInfo {
     private	String	sortName	; // 	茶类名称
     private	int	makeTimes	; // 	泡数	茶谱总泡数
     private	String	brandName	; // 	茶品牌名称	茶叶所属品牌
+
+    public TeaSpectrumDTO(Integer chapuId) {
+        this.chapuId = chapuId;
+    }
+
+    public TeaSpectrumDTO() {
+    }
 
     public Integer getIndex() {
         return index;
@@ -72,5 +81,23 @@ public class TeaSpectrumInfo {
 
     public void setBrandName(String brandName) {
         this.brandName = brandName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TeaSpectrumDTO that = (TeaSpectrumDTO) o;
+        return Objects.equals(chapuId, that.chapuId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(chapuId);
     }
 }
