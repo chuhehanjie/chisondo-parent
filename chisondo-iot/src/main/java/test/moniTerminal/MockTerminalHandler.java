@@ -15,6 +15,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+
 
 /**
  * 客户端处理服务端返回信息的处理器
@@ -132,7 +134,7 @@ public class MockTerminalHandler extends SimpleChannelInboundHandler<String>{
 		msg2.setSoak(33);
 		msg2.setWaterlevel(555);
 		teaspectrumMsg.setTeaparm(msg2);
-		resp.setChapumsg(teaspectrumMsg);
+		resp.setChapumsg(Arrays.asList(teaspectrumMsg));
 
 		resp.setRetn(MockData.SC_OK);
 		resp.setDesc(MockData.REQ_SUCCESS);

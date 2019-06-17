@@ -23,7 +23,7 @@ public class DevHttpChannelManager {
     }
 
     public static void removeByDeviceId(String deviceId) {
-        if (httpChannelMap.containsKey(deviceId)) {
+        if (null != httpChannelMap && httpChannelMap.containsKey(deviceId)) {
             httpChannelMap.remove(deviceId);
         }
     }

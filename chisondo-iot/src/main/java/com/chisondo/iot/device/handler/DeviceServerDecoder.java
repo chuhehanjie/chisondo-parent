@@ -13,6 +13,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -110,7 +111,7 @@ public class DeviceServerDecoder extends StringDecoder {
         teaParam.setSoak(300);
         teaParam.setWaterlevel(400);
         chapuMsg.setTeaparm(teaParam);
-        devSettingResp.setChapumsg(chapuMsg);
+        devSettingResp.setChapumsg(Arrays.asList(chapuMsg));
         devSettingResp.setRetn(200);
         devSettingResp.setDesc("请求成功");
         System.out.println(JSONObject.toJSONString(devSettingResp));
@@ -162,6 +163,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @param json
      * @return
      */
+    @Deprecated
     private boolean isQueryDevChapuInfoResp(String json) {
         return json.contains("\"action\":\"qrychapuparmok\"");
     }
@@ -171,7 +173,6 @@ public class DeviceServerDecoder extends StringDecoder {
      * @param json
      * @return
      */
-    @Deprecated
     private boolean isQueryDevSettingResp(String json) {
         return json.contains("\"action\":\"qrydevparmok\"");
     }

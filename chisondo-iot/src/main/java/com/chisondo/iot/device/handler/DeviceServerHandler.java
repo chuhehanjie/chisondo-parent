@@ -2,8 +2,8 @@ package com.chisondo.iot.device.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.iot.common.redis.RedisUtils;
+import com.chisondo.iot.common.utils.HttpUtils;
 import com.chisondo.iot.common.utils.IOTUtils;
-import com.chisondo.iot.common.utils.RestTemplateUtils;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
 import com.chisondo.model.http.resp.*;
@@ -20,8 +20,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 
@@ -36,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { // (1)
 
     @Autowired
-    private RestTemplateUtils restTemplateUtils;
+    private HttpUtils httpUtils;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -45,7 +43,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
      * A thread-safe Set  Using ChannelGroup, you can categorize Channels into a meaningful group.
      * A closed Channel is automatically removed from the collection,
      */
-    public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static ChannelGroup globalDevChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     //    private ExecutorService executorService = Executors.newFixedThreadPool(20);
     @Autowired
@@ -61,9 +59,9 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
 
         log.info("设备[{}]加入", deviceChannel.remoteAddress());
         // Broadcast a message to multiple Channels
-        // channels.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " 加入,总人数:" + channels.size() + "\n");
+        // globalDevChannels.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " 加入,总人数:" + globalDevChannels.size() + "\n");
 
-        channels.add(deviceChannel);
+        globalDevChannels.add(deviceChannel);
 
     }
 
@@ -120,20 +118,10 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         this.sendTCPResp2Http(resp, resp.getDeviceID());
         // 同时更新设备状态
         this.updateDevState2Redis(resp);
-        this.sendDevState2Http(resp.getDeviceID(), false);
+        this.httpUtils.sendDevState2Http(resp.getDeviceID(), false);
     }
 
-    private void sendDevState2Http(String deviceId, boolean isOffline) {
-        try {
-            String  suffix = isOffline ? "setDevStateOffline" : "updateDevStateFromRedis";
-            Map<String, Object> params = new HashMap<>();
-            params.put("deviceId", deviceId);
-            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/" + suffix, String.class, params);
-            log.error("result = {}", result);
-        } catch (Exception e) {
-            log.error("更新设备状态信息失败！", e);
-        }
-    }
+
 
     /**
      * 更新设备状态到 redis
@@ -237,21 +225,11 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         reportResp.setClientIP(this.convertClientIP(deviceChannel.remoteAddress().toString()));
         // TODO 更新 redis 中设备状态
         //this.redisClient.opsForValue().set(reportResp.getDeviceID(), JSONObject.toJSONString(reportResp), 60*20, TimeUnit.SECONDS);
-        this.reportDevStatus2App(reportResp);
+        this.httpUtils.reportDevStatus2App(reportResp);
     }
 
     private String convertClientIP(String clientIP) {
         return clientIP.replace("/", "");
-    }
-
-    private void reportDevStatus2App(DevStatusReportResp reportReq) {
-        // 发送请求到 HTTP 应用，更新设备状态
-        try {
-            String result = this.restTemplateUtils.httpPostMediaTypeJson(this.restTemplateUtils.appHttpURL + "/api/rest/currentState", String.class, reportReq);
-            log.error("result = {}", result);
-        } catch (Exception e) {
-            log.error("上报设备状态信息失败！", e);
-        }
     }
 
     @Override
@@ -270,34 +248,41 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
                                         ctx.pipeline().get(SslHandler.class).engine().getSession().getCipherSuite() +
                                         " cipher suite.\n");
 
-                        channels.add(incoming);
+                        globalDevChannels.add(incoming);
                     }
                 });
-        log.debug("SimpleChatClient:" + incoming.remoteAddress() + "在线,总人数:" + channels.size() + "\n");*/
+        log.debug("SimpleChatClient:" + incoming.remoteAddress() + "在线,总人数:" + globalDevChannels.size() + "\n");*/
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception { // (6)
+        this.doOffLineAction(ctx);
+    }
+
+    /**
+     * 离线操作
+     * @param ctx
+     */
+    private void doOffLineAction(ChannelHandlerContext ctx) {
         Channel deviceChannel = ctx.channel();
         String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
         log.error("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
         DevHttpChannelManager.removeByDeviceId(deviceId);
-        channels.remove(deviceChannel);
+        globalDevChannels.remove(deviceChannel);
         ctx.close();
         this.redisUtils.updateStatus4Dev(deviceId);
         log.error("设备[{}]离线，从 redis 中更新状态", deviceId);
-        this.sendDevState2Http(deviceId, true);
+        this.httpUtils.sendDevState2Http(deviceId, true);
         log.error("发送离线请求到HTTP");
 //        DeviceChannelManager.removeDeviceChannel();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        Channel incoming = ctx.channel();
+        Channel deviceChannel = ctx.channel();
         // TODO 是否需要写异常日志？
-        log.error("SimpleChatClient:" + incoming.remoteAddress() + "异常, 总人数:" + channels.size() + "\n");
         // 当出现异常就关闭连接
-        cause.printStackTrace();
-        ctx.close();
+        log.error("设备[{}]发生异常，总设备数 = {} ", deviceChannel.remoteAddress(), globalDevChannels.size(), cause);
+        this.doOffLineAction(ctx);
     }
 }

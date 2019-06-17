@@ -1,5 +1,7 @@
 package com.chisondo.model.http.resp;
 
+import java.util.List;
+
 public class DevSettingHttpResp extends CommonHttpResp {
 
     private	String action; //固定：qrydevparmok 	请求传入的action+ok	请求传入的action+ok
@@ -11,7 +13,7 @@ public class DevSettingHttpResp extends CommonHttpResp {
 
     private DevParamMsg boilwatermsg;
 
-    private TeaSpectrumMsgResp chapumsg;
+    private List<TeaSpectrumMsgResp> chapumsg;
 
     public DevSettingHttpResp(int retn, String desc) {
         super(retn, desc);
@@ -61,11 +63,11 @@ public class DevSettingHttpResp extends CommonHttpResp {
         this.boilwatermsg = boilwatermsg;
     }
 
-    public TeaSpectrumMsgResp getChapumsg() {
+    public List<TeaSpectrumMsgResp> getChapumsg() {
         return chapumsg;
     }
 
-    public void setChapumsg(TeaSpectrumMsgResp chapumsg) {
+    public void setChapumsg(List<TeaSpectrumMsgResp> chapumsg) {
         this.chapumsg = chapumsg;
     }
 }

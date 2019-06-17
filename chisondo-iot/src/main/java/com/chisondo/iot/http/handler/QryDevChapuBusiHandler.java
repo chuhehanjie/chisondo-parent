@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service("busiHandler4qryDevChapu")
 @Slf4j
+@Deprecated
 public class QryDevChapuBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {

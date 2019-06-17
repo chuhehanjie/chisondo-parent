@@ -2,10 +2,8 @@ package com.chisondo.iot.device.handler;
 
 import com.chisondo.iot.common.redis.RedisUtils;
 import com.chisondo.iot.common.utils.SpringContextUtils;
-import com.chisondo.iot.device.server.DevTcpChannelManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -13,9 +11,6 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static com.chisondo.iot.device.handler.DeviceServerHandler.channels;
 
 /**
  * 说明：心跳服务器处理器
@@ -43,7 +38,7 @@ public class HeartbeatServerHandler extends ChannelInboundHandlerAdapter {
 				// 超过指定时间没有上报设备状态，则认为设备已经掉线
 				/*Channel channel = ctx.channel();
 				String deviceId = DevTcpChannelManager.removeByChannel(channel);
-				channels.remove(channel);
+				globalDevChannels.remove(channel);
 				this.getRedisUtils().updateStatus4Dev(deviceId);
 				log.error("从 redis 中删除设备[{}]", deviceId);*/
 			} else if (event.state() == IdleState.WRITER_IDLE) {

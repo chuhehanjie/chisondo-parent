@@ -9,7 +9,14 @@ public class DevSettingRespDTO implements Serializable {
     private String deviceName; //设备名称
     private String devicePwd; // 连接密码
     private Integer isOpenSound; // 是否静音	0-有提示音；1-无提音
-    private WaterHeatInfo waterHeat; // 烧水参数
+    /**
+     * 网络标志
+     * 1-优先2G网络  2-优先Wi-Fi网络（默认）
+     */
+    private Integer gmsflag;
+    private DevSettingMsgDTO washTea; // 洗茶参数
+    private DevSettingMsgDTO waterHeat; // 烧水参数
+
 
     private List<TeaSpectrumDTO> chapuInfo; // 茶谱信息
 
@@ -45,11 +52,11 @@ public class DevSettingRespDTO implements Serializable {
         this.isOpenSound = isOpenSound;
     }
 
-    public WaterHeatInfo getWaterHeat() {
+    public DevSettingMsgDTO getWaterHeat() {
         return waterHeat;
     }
 
-    public void setWaterHeat(WaterHeatInfo waterHeat) {
+    public void setWaterHeat(DevSettingMsgDTO waterHeat) {
         this.waterHeat = waterHeat;
     }
 
@@ -59,5 +66,21 @@ public class DevSettingRespDTO implements Serializable {
 
     public void setChapuInfo(List<TeaSpectrumDTO> chapuInfo) {
         this.chapuInfo = chapuInfo;
+    }
+
+    public Integer getGmsflag() {
+        return gmsflag;
+    }
+
+    public void setGmsflag(Integer gmsflag) {
+        this.gmsflag = gmsflag;
+    }
+
+    public DevSettingMsgDTO getWashTea() {
+        return washTea;
+    }
+
+    public void setWashTea(DevSettingMsgDTO washTea) {
+        this.washTea = washTea;
     }
 }

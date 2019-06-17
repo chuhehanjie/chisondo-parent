@@ -130,12 +130,10 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
 
     /**
      * 查询设备参数设置信息
-     * 该方法已过期，改为调用 queryDevChapuInfo 方法，update by dz 20190616
      * @param req
      * @return
      */
     @Override
-    @Deprecated
     public DevSettingHttpResp queryDevSettingInfo(QryDeviceInfoHttpReq req) {
         req.setAction("qrydevparm");
         try {
@@ -149,10 +147,12 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
 
     /**
      * 查询设备茶谱信息
+     * 该方法已弃用，调用 queryDevSettingInfo 方法会返回茶谱信息，update by dz 20190616
      * @param req
      * @return
      */
     @Override
+    @Deprecated
     public DevChapuHttpResp queryDevChapuInfo(QryDeviceInfoHttpReq req) {
         req.setAction("qrychapuparm");
         try {

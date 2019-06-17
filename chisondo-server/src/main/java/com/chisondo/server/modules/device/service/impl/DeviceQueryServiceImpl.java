@@ -2,7 +2,7 @@ package com.chisondo.server.modules.device.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
-import com.chisondo.model.http.resp.DevChapuHttpResp;
+import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.model.http.resp.TeaSpectrumMsgResp;
 import com.chisondo.server.common.exception.CommonException;
@@ -65,7 +65,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	public CommonResp queryDevSettingInfo(CommonReq req) {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 
-		DevChapuHttpResp httpResp = this.deviceHttpService.queryDevChapuInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.NEW_DEVICE_ID).toString()));
+		DevSettingHttpResp httpResp = this.deviceHttpService.queryDevSettingInfo(new QryDeviceInfoHttpReq(req.getAttrByKey(Keys.NEW_DEVICE_ID).toString()));
 		if (!httpResp.isOK()) {
 			return new CommonResp(httpResp.getRetn(), httpResp.getDesc());
 		}
@@ -73,12 +73,20 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 		return CommonResp.ok(devSettingResp);
 	}
 
-	private DevSettingRespDTO buildDevSettingResp(ActivedDeviceInfoEntity deviceInfo, DevChapuHttpResp httpResp) {
+	private DevSettingRespDTO buildDevSettingResp(ActivedDeviceInfoEntity deviceInfo, DevSettingHttpResp httpResp) {
 		DevSettingRespDTO devSettingResp = new DevSettingRespDTO();
 		devSettingResp.setDeviceName(deviceInfo.getDeviceName());
 		devSettingResp.setDevicePwd(deviceInfo.getPassword());
-		devSettingResp.setIsOpenSound(ValidateUtils.equals(deviceInfo.getVolFlag(), Constant.DevVolumeCtrl.OPEN) ? Constant.DevVolumeFlag.YES : Constant.DevVolumeFlag.NO);
-		//devSettingResp.setWaterHeat(new WaterHeatInfo(httpResp.getWashteamsg().getTemperature(), httpResp.getWashteamsg().getSoak(), httpResp.getWashteamsg().getWaterlevel()));
+		if (ValidateUtils.isNotEmpty(httpResp.getMsg())) {
+			devSettingResp.setIsOpenSound(ValidateUtils.equals(httpResp.getMsg().getVolflag(), Constant.DevVolumeCtrl.OPEN) ? Constant.DevVolumeFlag.YES : Constant.DevVolumeFlag.NO);
+			devSettingResp.setGmsflag(httpResp.getMsg().getGmsflag());
+		}
+		if (ValidateUtils.isNotEmpty(httpResp.getWashteamsg())) {
+			devSettingResp.setWashTea(new DevSettingMsgDTO(httpResp.getWashteamsg().getTemperature(), httpResp.getWashteamsg().getSoak(), httpResp.getWashteamsg().getWaterlevel()));
+		}
+		if (ValidateUtils.isNotEmpty(httpResp.getBoilwatermsg())) {
+			devSettingResp.setWaterHeat(new DevSettingMsgDTO(httpResp.getBoilwatermsg().getTemperature(), httpResp.getBoilwatermsg().getSoak(), httpResp.getBoilwatermsg().getWaterlevel()));
+		}
 		if (ValidateUtils.isNotEmptyCollection(httpResp.getChapumsg())) {
 			List<TeaSpectrumDTO> chapuList = Lists.newArrayList();
 			for (TeaSpectrumMsgResp teaSpectrumMsgResp : httpResp.getChapumsg()) {

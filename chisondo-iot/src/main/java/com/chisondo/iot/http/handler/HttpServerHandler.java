@@ -1,14 +1,11 @@
 package com.chisondo.iot.http.handler;
 
 
-import com.alibaba.fastjson.JSONObject;
-import com.chisondo.iot.common.exception.DeviceNotConnectException;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.common.utils.SpringContextUtils;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
 import com.chisondo.model.http.HttpStatus;
-import com.chisondo.model.http.req.DeviceHttpReq;
 import com.chisondo.model.http.resp.DeviceHttpResp;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -31,9 +28,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {  // (2)
-        Channel deviceChannel = ctx.channel();
-
-        log.info("APP 请求地址:{}", deviceChannel.remoteAddress());
+        Channel httpChannel = ctx.channel();
+        log.info("加入 HTTP 通道 = {}", httpChannel.remoteAddress());
     }
 
     @Override
@@ -87,9 +83,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        Channel incoming = ctx.channel();
+        Channel httpChannel = ctx.channel();
+        String deviceId = DevHttpChannelManager.removeByChannel(httpChannel);
+        Channel deviceChannel = DevTcpChannelManager.getChannelByDeviceId(deviceId);
         // 当出现异常就关闭连接
-        cause.printStackTrace();
+        log.error("http 通道[设备ID = {}]异常！", deviceId, cause);
+        if (null != deviceChannel) {
+            deviceChannel.close();
+        }
         ctx.close();
     }
 }
