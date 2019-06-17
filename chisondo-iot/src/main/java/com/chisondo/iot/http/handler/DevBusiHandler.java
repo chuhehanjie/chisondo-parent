@@ -25,8 +25,9 @@ public abstract class DevBusiHandler {
     public static final String REQ_PREFIX = "busiHandler4";
 
     public void handle(FullHttpRequest request, Channel httpChannel) {
+        DevBusiModel devBusiModel = null;
         try {
-            DevBusiModel devBusiModel = this.validate(request);
+            devBusiModel = this.validate(request);
             this.addHttpChannel(devBusiModel.getDeviceId(), httpChannel);
             this.processBusi(devBusiModel);
         } catch (DeviceNotConnectException e) {

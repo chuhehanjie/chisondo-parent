@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -144,27 +145,29 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             log.error("设备[{}]状态信息在 redis 中不存在！", resp.getDeviceID());
             return;
         }
-        DeviceMsgResp devMsg = resp.getMsg();
-        if (null != devMsg.getTemperature()) {
-            devStatusResp.setTemp(devMsg.getTemperature());
-        }
-        if (null != devMsg.getWarmstatus()) {
-            devStatusResp.setWarm(devMsg.getWarmstatus());
-        }
-        if (null != devMsg.getTaststatus()) {
-            devStatusResp.setDensity(devMsg.getTaststatus());
-        }
-        if (null != devMsg.getWaterlevel()) {
-            devStatusResp.setWaterlv(devMsg.getWaterlevel());
-        }
-        if (null != devMsg.getSoak()) {
-            devStatusResp.setMakeDura(devMsg.getSoak());
-        }
-        devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()));
-        devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
-        devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
-        if (null != devMsg.getWorkstatus()) {
-            devStatusResp.setWork(devMsg.getWorkstatus());
+        if (null != resp.getMsg()) {
+            DeviceMsgResp devMsg = resp.getMsg();
+            if (null != devMsg.getTemperature()) {
+                devStatusResp.setTemp(devMsg.getTemperature());
+            }
+            if (null != devMsg.getWarmstatus()) {
+                devStatusResp.setWarm(devMsg.getWarmstatus());
+            }
+            if (null != devMsg.getTaststatus()) {
+                devStatusResp.setDensity(devMsg.getTaststatus());
+            }
+            if (null != devMsg.getWaterlevel()) {
+                devStatusResp.setWaterlv(devMsg.getWaterlevel());
+            }
+            if (null != devMsg.getSoak()) {
+                devStatusResp.setMakeDura(devMsg.getSoak());
+            }
+            devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()));
+            devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
+            devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
+            if (null != devMsg.getWorkstatus()) {
+                devStatusResp.setWork(devMsg.getWorkstatus());
+            }
         }
         this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
     }
@@ -221,6 +224,13 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         String deviceId = reportResp.getDeviceID();
         if (null == DevTcpChannelManager.getChannelByDeviceId(deviceId)) {
             DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);
+        } else {
+            Channel existedDevChannel = DevTcpChannelManager.getChannelByDeviceId(deviceId);
+            if (!ObjectUtils.nullSafeEquals(existedDevChannel, deviceChannel)) {
+                existedDevChannel.close();
+                log.error("通道不相同，需要重新覆盖");
+                DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);
+            }
         }
         reportResp.setTcpValTime(new Date());
         // 设置连接设备的客户端IP
@@ -251,8 +261,8 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
 
         ctx.pipeline().get(SslHandler.class).handshakeFuture().addListener(
                 new GenericFutureListener<Future<Channel>>() {
-                    @Override
-                    public void operationComplete(Future<Channel> future) throws Exception {
+                    public void operationComplete(Future<Channel> future) t
+                    @Overridehrows Exception {
                         incoming.writeAndFlush(
                                 "Welcome to " + InetAddress.getLocalHost().getHostName() + " secure chat service!\n");
                         incoming.writeAndFlush(
@@ -272,11 +282,9 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
         log.error("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
         DevHttpChannelManager.removeByDeviceId(deviceId);
-        DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
-        devStatusResp.setOnlineStatus(0);
-        devStatusResp.setConnStatus(0);
-        // TODO 是否需要设置 remain 为 0？
-        this.redisUtils.set(deviceId, devStatusResp);
+        channels.remove(deviceChannel);
+        ctx.close();
+        this.redisUtils.updateStatus4Dev(deviceId);
         log.error("设备[{}]离线，从 redis 中更新状态", deviceId);
         this.sendDevState2Http(deviceId, true);
         log.error("发送离线请求到HTTP");

@@ -1,6 +1,7 @@
 package com.chisondo.iot.common.redis;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.http.resp.DevStatusRespDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
@@ -88,5 +89,15 @@ public class RedisUtils {
      */
     private <T> T fromJson(String json, Class<T> clazz){
         return JSONObject.parseObject(json, clazz);
+    }
+
+    public void updateStatus4Dev(String deviceId) {
+        DevStatusRespDTO devStatusResp = this.get(deviceId, DevStatusRespDTO.class);
+        if (null != devStatusResp) {
+            devStatusResp.setOnlineStatus(0);
+            devStatusResp.setConnStatus(0);
+            // TODO 是否需要设置 remain 为 0？
+            this.set(deviceId, devStatusResp);
+        }
     }
 }
