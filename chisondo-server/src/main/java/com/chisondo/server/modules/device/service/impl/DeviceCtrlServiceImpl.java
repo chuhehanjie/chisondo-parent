@@ -480,6 +480,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		devHttpReq.setMsg(new DevParamMsg()); // TODO 待确认 设置声音和网络不应该传MSG
 		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevSoundOrNetwork(devHttpReq);
 		log.info("调用设置设备声音或网络 HTTP 服务响应：{}", devHttpResp);
+		setDevSoundReq.setDeviceId((String) req.getAttrByKey(Keys.DEVICE_ID));
 		this.deviceInfoService.updateDevSound(setDevSoundReq);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
