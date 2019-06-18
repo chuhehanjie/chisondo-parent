@@ -3,6 +3,7 @@ package com.chisondo.server.modules.device.validator;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
+import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.common.validator.BusiValidator;
 import com.chisondo.server.modules.device.dto.req.SetDevNameReqDTO;
@@ -20,6 +21,7 @@ public class SetDevNameValidator implements BusiValidator {
         if (ValidateUtils.isEmptyString(setDevNameReq.getDeviceName())) {
             throw new CommonException("设备名称为空");
         }
+        setDevNameReq.setDeviceId((String) req.getAttrByKey(Keys.DEVICE_ID));
         req.addAttr("setDevNameReq", setDevNameReq);
     }
 }

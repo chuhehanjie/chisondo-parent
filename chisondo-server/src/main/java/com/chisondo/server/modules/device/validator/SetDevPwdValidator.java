@@ -36,7 +36,7 @@ public class SetDevPwdValidator implements BusiValidator {
         if (ValidateUtils.isNotEmptyString(devInfo.getPassword()) && ValidateUtils.notEquals(devInfo.getPassword(), setDevPwdReq.getOldPwd())) {
             throw new CommonException("旧密码不正确");
         }
-
+        setDevPwdReq.setDeviceId(devInfo.getDeviceId());
         req.addAttr("setDevPwdReq", setDevPwdReq);
     }
 }
