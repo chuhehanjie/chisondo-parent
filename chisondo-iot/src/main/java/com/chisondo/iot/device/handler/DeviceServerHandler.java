@@ -216,7 +216,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             Channel existedDevChannel = DevTcpChannelManager.getChannelByDeviceId(deviceId);
             if (!ObjectUtils.nullSafeEquals(existedDevChannel, deviceChannel)) {
                 existedDevChannel.close();
-                log.error("通道不相同，需要重新覆盖");
+                log.error("通道不相同，需要重新覆盖, 原 IP = {}, 新 IP = {}", existedDevChannel.remoteAddress(), deviceChannel.remoteAddress());
                 DevTcpChannelManager.addDeviceChannel(deviceId, deviceChannel);
             }
         }
@@ -234,7 +234,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception { // (5)
-        log.info("channelActive channel = {}", ctx.channel().remoteAddress());
+        log.info("设备激活， IP = {}", ctx.channel().remoteAddress());
         /*final Channel incoming = ctx.channel();
 
         ctx.pipeline().get(SslHandler.class).handshakeFuture().addListener(
@@ -266,15 +266,16 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     private void doOffLineAction(ChannelHandlerContext ctx) {
         Channel deviceChannel = ctx.channel();
         String deviceId = DevTcpChannelManager.removeByChannel(deviceChannel);
-        log.error("设备[" + deviceId + "]掉线, 当前连接总数 = " + DevTcpChannelManager.count() + "\n");
-        DevHttpChannelManager.removeByDeviceId(deviceId);
-        globalDevChannels.remove(deviceChannel);
         ctx.close();
+        globalDevChannels.remove(deviceChannel);
+        if (StringUtils.isEmpty(deviceId)) {
+            log.error("非设备通道");
+            return;
+        }
+        DevHttpChannelManager.removeByDeviceId(deviceId);
         this.redisUtils.updateStatus4Dev(deviceId);
-        log.error("设备[{}]离线，从 redis 中更新状态", deviceId);
+        log.error("设备[{}]离线，从 redis 中更新状态并发送离线请求到 HTTP, 当前连接总数 = {}", deviceId, DevTcpChannelManager.count());
         this.httpUtils.sendDevState2Http(deviceId, true);
-        log.error("发送离线请求到HTTP");
-//        DeviceChannelManager.removeDeviceChannel();
     }
 
     @Override

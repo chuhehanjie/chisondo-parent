@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class KeepWarmCtrlBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("保温控制业务开始......");
+        log.info("发送保温控制指令开始......");
         DeviceHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), DeviceHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("保温控制业务结束......");
+        log.info("发送保温控制指令结束......");
     }
 }

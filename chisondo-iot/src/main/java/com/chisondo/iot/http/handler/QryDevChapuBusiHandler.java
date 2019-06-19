@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class QryDevChapuBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("查询设备茶谱信息开始......");
+        log.info("发送查询设备茶谱信息指令开始......");
         QryDeviceInfoHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), QryDeviceInfoHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("查询设备茶谱信息结束......");
+        log.info("发送查询设备茶谱信息指令结束......");
     }
 }

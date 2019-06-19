@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class StopWorkBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("停止沏茶/洗茶/烧水/保温业务开始......");
+        log.info("发送停止沏茶/洗茶/烧水/保温指令开始......");
         StopWorkHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), StopWorkHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("停止沏茶/洗茶/烧水/保温业务结束......");
+        log.info("发送停止沏茶/洗茶/烧水/保温指令结束......");
     }
 }

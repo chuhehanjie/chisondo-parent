@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class StartWorkBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("启动或预约泡茶业务开始......");
+        log.info("发送启动或预约泡茶指令开始......");
         DeviceHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), DeviceHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("启动或预约泡茶业务结束......");
+        log.info("发送启动或预约泡茶指令结束......");
     }
 }

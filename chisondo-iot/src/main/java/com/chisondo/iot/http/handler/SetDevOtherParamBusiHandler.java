@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 public class SetDevOtherParamBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("设置设备静音/网络业务开始......");
+        log.info("发送设置设备静音/网络指令开始......");
         SetDevOtherParamHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), SetDevOtherParamHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("设置设备静音/网络业务结束......");
+        log.info("发送设置设备静音/网络指令结束......");
     }
 }

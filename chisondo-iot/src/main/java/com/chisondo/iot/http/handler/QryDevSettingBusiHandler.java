@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class QryDevSettingBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("查询设备设置参数信息开始......");
+        log.info("发送查询设备设置参数指令开始......");
         QryDeviceInfoHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), QryDeviceInfoHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("查询设备设置参数信息结束......");
+        log.info("发送查询设备设置参数指令结束......");
     }
 }

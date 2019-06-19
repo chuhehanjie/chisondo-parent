@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class SetDevChapuParamBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("设置设备内置参数业务开始......");
+        log.info("发送设置设备内置参数指令开始......");
         SetDevChapuParamHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), SetDevChapuParamHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("设置设备内置参数业务结束......");
+        log.info("发送设置设备内置参数业务指令结束......");
     }
 }

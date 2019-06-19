@@ -35,8 +35,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 	@Bean
 	public RestTemplate restTemplate(){
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		requestFactory.setConnectTimeout(3000);
-		requestFactory.setReadTimeout(15000);
+		requestFactory.setConnectTimeout(5000);
+		requestFactory.setReadTimeout(20000);
 		return new RestTemplate(requestFactory);
 	}
 }

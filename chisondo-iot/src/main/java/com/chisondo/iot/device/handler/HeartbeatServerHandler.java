@@ -35,15 +35,14 @@ public class HeartbeatServerHandler extends ChannelInboundHandlerAdapter {
 			if (event.state() == IdleState.READER_IDLE) {
 				log.error("设备在指定时间内未上报请求，自动离线，设备IP = [{}]", ctx.channel().remoteAddress());
 				ctx.close();
+				return;
 			} else if (event.state() == IdleState.WRITER_IDLE) {
 				type = "write idle";
 			} else if (event.state() == IdleState.ALL_IDLE) {
 				type = "all idle";
 			}
-
-			ctx.writeAndFlush(HEARTBEAT_SEQUENCE.duplicate()).addListener(
-					ChannelFutureListener.CLOSE_ON_FAILURE);
-			log.error( ctx.channel().remoteAddress()+"超时类型：" + type);
+			ctx.writeAndFlush(HEARTBEAT_SEQUENCE.duplicate()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+			log.error("设备IP = {}, 超时类型 = {}", ctx.channel().remoteAddress(), type);
 		} else {
 			super.userEventTriggered(ctx, evt);
 		}

@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 public class LockOrUnlockDevBusiHandler extends DevBusiHandler {
     @Override
     protected void processBusi(DevBusiModel devBusiModel) {
-        log.info("锁定或解锁设备业务开始......");
+        log.info("发送锁定或解锁设备指令开始......");
         LockOrUnlockDevHttpReq devHttpReq = JSONObject.parseObject(devBusiModel.getJson(), LockOrUnlockDevHttpReq.class);
         devBusiModel.sendReq2Dev(devHttpReq);
-        log.info("锁定或解锁设备业务结束......");
+        log.info("发送锁定或解锁设备指令结束......");
     }
 }

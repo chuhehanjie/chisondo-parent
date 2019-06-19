@@ -11,6 +11,7 @@ import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -59,14 +60,14 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
                 httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
             } else {
                 DevBusiHandler devBusiHandler = (DevBusiHandler) SpringContextUtils.getBean(DevBusiHandler.REQ_PREFIX + uri);
-                try {
-                    devBusiHandler.handle(request, httpChannel);
+                devBusiHandler.handle(request, httpChannel);
+                /*try {
                 } catch (Exception e) {
                     log.error("发送请求到设备异常", e);
                     FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "发送请求到设备异常"));
                     httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
                     DevHttpChannelManager.removeByChannel(httpChannel);
-                }
+                }*/
             }
         }
     }
@@ -87,7 +88,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         String deviceId = DevHttpChannelManager.removeByChannel(httpChannel);
         Channel deviceChannel = DevTcpChannelManager.getChannelByDeviceId(deviceId);
         // 当出现异常就关闭连接
-        log.error("http 通道[设备ID = {}]异常！", deviceId, cause);
+        log.error(cause instanceof ReadTimeoutException ? "读取设备[{}]响应超时！" : "http 通道[设备ID = {}]异常！", deviceId, cause);
         if (null != deviceChannel) {
             deviceChannel.close();
         }
