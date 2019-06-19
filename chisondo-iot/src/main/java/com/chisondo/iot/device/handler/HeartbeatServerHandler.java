@@ -34,13 +34,7 @@ public class HeartbeatServerHandler extends ChannelInboundHandlerAdapter {
 			String type = "";
 			if (event.state() == IdleState.READER_IDLE) {
 				log.error("设备在指定时间内未上报请求，自动离线，设备IP = [{}]", ctx.channel().remoteAddress());
-				throw new RuntimeException("设备未在指定时间内上报设备状态");
-				// 超过指定时间没有上报设备状态，则认为设备已经掉线
-				/*Channel channel = ctx.channel();
-				String deviceId = DevTcpChannelManager.removeByChannel(channel);
-				globalDevChannels.remove(channel);
-				this.getRedisUtils().updateStatus4Dev(deviceId);
-				log.error("从 redis 中删除设备[{}]", deviceId);*/
+				ctx.close();
 			} else if (event.state() == IdleState.WRITER_IDLE) {
 				type = "write idle";
 			} else if (event.state() == IdleState.ALL_IDLE) {
