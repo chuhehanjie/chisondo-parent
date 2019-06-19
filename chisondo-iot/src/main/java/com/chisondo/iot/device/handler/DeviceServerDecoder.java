@@ -10,9 +10,11 @@ import com.chisondo.model.http.req.DeviceHttpReq;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +34,10 @@ public class DeviceServerDecoder extends StringDecoder {
             log.error("设备ID为空！");
             return;
         }
+        this.decodeResponse(out, json);
+    }
+
+    private void decodeResponse(List<Object> out, String json) {
         try {
             if (this.isDevStatusReportReq(json)) {
                 // 设备状态上报请求
@@ -72,11 +78,12 @@ public class DeviceServerDecoder extends StringDecoder {
     }
 
     private String filterCloseSymbol(String json) {
-        return json.endsWith(Constant.CLOSE_SYMBOL) ? json.replace(Constant.CLOSE_SYMBOL, "") : json;
+        String resultJSON = json.endsWith(Constant.CLOSE_SYMBOL) ? json.replace(Constant.CLOSE_SYMBOL, "") : json;
+        return resultJSON.replaceAll("\n", "").replaceAll("\t", "");
     }
 
     public static void main(String[] args) {
-        String json = "{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"18170964\",\"msg\":{\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}\\n";
+        /*String json = "{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"18170964\",\"msg\":{\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}\\n";
         if (json.endsWith(Constant.CLOSE_SYMBOL)) {
             json = json.replace(Constant.CLOSE_SYMBOL, "");
         }
@@ -119,7 +126,26 @@ public class DeviceServerDecoder extends StringDecoder {
         String json2 = "{\"retn\":200, \"desc\":\"success\", \"action\":\"startworkok\",\"deviceID\":\"71823MJ890KB\",\"msg\":{\"state\":0,\"stateinfo\":0,\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"20\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1}}";
         //String json2 = "{\"retn\":200, \"desc\":\"success\", \"action\":\"startworkok\",\"deviceID\":\"71823MJ890KB\"}";
         DeviceHttpResp deviceResp = JSONObject.parseObject(json2, DeviceHttpResp.class);
-        System.out.println("deviceResp json = " + JSONObject.toJSONString(deviceResp));
+        System.out.println("deviceResp json = " + JSONObject.toJSONString(deviceResp));*/
+        String json = "{\n" +
+                "\t\"action\":\t\"statuspush\",\n" +
+                "\t\"actionFlag\":\t1,\n" +
+                "\t\"deviceID\":\t\"533969898238259\",\n" +
+                "\t\"msg\":\t{\n" +
+                "\t\t\"errorstatus\":\t0,\n" +
+                "\t\t\"nowwarm\":\t27,\n" +
+                "\t\t\"remaintime\":\t0,\n" +
+                "\t\t\"soak\":\t60,\n" +
+                "\t\t\"taststatus\":\t2,\n" +
+                "\t\t\"temperature\":\t99,\n" +
+                "\t\t\"warmstatus\":\t0,\n" +
+                "\t\t\"waterlevel\":\t400,\n" +
+                "\t\t\"workstatus\":\t0\n" +
+                "\t}\n" +
+                "}\n";
+        DeviceServerDecoder app = new DeviceServerDecoder(CharsetUtil.UTF_8);
+        json = app.filterCloseSymbol(json);
+        app.decodeResponse(new ArrayList<>(), json);
     }
 
     /**
