@@ -29,15 +29,11 @@ public class DeviceServerDecoder extends StringDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         String json = IOTUtils.convertByteBufToString(msg);
-        log.error("decoder msg 接收设备响应 = " + json);
+        log.error("decoder msg 接收设备[{}]响应 = {}", ctx.channel().remoteAddress(), json);
         if (StringUtils.isEmpty(json)) {
             return;
         }
         json = this.filterCloseSymbol(json);
-        if (this.isDeviceIdEmpty(json)) {
-            log.error("设备ID为空！");
-            return;
-        }
         this.decodeResponse(out, json);
     }
 
@@ -64,13 +60,7 @@ public class DeviceServerDecoder extends StringDecoder {
                 DeviceHttpResp deviceResp = JSONObject.parseObject(json, DeviceHttpResp.class);
                 out.add(deviceResp);
             } else {
-                // http request
-                DeviceHttpReq req = JSONObject.parseObject(json, DeviceHttpReq.class);
-                if (null != req.getAction() && null != req.getDeviceID()) {
-                    out.add(req);
-                } else {
-                    out.add("test msg");
-                }
+               log.error("未找到对应的设备响应处理");
             }
         } catch (JSONException e) {
             log.error("JSON格式错误！", e);

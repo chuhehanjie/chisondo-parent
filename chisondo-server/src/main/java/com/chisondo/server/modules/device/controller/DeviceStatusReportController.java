@@ -80,7 +80,7 @@ public class DeviceStatusReportController extends AbstractController {
 		deviceStateInfo.setDeviceId(deviceInfo.getDeviceId());
 		deviceStateInfo.setOnlineState(Constant.OnlineState.YES);
 		deviceStateInfo.setDeviceStateInfo("TEST10086"); // TODO 待确认 设备状态信息值先写死
-		// deviceStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
+		deviceStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		deviceStateInfo.setUpdateTime(DateUtils.currentDate());
 		deviceStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
 		deviceStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());

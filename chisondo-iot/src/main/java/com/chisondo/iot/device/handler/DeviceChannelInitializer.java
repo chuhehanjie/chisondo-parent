@@ -86,7 +86,7 @@ public class DeviceChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new HeartbeatServerHandler());
 
         // Add the text line codec combination first,
-        pipeline.addLast(new DelimiterBasedFrameDecoder(msglength, new ByteBuf[] {
+        pipeline.addLast(new DeviceDelimiterDecoder(msglength, new ByteBuf[] {
                 Unpooled.wrappedBuffer(new byte[] {'A', 'T', 'X' }),
                 Unpooled.wrappedBuffer(new byte[] {'E', 'T', 'X' })
         }));//tcp 分包,定义分隔符号// TODO: 16/5/9
