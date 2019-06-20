@@ -15,6 +15,9 @@
  */
 package com.chisondo.iot.device.handler;
 
+import com.alibaba.fastjson.JSONObject;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -83,7 +86,10 @@ public class DeviceChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new HeartbeatServerHandler());
 
         // Add the text line codec combination first,
-        //pipeline.addLast(new DelimiterBasedFrameDecoder(msglength, Delimiters.lineDelimiter()));//tcp 分包,定义分隔符号// TODO: 16/5/9
+        pipeline.addLast(new DelimiterBasedFrameDecoder(msglength, new ByteBuf[] {
+                Unpooled.wrappedBuffer(new byte[] {'A', 'T', 'X' }),
+                Unpooled.wrappedBuffer(new byte[] {'E', 'T', 'X' })
+        }));//tcp 分包,定义分隔符号// TODO: 16/5/9
         // the encoder and decoder are static as these are sharable
         pipeline.addLast(DECODER);
         pipeline.addLast(ENCODER);
@@ -91,5 +97,27 @@ public class DeviceChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(this.deviceServerHandler);
         log.debug("SimpleChatClient:{} 连接上！", socketChannel.remoteAddress());
 
+    }
+
+    public static void main(String[] args) {
+        String json = "ATX{\n" +
+                " \"action\": \"statuspush\",\n" +
+                " \"actionFlag\": 1,\n" +
+                " \"deviceID\": \"533994397910579\",\n" +
+                " \"msg\": {\n" +
+                "  \"errorstatus\": 0,\n" +
+                "  \"nowwarm\": 34,\n" +
+                "  \"remaintime\": 0,\n" +
+                "  \"soak\": 60,\n" +
+                "  \"taststatus\": 1,\n" +
+                "  \"temperature\": 99,\n" +
+                "  \"warmstatus\": 0,\n" +
+                "  \"waterlevel\": 400,\n" +
+                "  \"workstatus\": 0\n" +
+                " }\n" +
+                "}\n" +
+                "EXT";
+        json = json.replaceFirst("ATX", "").replaceFirst("EXT", "");
+        System.out.println(JSONObject.parse(json));
     }
 }

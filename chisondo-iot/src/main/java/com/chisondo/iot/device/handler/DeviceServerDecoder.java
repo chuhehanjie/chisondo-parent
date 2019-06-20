@@ -12,6 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class DeviceServerDecoder extends StringDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         String json = IOTUtils.convertByteBufToString(msg);
         log.error("decoder msg 接收设备响应 = " + json);
+        if (StringUtils.isEmpty(json)) {
+            return;
+        }
         json = this.filterCloseSymbol(json);
         if (this.isDeviceIdEmpty(json)) {
             log.error("设备ID为空！");
@@ -83,7 +87,7 @@ public class DeviceServerDecoder extends StringDecoder {
     }
 
     public static void main(String[] args) {
-        /*String json = "{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"18170964\",\"msg\":{\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}\\n";
+        /*String json = "{\"statuspush\",\"actionFlag\":1,\"deviceID\":\"18170964\",\"msg\":{\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}\\n";
         if (json.endsWith(Constant.CLOSE_SYMBOL)) {
             json = json.replace(Constant.CLOSE_SYMBOL, "");
         }
@@ -123,12 +127,12 @@ public class DeviceServerDecoder extends StringDecoder {
         devSettingResp.setDesc("请求成功");
         System.out.println(JSONObject.toJSONString(devSettingResp));
         System.out.println("*************************************************");
-        String json2 = "{\"retn\":200, \"desc\":\"success\", \"action\":\"startworkok\",\"deviceID\":\"71823MJ890KB\",\"msg\":{\"state\":0,\"stateinfo\":0,\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"20\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1}}";
-        //String json2 = "{\"retn\":200, \"desc\":\"success\", \"action\":\"startworkok\",\"deviceID\":\"71823MJ890KB\"}";
+        String json2 = "{\"retn\":200, \"desc\":\"success\", \"startworkok\",\"deviceID\":\"71823MJ890KB\",\"msg\":{\"state\":0,\"stateinfo\":0,\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"20\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1}}";
+        //String json2 = "{\"retn\":200, \"desc\":\"success\", \"startworkok\",\"deviceID\":\"71823MJ890KB\"}";
         DeviceHttpResp deviceResp = JSONObject.parseObject(json2, DeviceHttpResp.class);
         System.out.println("deviceResp json = " + JSONObject.toJSONString(deviceResp));*/
         String json = "{\n" +
-                "\t\"action\":\t\"statuspush\",\n" +
+                "\t\t\"statuspush\",\n" +
                 "\t\"actionFlag\":\t1,\n" +
                 "\t\"deviceID\":\t\"533969898238259\",\n" +
                 "\t\"msg\":\t{\n" +
@@ -154,7 +158,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isStartWorkResp(String json) {
-        return json.contains("\"action\":\"startworkok\"");
+        return json.contains("\"startworkok\"");
     }
 
     /**
@@ -163,7 +167,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isStopWorkResp(String json) {
-        return json.contains("\"action\":\"stopworkok\"");
+        return json.contains("\"stopworkok\"");
     }
 
     /**
@@ -172,7 +176,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isDevStatusReportReq(String json) {
-        return json.contains("\"action\":\"statuspush\"");
+        return json.contains("\"statuspush\"");
     }
 
     /**
@@ -181,7 +185,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isQueryDevStatusResp(String json) {
-        return json.contains("\"action\":\"qrydevicestateok\"");
+        return json.contains("\"qrydevicestateok\"");
     }
 
     /**
@@ -191,7 +195,7 @@ public class DeviceServerDecoder extends StringDecoder {
      */
     @Deprecated
     private boolean isQueryDevChapuInfoResp(String json) {
-        return json.contains("\"action\":\"qrychapuparmok\"");
+        return json.contains("\"qrychapuparmok\"");
     }
 
     /**
@@ -200,7 +204,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isQueryDevSettingResp(String json) {
-        return json.contains("\"action\":\"qrydevparmok\"");
+        return json.contains("\"qrydevparmok\"");
     }
 
     /**
@@ -209,7 +213,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isLockOrUnlockDevResp(String json) {
-        return json.contains("\"action\":\"devicelockok\"");
+        return json.contains("\"devicelockok\"");
     }
 
     /**
@@ -218,7 +222,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isKeepWarmCtrlResp(String json) {
-        return json.contains("\"action\":\"keepwarmok\"");
+        return json.contains("\"keepwarmok\"");
     }
 
     /**
@@ -227,7 +231,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isSetChapuParamResp(String json) {
-        return json.contains("\"action\":\"setchapuparmok\"");
+        return json.contains("\"setchapuparmok\"");
     }
 
     /**
@@ -236,7 +240,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isSetOtherParamResp(String json) {
-        return json.contains("\"action\":\"setotherparmok\"");
+        return json.contains("\"setotherparmok\"");
     }
  /**
      * 是否设置洗茶/烧水参数响应
@@ -244,7 +248,7 @@ public class DeviceServerDecoder extends StringDecoder {
      * @return
      */
     private boolean isSetParamResp(String json) {
-        return json.contains("\"action\":\"setdevparmok\"");
+        return json.contains("\"setdevparmok\"");
     }
 
     private boolean isErrorResp(String json) {
