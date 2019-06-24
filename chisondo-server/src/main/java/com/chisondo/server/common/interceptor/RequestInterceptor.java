@@ -5,6 +5,7 @@ import com.chisondo.server.common.utils.CacheDataUtils;
 import com.chisondo.server.common.utils.CommonUtils;
 import com.chisondo.server.common.utils.Keys;
 import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.modules.device.controller.DeviceStatusReportController;
 import com.chisondo.server.modules.sys.entity.CompanyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -25,6 +26,9 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //如果不是映射到方法直接通过
         if (!(handler instanceof HandlerMethod)) {
+            return true;
+        }
+        if (this.isDevInnerCallMethod((HandlerMethod) handler)) {
             return true;
         }
         // 未开启鉴权或是不需要鉴权的请求，则直接放行
@@ -54,6 +58,15 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 是否设备内部调用方法
+     * @param handler
+     * @return
+     */
+    private boolean isDevInnerCallMethod(HandlerMethod handler) {
+        return handler.getBean() instanceof DeviceStatusReportController;
     }
 
     private boolean isReqExcludeAuth(HttpServletRequest request) {

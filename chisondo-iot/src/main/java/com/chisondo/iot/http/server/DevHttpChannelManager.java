@@ -13,9 +13,11 @@ public class DevHttpChannelManager {
 
     private static Map<String, Channel> httpChannelMap = new ConcurrentHashMap<>();
 
+    public static Map<String, String> deviceAction = new ConcurrentHashMap<>();
+
     public static void addHttpChannel(String deviceId, Channel channel) {
         httpChannelMap.put(deviceId, channel);
-        log.info("add http channel deviceId = {}, size = {}", deviceId, httpChannelMap.size());
+        log.info("添加 http 通道，设备ID = {}, size = {}", deviceId, httpChannelMap.size());
     }
 
     public static Channel getHttpChannelByDeviceId(String deviceId) {

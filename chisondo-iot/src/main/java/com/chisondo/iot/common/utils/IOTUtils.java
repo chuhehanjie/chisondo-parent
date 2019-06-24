@@ -11,33 +11,33 @@ import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.multipart.MemoryAttribute;
 import io.netty.util.CharsetUtil;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class IOTUtils {
 
-    public static List<String> reqUriList;
+    public static Map<String, String> reqUriMap;
 
     static {
-        reqUriList = new ArrayList<>();
-        reqUriList.add(DevReqURIConstant.START_WORK);
-        reqUriList.add(DevReqURIConstant.QRY_DEV_PARAM);
-        reqUriList.add(DevReqURIConstant.QRY_DEV_CHAPU);
-        reqUriList.add(DevReqURIConstant.QRY_DEV_STATUS);
-        reqUriList.add(DevReqURIConstant.START_KEEP_WARM);
-        reqUriList.add(DevReqURIConstant.SET_DEV_CHAPU_PARAM);
-        reqUriList.add(DevReqURIConstant.SET_DEV_OTHER_PARAM);
-        reqUriList.add(DevReqURIConstant.STOP_WORK);
-        reqUriList.add(DevReqURIConstant.LOCK_OR_UNLOCK_DEV);
-        reqUriList.add(DevReqURIConstant.SET_DEV_PARAM);
+        reqUriMap = new HashMap<>();
+        reqUriMap.put(DevReqURIConstant.START_WORK, "启动或预约泡茶");
+        reqUriMap.put(DevReqURIConstant.QRY_DEV_PARAM, "查询设备设置参数");
+        reqUriMap.put(DevReqURIConstant.QRY_DEV_CHAPU, "查询设备茶谱信息");
+        reqUriMap.put(DevReqURIConstant.QRY_DEV_STATUS, "查询设备状态");
+        reqUriMap.put(DevReqURIConstant.START_KEEP_WARM, "保温控制");
+        reqUriMap.put(DevReqURIConstant.SET_DEV_CHAPU_PARAM, "设置设备内置参数");
+        reqUriMap.put(DevReqURIConstant.SET_DEV_OTHER_PARAM, "设置设备静音/网络");
+        reqUriMap.put(DevReqURIConstant.STOP_WORK, "停止沏茶/洗茶/烧水/保温");
+        reqUriMap.put(DevReqURIConstant.LOCK_OR_UNLOCK_DEV, "锁定或解锁设备");
+        reqUriMap.put(DevReqURIConstant.SET_DEV_PARAM, "设置洗茶/烧水参数");
     }
 
-    public static List<String> getReqUriList() {
-        return reqUriList;
+    public static Map<String, String> getReqUriMap() {
+        return reqUriMap;
     }
 
     public static String convertByteBufToString(ByteBuf buf) {
@@ -145,5 +145,14 @@ public final class IOTUtils {
         String json = "{\"action\":\"statuspush\",\"actionFlag\":1,\"deviceID\":\"7788520\",\"msg\":\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}" + "\n";
         System.out.println(HexUtils.str2HexStr(json));
         System.out.println(ByteBuffer.wrap(json.getBytes()).toString());
+    }
+
+    public static String getDeviceActionName(String devBusiHanlderName) {
+        if (!StringUtils.isEmpty(devBusiHanlderName)) {
+            devBusiHanlderName = devBusiHanlderName.replaceAll("BusiHandler", "");
+            devBusiHanlderName = devBusiHanlderName.substring(0, 1).toLowerCase() + devBusiHanlderName.substring(1);
+            return reqUriMap.containsKey(devBusiHanlderName) ? reqUriMap.get(devBusiHanlderName) : "";
+        }
+        return "";
     }
 }

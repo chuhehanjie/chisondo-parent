@@ -51,7 +51,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         Channel httpChannel = ctx.channel();
         // 校验请求路由
         String uri = request.uri().replace("/", "");
-        if (!IOTUtils.getReqUriList().contains(uri)) {
+        if (!IOTUtils.getReqUriMap().containsKey(uri)) {
             FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_BAD_REQUEST, "错误的请求"));
             httpChannel.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         } else {
@@ -88,7 +88,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         String deviceId = DevHttpChannelManager.removeByChannel(httpChannel);
         Channel deviceChannel = DevTcpChannelManager.getChannelByDeviceId(deviceId);
         // 当出现异常就关闭连接
-        log.error(cause instanceof ReadTimeoutException ? "读取设备[{}]响应超时！" : "http 通道[设备ID = {}]异常！", deviceId, cause);
+        log.error(cause instanceof ReadTimeoutException ? "读取设备[{} = " + IOTUtils.getDeviceActionName(DevHttpChannelManager.deviceAction.get(deviceId)) + "]响应超时！" : "http 通道[设备ID = {}]异常！", deviceId, cause);
         if (null != deviceChannel) {
             deviceChannel.close();
         }

@@ -30,6 +30,7 @@ public abstract class DevBusiHandler {
             devBusiModel = this.validate(request);
             this.addHttpChannel(devBusiModel.getDeviceId(), httpChannel);
             this.processBusi(devBusiModel);
+            DevHttpChannelManager.deviceAction.put(devBusiModel.getDeviceId(), this.getClass().getSimpleName());
         } catch (DeviceNotConnectException e) {
             log.error("设备[{}]未连接", e.getDeviceId());
             FullHttpResponse response = IOTUtils.buildResponse(new DeviceHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "设备[" + e.getDeviceId() + "]未连接"));
@@ -39,7 +40,6 @@ public abstract class DevBusiHandler {
     }
 
     private void addHttpChannel(String deviceId, Channel httpChannel) {
-        log.info("添加 HTTP 通道，设备ID = {}", deviceId);
         DevHttpChannelManager.addHttpChannel(deviceId, httpChannel);
     }
 
