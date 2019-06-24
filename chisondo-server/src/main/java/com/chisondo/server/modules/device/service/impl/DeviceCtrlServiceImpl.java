@@ -106,13 +106,16 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			if (devHttpResp.isOK()) {
 				UserMakeTeaEntity userMakeTea = this.buildUserMakeTea(startOrReserveTeaReq, user.getMemberId().toString(), devHttpResp);
 				this.userMakeTeaService.save(userMakeTea);
-				// 如果需要保温
-                if (ValidateUtils.isNotEmpty(userMakeTea.getWarm())) {
+				/**
+				 * 如果需要保温
+				 * 不需要同时发送保温指令 update by dz 20190624
+				 */
+                /*if (ValidateUtils.isNotEmpty(userMakeTea.getWarm())) {
 					DeviceHttpReq devHttpReq2 = new DeviceHttpReq(newDeviceId);
                     devHttpResp = this.deviceHttpService.startKeeWarm(devHttpReq2);
 					req.addAttr(Keys.DEV_REQ_2, devHttpReq2);
                     CommonUtils.debugLog(log, "调用 http 保温控制响应：" + devHttpResp);
-                }
+                }*/
 				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 			} else {
 				// 设备接口服务返回失败

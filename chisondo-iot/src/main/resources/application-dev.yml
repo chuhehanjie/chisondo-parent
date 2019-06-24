@@ -24,7 +24,7 @@ netty:
     keepalive: true
     backlog: 800
   msg:
-    length: 2048
+    length: 1024
   bi:
     pool: 20
 chisondo:
