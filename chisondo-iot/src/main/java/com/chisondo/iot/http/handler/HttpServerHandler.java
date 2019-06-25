@@ -89,9 +89,12 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         Channel deviceChannel = DevTcpChannelManager.getChannelByDeviceId(deviceId);
         // 当出现异常就关闭连接
         log.error(cause instanceof ReadTimeoutException ? "读取设备[{} = " + IOTUtils.getDeviceActionName(DevHttpChannelManager.deviceAction.get(deviceId)) + "]响应超时！" : "http 通道[设备ID = {}]异常！", deviceId, cause);
-        if (null != deviceChannel) {
+        /**
+         * 设备响应超时不关闭TCP连接
+         */
+        /*if (null != deviceChannel) {
             deviceChannel.close();
-        }
+        }*/
         ctx.close();
     }
 }
