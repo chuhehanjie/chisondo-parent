@@ -144,6 +144,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	 * @param devStateInfo
 	 */
 	private void processDevWorkingRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
+		// 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
+		devStatusResp.setReamin(devStatusResp.getReamin() + 2);
 		new Thread(() -> {
 			boolean needUpdate = true;
 			int remainTime = devStatusResp.getReamin() - 1;

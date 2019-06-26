@@ -68,8 +68,12 @@ public class DeviceQueryController extends AbstractController {
 		devStatusResp.setWarm(result.getInteger("warm"));
 		devStatusResp.setDensity(result.getInteger("density"));
 		devStatusResp.setWaterlv(0);
-		// 老设备 makeDura 要乘以5
-		devStatusResp.setMakeDura(ValidateUtils.isNotEmpty(result.getInteger("makeDura")) ? result.getInteger("makeDura") * 5 : null);
+		/**
+		 *  老设备 makeDura 要乘以5
+		 *  不需要再乘以5 update by dz 20190626
+		 */
+//		devStatusResp.setMakeDura(ValidateUtils.isNotEmpty(result.getInteger("makeDura")) ? result.getInteger("makeDura") * 5 : null);
+		devStatusResp.setMakeDura(result.getInteger("makeDura"));
 		devStatusResp.setReamin(result.getInteger("reamin"));
 		devStatusResp.setTea(result.getInteger("tea"));
 		devStatusResp.setWater(result.getInteger("water"));
