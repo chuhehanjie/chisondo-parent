@@ -3,6 +3,7 @@ package com.chisondo.server.common.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.http.HttpStatus;
 import com.chisondo.model.http.resp.DevStatusReportResp;
+import com.chisondo.model.http.resp.DeviceHttpResp;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
@@ -98,7 +99,7 @@ public final class CommonUtils {
         return params;
     }
 
-    public static DevStatusRespDTO convert2DevStatusInfo(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
+    public static DevStatusRespDTO convert2DevStatusDTO(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
         DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
         devStatusResp.setDeviceId(devStatusReportResp.getDeviceID());
         devStatusResp.setTemp(devStatusReportResp.getMsg().getTemperature());
@@ -122,7 +123,7 @@ public final class CommonUtils {
         return devStatusResp;
     }
 
-    public static DevStatusRespDTO convert2DevStatusInfo(DeviceStateInfoEntity devStateInfo) {
+    public static DevStatusRespDTO convert2DevStatusDTO(DeviceStateInfoEntity devStateInfo) {
         DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
         devStatusResp.setMakeTemp(devStateInfo.getMakeTemp());
         devStatusResp.setTemp(devStateInfo.getTemp());
@@ -145,6 +146,42 @@ public final class CommonUtils {
         devStatusResp.setOnlineStatus(devStateInfo.getOnlineState());
         devStatusResp.setConnStatus(devStateInfo.getConnectState());
         return devStatusResp;
+    }
+
+    public static DeviceStateInfoEntity convert2DevStatusEntity(DevStatusReportResp devStatusReportResp) {
+        DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
+        devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
+        devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
+//		devStateInfo.setDeviceStateInfo("");
+        devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
+        devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
+        devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());
+        devStateInfo.setWarm(devStatusReportResp.getMsg().getWarmstatus());
+        devStateInfo.setDensity(devStatusReportResp.getMsg().getTaststatus());
+        devStateInfo.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
+        devStateInfo.setMakeDura(devStatusReportResp.getMsg().getSoak());
+        devStateInfo.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
+        devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+        devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+        devStateInfo.setWork(devStatusReportResp.getMsg().getWorkstatus());
+        return devStateInfo;
+    }
+
+    public static DeviceStateInfoEntity convert2DevStatusEntity(DeviceHttpResp devStatusReportResp, String deviceId) {
+        DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
+        devStateInfo.setDeviceId(deviceId);
+        devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
+        devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
+        devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());
+        devStateInfo.setWarm(devStatusReportResp.getMsg().getWarmstatus());
+        devStateInfo.setDensity(devStatusReportResp.getMsg().getTaststatus());
+        devStateInfo.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
+        devStateInfo.setMakeDura(devStatusReportResp.getMsg().getSoak());
+        devStateInfo.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
+        devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+        devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
+        devStateInfo.setWork(devStatusReportResp.getMsg().getWorkstatus());
+        return devStateInfo;
     }
 
     public static CommonResp buildOldDevResp(JSONObject result) {
@@ -209,5 +246,23 @@ public final class CommonUtils {
 
     public static String convertDateStr(String dateStr) {
         return ValidateUtils.isNotEmptyString(dateStr) && dateStr.length() > 19 ? dateStr.substring(0, 19) : dateStr;
+    }
+
+    public static DeviceStateInfoEntity buildDevStateByDevStatusResp(DevStatusRespDTO devStatusResp, String deviceId) {
+        DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
+        deviceState.setDeviceId(deviceId);
+        deviceState.setUpdateTime(DateUtils.currentDate());
+        deviceState.setLastConnTime(DateUtils.currentDate());
+        deviceState.setMakeTemp(devStatusResp.getMakeTemp());
+        deviceState.setTemp(devStatusResp.getTemp());
+        deviceState.setWarm(devStatusResp.getWarm());
+        deviceState.setDensity(devStatusResp.getDensity());
+        deviceState.setWaterlv(devStatusResp.getWaterlv());
+        deviceState.setMakeDura(devStatusResp.getMakeDura());
+        deviceState.setReamin(devStatusResp.getReamin());
+        deviceState.setTea(devStatusResp.getTea());
+        deviceState.setWater(devStatusResp.getWater());
+        deviceState.setWork(devStatusResp.getWork());
+        return deviceState;
     }
 }

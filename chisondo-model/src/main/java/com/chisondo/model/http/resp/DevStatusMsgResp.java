@@ -37,7 +37,7 @@ public class DevStatusMsgResp implements Serializable {
     /**
      * 	面板剩余时间
      */
-    private String remaintime;
+    private Integer remaintime;
     /**
      * 异常状态
      * 0-正常 1-缺水 2-缺茶 3-缺水缺茶 4-未连接Wi-Fi
@@ -97,11 +97,11 @@ public class DevStatusMsgResp implements Serializable {
         this.waterlevel = waterlevel;
     }
 
-    public String getRemaintime() {
+    public Integer getRemaintime() {
         return remaintime;
     }
 
-    public void setRemaintime(String remaintime) {
+    public void setRemaintime(Integer remaintime) {
         this.remaintime = remaintime;
     }
 

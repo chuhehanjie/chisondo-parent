@@ -138,63 +138,13 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		this.save2Redis(devStatusReportResp, devStateInfo);
 	}
 
-	/**
-	 * 处理设备工作剩余时间
-	 * @param devStatusResp
-	 * @param devStateInfo
-	 */
-	private void processDevWorkingRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
-		// 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
-		devStatusResp.setReamin(devStatusResp.getReamin() + 2);
-		new Thread(() -> {
-			boolean needUpdate = true;
-			int remainTime = devStatusResp.getReamin() - 1;
-			for (int i = remainTime; i >= 0; i--) {
-				try {
-					DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
-					if (ValidateUtils.isNotEmpty(tempDevStatusResp) && ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
-						needUpdate = false;
-						break;
-					}
-					devStatusResp.setReamin(i);
-					this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					log.error("更新设备工作剩余时间失败！", e);
-				}
-			}
-			if (!needUpdate) {
-				devStateInfo.setReamin(0);
-				this.update(devStateInfo);
-			}
-		}).start();
-	}
 
 	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp) {
-        DeviceStateInfoEntity devStateInfo = this.convert2DevStatusInfo(devStatusReportResp);
+        DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(devStatusReportResp);
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
 //		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
 		devStateInfo.setLastConnTime(DateUtils.currentDate());
-		return devStateInfo;
-	}
-
-	public DeviceStateInfoEntity convert2DevStatusInfo(DevStatusReportResp devStatusReportResp) {
-		DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
-		devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
-		devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
-//		devStateInfo.setDeviceStateInfo("");
-		devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
-		devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
-		devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());
-		devStateInfo.setWarm(devStatusReportResp.getMsg().getWarmstatus());
-		devStateInfo.setDensity(devStatusReportResp.getMsg().getTaststatus());
-		devStateInfo.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
-		devStateInfo.setMakeDura(devStatusReportResp.getMsg().getSoak());
-		devStateInfo.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
-		devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
-		devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
-		devStateInfo.setWork(devStatusReportResp.getMsg().getWorkstatus());
 		return devStateInfo;
 	}
 
@@ -225,11 +175,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		deviceState.setTea(devStatusResp.getTea());
 		deviceState.setWater(devStatusResp.getWater());
 		deviceState.setWork(devStatusResp.getWork());
-		if (ValidateUtils.isNotEmpty(devStatusResp.getReamin()) && devStatusResp.getReamin() > 0) {
-			this.processDevWorkingRemainTime(devStatusResp, deviceState);
-		} else {
-			this.update(deviceState);
-		}
+		this.update(deviceState);
 		log.error("更新设备[{}]状态信息成功！新设备ID = {}", deviceInfo.getDeviceId(), deviceInfo.getNewDeviceId());
 	}
 
@@ -240,13 +186,10 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	private void save2Redis(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
-		DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusInfo(devStatusReportResp, devStateInfo);
+		DevStatusRespDTO devStatusResp = CommonUtils.convert2DevStatusDTO(devStatusReportResp, devStateInfo);
 		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
 //		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
 		this.redisUtils.set(devStateInfo.getNewDeviceId(), devStatusResp);
-		if (devStatusResp.getReamin() > 0) {
-			this.processDevWorkingRemainTime(devStatusResp, devStateInfo);
-		}
 	}
 
 	@Override

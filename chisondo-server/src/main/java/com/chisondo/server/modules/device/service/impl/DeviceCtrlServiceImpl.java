@@ -116,12 +116,74 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 					req.addAttr(Keys.DEV_REQ_2, devHttpReq2);
                     CommonUtils.debugLog(log, "调用 http 保温控制响应：" + devHttpResp);
                 }*/
+                // 需要倒计时处理
+				String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+				this.processDevWorkingRemainTime(devHttpResp, deviceId);
 				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 			} else {
 				// 设备接口服务返回失败
 				return CommonResp.error(devHttpResp.getRetn(), devHttpResp.getDesc());
 			}
 		}
+	}
+
+	/**
+	 * 处理设备工作剩余时间
+	 * @param deviceHttpResp
+	 * @param deviceId
+	 */
+	private void processDevWorkingRemainTime(final DeviceHttpResp deviceHttpResp, String deviceId) {
+		if (ValidateUtils.isEmpty(deviceHttpResp.getMsg()) || ValidateUtils.isEmpty(deviceHttpResp.getMsg().getRemaintime())) {
+			return;
+		}
+		log.info("开始倒计时处理，设备ID = {}, remain = {}", deviceHttpResp.getDeviceID(), deviceHttpResp.getMsg().getRemaintime());
+		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
+		devStatusRespDTO.setTemp(0);
+		devStatusRespDTO.setWarm(0);
+		devStatusRespDTO.setDensity(0);
+		devStatusRespDTO.setWaterlv(0);
+		devStatusRespDTO.setMakeDura(0);
+		devStatusRespDTO.setReamin(0);
+		devStatusRespDTO.setTea(0);
+		devStatusRespDTO.setWater(0);
+		devStatusRespDTO.setWork(0);
+		devStatusRespDTO.setMakeType(0);
+		devStatusRespDTO.setTeaSortId(0);
+		devStatusRespDTO.setTeaSortName("");
+		devStatusRespDTO.setChapuId(0);
+		devStatusRespDTO.setChapuName("");
+		devStatusRespDTO.setChapuImage("");
+		devStatusRespDTO.setChapuMakeTimes(0);
+		devStatusRespDTO.setIndex(0);
+		devStatusRespDTO.setReservLeftTime(0);
+		devStatusRespDTO.setUseNum(0);
+		devStatusRespDTO.setDeviceId("");
+
+		// 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
+		devStatusRespDTO.setReamin(deviceHttpResp.getMsg().getRemaintime() + 2);
+		DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(deviceHttpResp, deviceId);
+		new Thread(() -> {
+			boolean needUpdate = true;
+			int remainTime = deviceHttpResp.getMsg().getRemaintime() - 1;
+			try {
+				for (int i = remainTime; i >= 0; i--) {
+						DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
+						if (ValidateUtils.isNotEmpty(tempDevStatusResp) && ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
+							needUpdate = false;
+							break;
+						}
+						tempDevStatusResp.setReamin(i);
+						this.redisUtils.set(tempDevStatusResp.getDeviceId(), tempDevStatusResp);
+						Thread.sleep(1000);
+				}
+			} catch (InterruptedException e) {
+				log.error("更新设备工作剩余时间失败！", e);
+			}
+			if (!needUpdate) {
+				devStateInfo.setReamin(0);
+			}
+			this.deviceStateInfoService.update(devStateInfo);
+		}).start();
 	}
 
     private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String newDeviceId) {

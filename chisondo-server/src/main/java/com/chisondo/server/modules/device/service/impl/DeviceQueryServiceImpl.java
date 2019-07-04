@@ -207,7 +207,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 			if (ValidateUtils.isEmpty(devStateInfo)) {
 				return CommonResp.error("设备状态信息不存在！");
 			}
-			devStatusResp = CommonUtils.convert2DevStatusInfo(devStateInfo);
+			devStatusResp = CommonUtils.convert2DevStatusDTO(devStateInfo);
 			return CommonResp.ok(devStatusResp);
 		}
 	}
