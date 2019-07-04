@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -96,7 +97,8 @@ public class RedisUtils {
         if (null != devStatusResp) {
             devStatusResp.setOnlineStatus(0);
             devStatusResp.setConnStatus(0);
-            // TODO 是否需要设置 remain 为 0？
+            devStatusResp.setOfflineTime(new Date());
+            devStatusResp.setReamin(0);
             this.set(deviceId, devStatusResp);
         }
     }

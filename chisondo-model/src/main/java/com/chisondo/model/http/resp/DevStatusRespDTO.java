@@ -1,6 +1,7 @@
 package com.chisondo.model.http.resp;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class DevStatusRespDTO implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -30,6 +31,11 @@ public class DevStatusRespDTO implements Serializable {
     private Integer useNum; // 使用次数
 
     private String deviceId;
+
+    /**
+     * 离线时间
+     */
+    private Date offlineTime;
 
     public Integer getConnStatus() {
         return connStatus;
@@ -213,5 +219,13 @@ public class DevStatusRespDTO implements Serializable {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public Date getOfflineTime() {
+        return offlineTime;
+    }
+
+    public void setOfflineTime(Date offlineTime) {
+        this.offlineTime = offlineTime;
     }
 }

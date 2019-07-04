@@ -39,6 +39,7 @@ public class DeviceStatusReportController extends AbstractController {
 	 * 从 redis 中更新设备状态
 	 */
 	@RequestMapping("/api/rest/updateDevStateFromRedis")
+	@Deprecated
 	public CommonResp updateDevStateFromRedis(@RequestBody Map<String, Object> params) {
 		String newDevId = params.get(Keys.DEVICE_ID).toString();
 		this.deviceStateInfoService.updateDevStateFromRedis(newDevId);

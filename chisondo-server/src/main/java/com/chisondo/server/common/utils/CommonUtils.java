@@ -170,6 +170,8 @@ public final class CommonUtils {
     public static DeviceStateInfoEntity convert2DevStatusEntity(DeviceHttpResp devStatusReportResp, String deviceId) {
         DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
         devStateInfo.setDeviceId(deviceId);
+        devStateInfo.setLastConnTime(DateUtils.currentDate()); // TODO 上次连接时间应该取上条记录的更新时间
+        devStateInfo.setUpdateTime(DateUtils.currentDate());
         devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
         devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
         devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());

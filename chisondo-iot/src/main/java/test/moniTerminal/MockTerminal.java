@@ -82,7 +82,7 @@ public class MockTerminal {
         msg.setTemperature(70);
         msg.setSoak(100);
         msg.setWaterlevel(150);
-        msg.setRemaintime("580");
+        msg.setRemaintime(580);
         msg.setErrorstatus(Constant.ErrorStatus.NORMAL);
         msg.setNowwarm(65);
         reportReq.setMsg(msg);

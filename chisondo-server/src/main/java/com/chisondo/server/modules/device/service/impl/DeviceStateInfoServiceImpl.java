@@ -154,6 +154,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	@Override
+	@Deprecated
 	public void updateDevStateFromRedis(String newDevId) {
 		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(newDevId);
 		if (ValidateUtils.isEmpty(deviceInfo)) {

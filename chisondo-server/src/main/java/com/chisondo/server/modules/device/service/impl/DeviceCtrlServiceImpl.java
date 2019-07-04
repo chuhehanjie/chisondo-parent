@@ -32,15 +32,19 @@ import com.chisondo.server.modules.user.service.UserBookService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.chisondo.server.modules.user.service.UserVipService;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 
@@ -133,60 +137,53 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	 * @param deviceId
 	 */
 	private void processDevWorkingRemainTime(final DeviceHttpResp deviceHttpResp, String deviceId) {
-		if (ValidateUtils.isEmpty(deviceHttpResp.getMsg()) || ValidateUtils.isEmpty(deviceHttpResp.getMsg().getRemaintime())) {
+		if (ValidateUtils.isEmpty(deviceHttpResp.getMsg())) {
+			log.error("设备[{}]MSG为空", deviceHttpResp.getDeviceID());
 			return;
 		}
-		log.info("开始倒计时处理，设备ID = {}, remain = {}", deviceHttpResp.getDeviceID(), deviceHttpResp.getMsg().getRemaintime());
-		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
-		devStatusRespDTO.setTemp(0);
-		devStatusRespDTO.setWarm(0);
-		devStatusRespDTO.setDensity(0);
-		devStatusRespDTO.setWaterlv(0);
-		devStatusRespDTO.setMakeDura(0);
-		devStatusRespDTO.setReamin(0);
-		devStatusRespDTO.setTea(0);
-		devStatusRespDTO.setWater(0);
-		devStatusRespDTO.setWork(0);
-		devStatusRespDTO.setMakeType(0);
-		devStatusRespDTO.setTeaSortId(0);
-		devStatusRespDTO.setTeaSortName("");
-		devStatusRespDTO.setChapuId(0);
-		devStatusRespDTO.setChapuName("");
-		devStatusRespDTO.setChapuImage("");
-		devStatusRespDTO.setChapuMakeTimes(0);
-		devStatusRespDTO.setIndex(0);
-		devStatusRespDTO.setReservLeftTime(0);
-		devStatusRespDTO.setUseNum(0);
-		devStatusRespDTO.setDeviceId("");
-
-		// 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
-		devStatusRespDTO.setReamin(deviceHttpResp.getMsg().getRemaintime() + 2);
 		DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(deviceHttpResp, deviceId);
-		new Thread(() -> {
-			boolean needUpdate = true;
-			int remainTime = deviceHttpResp.getMsg().getRemaintime() - 1;
-			try {
-				for (int i = remainTime; i >= 0; i--) {
-						DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
-						if (ValidateUtils.isNotEmpty(tempDevStatusResp) && ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
-							needUpdate = false;
-							break;
-						}
-						tempDevStatusResp.setReamin(i);
-						this.redisUtils.set(tempDevStatusResp.getDeviceId(), tempDevStatusResp);
-						Thread.sleep(1000);
-				}
-			} catch (InterruptedException e) {
-				log.error("更新设备工作剩余时间失败！", e);
-			}
-			if (!needUpdate) {
-				devStateInfo.setReamin(0);
-			}
+		if (ValidateUtils.isNotEmpty(deviceHttpResp.getMsg().getRemaintime()) && deviceHttpResp.getMsg().getRemaintime() > 0) {
+			this.asyncProcessWorkRemainTime(deviceHttpResp, devStateInfo);
+		} else {
 			this.deviceStateInfoService.update(devStateInfo);
-		}).start();
+		}
 	}
 
-    private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String newDeviceId) {
+	/**
+	 * 异步处理工作剩余时间
+	 * @param deviceHttpResp
+	 * @param devStateInfo
+	 */
+	private void asyncProcessWorkRemainTime(DeviceHttpResp deviceHttpResp, DeviceStateInfoEntity devStateInfo) {
+		log.info("开始倒计时处理，设备ID = {}, action = {}, remain = {}", deviceHttpResp.getDeviceID(), deviceHttpResp.getAction(), deviceHttpResp.getMsg().getRemaintime());
+		ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
+                new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
+		scheduledExecutorService.execute(() -> {
+            boolean needUpdate = true;
+            int remainTime = deviceHttpResp.getMsg().getRemaintime() - 1;
+            try {
+                for (int i = remainTime; i >= 0; i--) {
+                    DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
+                    if (ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
+                        needUpdate = false;
+                        break;
+                    }
+                    tempDevStatusResp.setReamin(i);
+                    devStateInfo.setReamin(i);
+                    this.redisUtils.set(deviceHttpResp.getDeviceID(), tempDevStatusResp);
+                    Thread.sleep(990);
+                }
+            } catch (InterruptedException e) {
+                log.error("更新设备工作剩余时间失败！", e);
+            }
+            if (!needUpdate) {
+                devStateInfo.setReamin(0);
+            }
+            this.deviceStateInfoService.update(devStateInfo);
+        });
+	}
+
+	private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String newDeviceId) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setMsg(new DevParamMsg(startOrReserveTeaReq.getTemperature(), startOrReserveTeaReq.getSoak(), startOrReserveTeaReq.getWaterlevel()));
@@ -335,6 +332,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			req.addAttr(Keys.DEV_REQ_2, devHttpReq2);
 			log.info("调用设置洗茶参数 HTTP 服务响应：{}", devHttpResp);
 		}
+		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+		this.processDevWorkingRemainTime(devHttpResp, deviceId);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
@@ -365,7 +364,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			req.addAttr(Keys.DEV_REQ_2, devHttpReq2);
 			log.info("调用设置烧水参数 HTTP 服务响应：{}", devHttpResp);
 		}
-
+		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
+		this.processDevWorkingRemainTime(devHttpResp, deviceId);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
@@ -385,6 +385,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用停止沏茶/洗茶/烧水 HTTP 服务响应：{}", devHttpResp);
 		if (devHttpResp.isOK()) {
+			this.processDevWorkingRemainTime(devHttpResp, deviceId);
 			// 更新用户泡茶表状态
 			UserMakeTeaEntity userMakeTea = userMakeTeaList.get(0);
 			userMakeTea.setStatus(Constant.UserMakeTeaStatus.CANCELED);
@@ -412,11 +413,24 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
 		AppChapuParaEntity teaSpectrumParam = (AppChapuParaEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_PARAM_INFO);
-		DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		/*DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setMsg(new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater()));
-		DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.makeTea(devHttpReq);*/
+		/**
+		 * 茶谱沏茶，不用现在的发沏茶指令方式了，用这个设置内置茶谱的接口， index传1000 就表示执行这个茶谱沏茶，不是更改位置茶谱
+		 * update by dz 20190704
+		 */
+		SetDevChapuParamHttpReq devHttpReq = new SetDevChapuParamHttpReq();
+		devHttpReq.setDeviceID(newDeviceId);
+		devHttpReq.setIndex(1000); // index 固定传 1000
+		devHttpReq.setMaketimes(teaSpectrum.getMakeTimes());
+		List<DevParamMsg> teaparams = ImmutableList.of(new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater()));
+		devHttpReq.setTeaparm(teaparams);
+		devHttpReq.setChapuid(teaSpectrum.getChapuId());
+		devHttpReq.setChapuname(teaSpectrum.getName());
+		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevChapuParam(devHttpReq);
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用使用茶谱沏茶 HTTP 服务响应：{}", devHttpResp);
 		if (devHttpResp.isOK()) {

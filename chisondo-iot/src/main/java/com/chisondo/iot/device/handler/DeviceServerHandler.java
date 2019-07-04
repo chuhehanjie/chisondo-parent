@@ -115,10 +115,11 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         // 接收设备发送的响应，并将响应发送到 http server
         DeviceHttpResp resp = (DeviceHttpResp) msg;
         log.debug("设备控制响应信息 = {}", JSONObject.toJSONString(resp));
-        this.sendTCPResp2Http(resp, resp.getDeviceID());
         // 同时更新设备状态
         this.updateDevState2Redis(resp);
-        this.httpUtils.sendDevState2Http(resp.getDeviceID(), false);
+        // TODO 不需要发送设备状态到 HTTP update 20190705
+        //this.httpUtils.sendDevState2Http(resp.getDeviceID(), false);
+        this.sendTCPResp2Http(resp, resp.getDeviceID());
     }
 
 
@@ -150,7 +151,8 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             if (null != devMsg.getSoak()) {
                 devStatusResp.setMakeDura(devMsg.getSoak());
             }
-            devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()));
+            // 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
+            devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()) + 2);
             devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
             devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
             if (null != devMsg.getWorkstatus()) {
