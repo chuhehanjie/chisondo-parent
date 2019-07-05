@@ -473,7 +473,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		deviceStateInfo.setChapuName(teaSpectrum.getName());
 		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
 		deviceStateInfo.setIndex(useMakeTea.getMakeIndex());
-		deviceStateInfo.setChapuImage(teaSpectrum.getImage());
+		deviceStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getUseTimes());
 		this.deviceStateInfoService.update(deviceStateInfo);
 	}
