@@ -466,6 +466,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
             AppChapuMineEntity myTeaSpectrum = myTeaSpectrumList.get(0);
             myTeaSpectrum.setLastUseTime(myTeaSpectrum.getOperTime());
             myTeaSpectrum.setOperTime(DateUtils.currentDate());
+            myTeaSpectrum.setChapuId(null);
             myTeaSpectrum.setUseTimes(ValidateUtils.isEmpty(myTeaSpectrum.getUseTimes()) ? 1 : myTeaSpectrum.getUseTimes() + 1);
             this.appChapuMineService.update(myTeaSpectrum);
         }
