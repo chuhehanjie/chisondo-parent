@@ -148,8 +148,8 @@ public final class CommonUtils {
         return devStatusResp;
     }
 
-    public static DeviceStateInfoEntity convert2DevStatusEntity(DevStatusReportResp devStatusReportResp) {
-        DeviceStateInfoEntity devStateInfo = new DeviceStateInfoEntity();
+    public static DeviceStateInfoEntity convert2DevStatusEntity(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity existedDevState) {
+        DeviceStateInfoEntity devStateInfo = ValidateUtils.isNotEmpty(existedDevState) ? existedDevState : new DeviceStateInfoEntity();
         devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
         devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
 //		devStateInfo.setDeviceStateInfo("");

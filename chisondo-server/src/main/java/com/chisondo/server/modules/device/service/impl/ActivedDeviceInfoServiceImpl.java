@@ -1,9 +1,6 @@
 package com.chisondo.server.modules.device.service.impl;
 
-import com.chisondo.server.common.utils.CommonUtils;
-import com.chisondo.server.common.utils.Constant;
-import com.chisondo.server.common.utils.Keys;
-import com.chisondo.server.common.utils.ValidateUtils;
+import com.chisondo.server.common.utils.*;
 import com.chisondo.server.modules.device.dto.req.SetDevNameReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevPwdReqDTO;
 import com.chisondo.server.modules.device.dto.req.SetDevSoundReqDTO;
@@ -26,6 +23,9 @@ import javax.validation.Valid;
 public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 	@Autowired
 	private ActivedDeviceInfoDao deviceInfoDao;
+
+	@Autowired
+	private RedisUtils redisUtils;
 	
 	@Override
 	public ActivedDeviceInfoEntity queryObject(String deviceId){
@@ -98,6 +98,14 @@ public class ActivedDeviceInfoServiceImpl implements ActivedDeviceInfoService {
 
 	@Override
 	public ActivedDeviceInfoEntity getNewDeviceByNewDevId(String newDevId) {
-		return this.deviceInfoDao.queryByNewDevId(newDevId);
+		ActivedDeviceInfoEntity deviceInfo = this.redisUtils.get(Keys.PREFIX_NEW_DEVICE + newDevId, ActivedDeviceInfoEntity.class);
+		if (ValidateUtils.isEmpty(deviceInfo)) {
+			deviceInfo = this.deviceInfoDao.queryByNewDevId(newDevId);
+			if (ValidateUtils.isNotEmpty(deviceInfo)) {
+				// 将设备信息放入 redis 缓存 100 秒
+				this.redisUtils.set(Keys.PREFIX_NEW_DEVICE + newDevId, deviceInfo, 500);
+			}
+		}
+		return deviceInfo;
 	}
 }

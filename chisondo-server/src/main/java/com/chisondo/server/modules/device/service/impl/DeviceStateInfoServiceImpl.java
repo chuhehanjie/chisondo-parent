@@ -116,10 +116,10 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 
 	@Override
 	public void updateDevStatus(DevStatusReportResp devStatusReportResp, String newDeviceId) {
-		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportResp);
-		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		//  根据设备ID查询设备状态信息是否存在
-		DeviceStateInfoEntity existedDevState = this.queryObject(devStateInfo.getDeviceId());
+		DeviceStateInfoEntity existedDevState = this.queryObject(devStatusReportResp.getDbDeviceId());
+		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportResp, existedDevState);
+		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		if (ValidateUtils.isEmpty(existedDevState)) {
 			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
 			devStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());
@@ -139,8 +139,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 
-	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp) {
-        DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(devStatusReportResp);
+	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity existedDevState) {
+        DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(devStatusReportResp, existedDevState);
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
 //		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
