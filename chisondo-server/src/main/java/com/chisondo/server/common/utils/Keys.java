@@ -78,4 +78,5 @@ public class Keys {
     public static final String DEV_REQ = "devReq";
     public static final String DEV_REQ_2 = "devReq2";
 
+    public static final String PREFIX_NEW_DEVICE = "NEW_DEVICE_";
 }

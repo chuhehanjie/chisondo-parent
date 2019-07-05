@@ -453,10 +453,29 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			useMakeTea.setMakeType(Constant.MakeTeaType4Db.TEA_SPECTRUM);
 			this.userMakeTeaService.save(useMakeTea);
 			this.updateChapuInfo2Redis(teaSpectrum, newDeviceId, useMakeTea);
+			this.updateDevChapuStatus(useTeaSpectrumReq, teaSpectrum, useMakeTea);
 			this.updateMyTeaSpectrum(useMakeTea);
 
 		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	/**
+	 * 更新设备茶谱状态
+	 * @param useTeaSpectrumReq
+	 * @param teaSpectrum
+	 * @param useMakeTea
+	 */
+	private void updateDevChapuStatus(UseTeaSpectrumReqDTO useTeaSpectrumReq, AppChapuEntity teaSpectrum, UserMakeTeaEntity useMakeTea) {
+		DeviceStateInfoEntity deviceStateInfo = this.deviceStateInfoService.queryObject(useTeaSpectrumReq.getDeviceId());
+		deviceStateInfo.setMakeType(useMakeTea.getMakeType());
+		deviceStateInfo.setChapuId(teaSpectrum.getChapuId());
+		deviceStateInfo.setChapuName(teaSpectrum.getName());
+		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+		deviceStateInfo.setIndex(useMakeTea.getMakeIndex());
+		deviceStateInfo.setChapuImage(teaSpectrum.getImage());
+		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getUseTimes());
+		this.deviceStateInfoService.update(deviceStateInfo);
 	}
 
 	private void updateMyTeaSpectrum(UserMakeTeaEntity useMakeTea) {

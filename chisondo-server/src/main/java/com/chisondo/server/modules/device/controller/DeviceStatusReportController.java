@@ -61,6 +61,11 @@ public class DeviceStatusReportController extends AbstractController {
 		return CommonResp.ok();
 	}
 
+	/**
+	 * 设备上报发送的 HTTP 请求
+	 * @param devStatusReportResp
+	 * @return
+	 */
 	@RequestMapping("/api/rest/currentState")
 	public CommonResp updateDevStatus(@RequestBody DevStatusReportResp devStatusReportResp) {
 		ActivedDeviceInfoEntity deviceInfo = this.deviceInfoService.getNewDeviceByNewDevId(devStatusReportResp.getDeviceID());
