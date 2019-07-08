@@ -30,4 +30,6 @@ public interface DeviceHttpService {
     DeviceHttpResp lockOrUnlockDev(LockOrUnlockDevHttpReq req);
 
     DeviceHttpResp setDevSoundOrNetwork(SetDevOtherParamHttpReq req);
+
+    DeviceHttpResp devUpgrade(DevUpgradeHttpReq req);
 }

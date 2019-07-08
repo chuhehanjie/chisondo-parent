@@ -1,4 +1,5 @@
 package com.chisondo.server.modules.device.service.impl;
+import com.chisondo.model.http.req.DevUpgradeMsg;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.constant.DevConstant;
@@ -186,6 +187,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String newDeviceId) {
 		DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(newDeviceId);
+		devHttpReq.setTeaTypeId(startOrReserveTeaReq.getTeaSortId());
+		devHttpReq.setTeaTypeName(startOrReserveTeaReq.getTeaSortName());
 		devHttpReq.setMsg(new DevParamMsg(startOrReserveTeaReq.getTemperature(), startOrReserveTeaReq.getSoak(), startOrReserveTeaReq.getWaterlevel()));
 		return devHttpReq;
 	}
@@ -728,5 +731,22 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用锁定或解锁设备 HTTP 服务响应：{}", devHttpResp);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	@Override
+	public CommonResp devUpgrade(CommonReq req) {
+		DevUpgradeReqDTO devUpgradeReqDTO = (DevUpgradeReqDTO) req.getAttrByKey(Keys.REQ);
+		DevUpgradeHttpReq devHttpReq = this.buildDevUpgradeHttpReq(devUpgradeReqDTO);
+		DeviceHttpResp devHttpResp = this.deviceHttpService.devUpgrade(devHttpReq);
+		req.addAttr(Keys.DEV_REQ, devHttpReq);
+		log.info("调用设备升级 HTTP 服务响应：{}", devHttpResp);
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+	}
+
+	private DevUpgradeHttpReq buildDevUpgradeHttpReq(DevUpgradeReqDTO devUpgradeReqDTO) {
+		DevUpgradeHttpReq devHttpReq = new DevUpgradeHttpReq();
+		devHttpReq.setDeviceID(devUpgradeReqDTO.getDeviceId());
+		devHttpReq.setMsg(new DevUpgradeMsg(devUpgradeReqDTO.getCompanyCode(), devUpgradeReqDTO.getVersion(), devUpgradeReqDTO.getStandyServer()));
+		return devHttpReq;
 	}
 }

@@ -56,7 +56,7 @@ public class DeviceServerDecoder extends StringDecoder {
                 DevSettingHttpResp devSettingResp = JSONObject.parseObject(json, DevSettingHttpResp.class);
                 out.add(devSettingResp);
             } else if (this.isStartWorkResp(json) || this.isStopWorkResp(json) || this.isLockOrUnlockDevResp(json) || this.isKeepWarmCtrlResp(json)
-                    || this.isSetChapuParamResp(json) || this.isSetOtherParamResp(json) || this.isSetParamResp(json) || this.isErrorResp(json)) {
+                    || this.isSetChapuParamResp(json) || this.isSetOtherParamResp(json) || this.isDevUpgradeResp(json) || this.isSetParamResp(json) || this.isErrorResp(json)) {
                 DeviceHttpResp deviceResp = JSONObject.parseObject(json, DeviceHttpResp.class);
                 out.add(deviceResp);
             } else {
@@ -204,6 +204,15 @@ public class DeviceServerDecoder extends StringDecoder {
      */
     private boolean isLockOrUnlockDevResp(String json) {
         return json.contains("\"devicelockok\"");
+    }
+
+    /**
+     * 是否固件升级响应
+     * @param json
+     * @return
+     */
+    private boolean isDevUpgradeResp(String json) {
+        return json.contains("\"OTAparmok\"");
     }
 
     /**

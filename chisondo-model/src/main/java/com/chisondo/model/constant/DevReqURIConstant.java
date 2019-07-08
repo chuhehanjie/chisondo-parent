@@ -20,4 +20,6 @@ public interface DevReqURIConstant {
     String SET_DEV_OTHER_PARAM = "setDevOtherParam";
 
     String SET_DEV_PARAM = "setDevParam";
+
+    String DEV_UPGRADE = "devUpgrade";
 }

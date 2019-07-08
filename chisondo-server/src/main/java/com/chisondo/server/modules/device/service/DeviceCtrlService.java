@@ -63,4 +63,6 @@ public interface DeviceCtrlService {
     void updateMakeType4Dev(int makeType, String deviceId);
 
     CommonResp lockOrUnlockDev(CommonReq req);
+
+    CommonResp devUpgrade(CommonReq req);
 }

@@ -34,6 +34,7 @@ public final class IOTUtils {
         reqUriMap.put(DevReqURIConstant.STOP_WORK, "停止沏茶/洗茶/烧水/保温");
         reqUriMap.put(DevReqURIConstant.LOCK_OR_UNLOCK_DEV, "锁定或解锁设备");
         reqUriMap.put(DevReqURIConstant.SET_DEV_PARAM, "设置洗茶/烧水参数");
+        reqUriMap.put(DevReqURIConstant.DEV_UPGRADE, "固件升级");
     }
 
     public static Map<String, String> getReqUriMap() {

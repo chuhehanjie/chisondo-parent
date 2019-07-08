@@ -274,4 +274,16 @@ public class DeviceCtrlController extends AbstractController {
 		}
 		return this.deviceCtrlService.lockOrUnlockDev(req);
 	}
+
+	/**
+     * 设备升级
+     * @param req
+     * @return
+     */
+	@RequestMapping("/api/rest/updatecode")
+	@DevOperateLog("设备升级")
+	@ParamValidator({DevExistenceValidator.class, DevUpgradeValidator.class})
+	public CommonResp devUpgrade(@RequestBody CommonReq req) {
+		return this.deviceCtrlService.devUpgrade(req);
+	}
 }

@@ -200,4 +200,15 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
         return this.deviceControl(this.http2DevURL + DevReqURIConstant.SET_DEV_OTHER_PARAM, req, req.getDeviceID());
     }
 
+    /**
+     * 设置设备声音或网络
+     * @param req
+     * @return
+     */
+    @Override
+    public DeviceHttpResp devUpgrade(DevUpgradeHttpReq req) {
+        req.setAction("OTAparm");
+        return this.deviceControl(this.http2DevURL + DevReqURIConstant.DEV_UPGRADE, req, req.getDeviceID());
+    }
+
 }

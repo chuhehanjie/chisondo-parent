@@ -20,6 +20,12 @@ public class DevSettingRespDTO implements Serializable {
 
     private List<TeaSpectrumDTO> chapuInfo; // 茶谱信息
 
+    private String version; // 当前版本号
+    private String newversion; // 新版本号
+    private String companyCode; // 公司编号
+    private String standyServer; // 服务器地址
+
+
     public DevSettingRespDTO() {
     }
 
@@ -82,5 +88,37 @@ public class DevSettingRespDTO implements Serializable {
 
     public void setWashTea(DevSettingMsgDTO washTea) {
         this.washTea = washTea;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getNewversion() {
+        return newversion;
+    }
+
+    public void setNewversion(String newversion) {
+        this.newversion = newversion;
+    }
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
+    }
+
+    public String getStandyServer() {
+        return standyServer;
+    }
+
+    public void setStandyServer(String standyServer) {
+        this.standyServer = standyServer;
     }
 }

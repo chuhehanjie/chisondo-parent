@@ -10,6 +10,8 @@ public class DeviceHttpReq implements Serializable {
     private String action;
     private int actionflag;
     private String deviceID;
+    private Integer teaTypeId; // 茶类ID
+    private String teaTypeName; // 茶类名称
     private DevParamMsg msg;
 
     public DeviceHttpReq() {
@@ -49,5 +51,21 @@ public class DeviceHttpReq implements Serializable {
 
     public void setMsg(DevParamMsg msg) {
         this.msg = msg;
+    }
+
+    public Integer getTeaTypeId() {
+        return teaTypeId;
+    }
+
+    public void setTeaTypeId(Integer teaTypeId) {
+        this.teaTypeId = teaTypeId;
+    }
+
+    public String getTeaTypeName() {
+        return teaTypeName;
+    }
+
+    public void setTeaTypeName(String teaTypeName) {
+        this.teaTypeName = teaTypeName;
     }
 }
