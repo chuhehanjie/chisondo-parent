@@ -31,6 +31,7 @@
         <result property="makeType" column="make_type"/>
         <result property="teaSortId" column="tea_sort_id"/>
         <result property="teaSortName" column="tea_sort_name"/>
+        <result property="chapuId" column="chapu_id"/>
         <result property="chapuName" column="chapu_name"/>
         <result property="chapuImage" column="chapu_image"/>
         <result property="chapuMakeTimes" column="chapu_make_times"/>

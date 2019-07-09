@@ -143,8 +143,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
         DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(devStatusReportResp, existedDevState);
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
 //		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
+		devStateInfo.setLastConnTime(devStateInfo.getUpdateTime());
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
-		devStateInfo.setLastConnTime(DateUtils.currentDate());
 		return devStateInfo;
 	}
 
