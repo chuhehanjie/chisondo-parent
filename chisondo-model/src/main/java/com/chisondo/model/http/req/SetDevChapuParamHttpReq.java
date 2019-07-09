@@ -20,6 +20,7 @@ public class SetDevChapuParamHttpReq implements Serializable {
     private Integer chapuid; // 茶谱ID
     private String chapuname; // 茶谱名称
     private Integer maketimes; // 总泡数
+    private Integer executeIndex; // 执行第几泡
     private List<DevParamMsg> teaparm; //	每一泡参数
 
     private String deviceID;
@@ -78,5 +79,13 @@ public class SetDevChapuParamHttpReq implements Serializable {
 
     public void setDeviceID(String deviceID) {
         this.deviceID = deviceID;
+    }
+
+    public Integer getExecuteIndex() {
+        return executeIndex;
+    }
+
+    public void setExecuteIndex(Integer executeIndex) {
+        this.executeIndex = executeIndex;
     }
 }

@@ -39,14 +39,15 @@ public class UseTeaSpectrumValidator implements BusiValidator {
             throw new CommonException("茶谱信息不存在");
         }
         int index = (ValidateUtils.isEmpty(useTeaSpectrumReq.getIndex()) || 0 == useTeaSpectrumReq.getIndex()) ? 1 : useTeaSpectrumReq.getIndex();
-        List<AppChapuParaEntity> teaSpectrumParams = this.appChapuParaService.queryList(ImmutableMap.of(Keys.CHAPU_ID, useTeaSpectrumReq.getChapuId(), "number", index));
+        useTeaSpectrumReq.setIndex(index);
+        List<AppChapuParaEntity> teaSpectrumParams = this.appChapuParaService.queryList(ImmutableMap.of(Keys.CHAPU_ID, useTeaSpectrumReq.getChapuId()));
         if (ValidateUtils.isEmptyCollection(teaSpectrumParams)) {
             throw new CommonException("茶谱参数不存在");
         }
         useTeaSpectrumReq.setDeviceId((String) req.getAttrByKey(Keys.DEVICE_ID));
         req.addAttr(Keys.REQ, useTeaSpectrumReq);
         req.addAttr(Keys.TEA_SPECTRUM_INFO, teaSpectrum);
-        req.addAttr(Keys.TEA_SPECTRUM_PARAM_INFO, teaSpectrumParams.get(0));
+        req.addAttr(Keys.TEA_SPECTRUM_PARAMS, teaSpectrumParams);
         // 使用茶谱泡茶，应该校验茶谱存在不存在，而不是校验用户沏茶记录是否存在
         /*UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
         // 根据设备ID和茶谱ID获取最近的用户沏茶记录

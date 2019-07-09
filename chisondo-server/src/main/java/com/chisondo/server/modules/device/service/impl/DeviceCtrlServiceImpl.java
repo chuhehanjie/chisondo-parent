@@ -33,7 +33,6 @@ import com.chisondo.server.modules.user.service.UserBookService;
 import com.chisondo.server.modules.user.service.UserDeviceService;
 import com.chisondo.server.modules.user.service.UserMakeTeaService;
 import com.chisondo.server.modules.user.service.UserVipService;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -143,11 +142,15 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			return;
 		}
 		DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(deviceHttpResp, deviceId);
-		if (ValidateUtils.isNotEmpty(deviceHttpResp.getMsg().getRemaintime()) && deviceHttpResp.getMsg().getRemaintime() > 0) {
+		if (this.hasWorkingRemainTime(deviceHttpResp)) {
 			this.asyncProcessWorkRemainTime(deviceHttpResp, devStateInfo);
 		} else {
 			this.deviceStateInfoService.update(devStateInfo);
 		}
+	}
+
+	private boolean hasWorkingRemainTime(DeviceHttpResp deviceHttpResp) {
+		return ValidateUtils.isNotEmpty(deviceHttpResp.getMsg().getRemaintime()) && deviceHttpResp.getMsg().getRemaintime() > 0;
 	}
 
 	/**
@@ -415,7 +418,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		UseTeaSpectrumReqDTO useTeaSpectrumReq = (UseTeaSpectrumReqDTO) req.getAttrByKey(Keys.REQ);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 		AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
-		AppChapuParaEntity teaSpectrumParam = (AppChapuParaEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_PARAM_INFO);
+		List<AppChapuParaEntity> teaSpectrumParams = (List<AppChapuParaEntity>) req.getAttrByKey(Keys.TEA_SPECTRUM_PARAMS);
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
 		/*DeviceHttpReq devHttpReq = new DeviceHttpReq();
 		devHttpReq.setDeviceID(newDeviceId);
@@ -428,15 +431,18 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		SetDevChapuParamHttpReq devHttpReq = new SetDevChapuParamHttpReq();
 		devHttpReq.setDeviceID(newDeviceId);
 		devHttpReq.setIndex(1000); // index 固定传 1000
+		devHttpReq.setExecuteIndex(useTeaSpectrumReq.getIndex()); // 实际要执行的泡数
 		devHttpReq.setMaketimes(teaSpectrum.getMakeTimes());
-		List<DevParamMsg> teaparams = ImmutableList.of(new DevParamMsg(teaSpectrumParam.getTemp(), teaSpectrumParam.getDura(), teaSpectrumParam.getWater()));
-		devHttpReq.setTeaparm(teaparams);
 		devHttpReq.setChapuid(teaSpectrum.getChapuId());
 		devHttpReq.setChapuname(teaSpectrum.getName());
+		List<DevParamMsg> teaparams = teaSpectrumParams.stream().map(item -> new DevParamMsg(item.getTemp(), item.getDura(), item.getWater())).collect(Collectors.toList());
+		devHttpReq.setTeaparm(teaparams);
+
 		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevChapuParam(devHttpReq);
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用使用茶谱沏茶 HTTP 服务响应：{}", devHttpResp);
 		if (devHttpResp.isOK()) {
+			AppChapuParaEntity teaSpectrumParam = teaSpectrumParams.stream().filter(item -> ValidateUtils.equals(useTeaSpectrumReq.getIndex(), item.getNumber())).findFirst().get();
 			// 沏茶成功
 			UserMakeTeaEntity useMakeTea = new UserMakeTeaEntity();
 			useMakeTea.setTeamanId(user.getMemberId().toString());
@@ -456,8 +462,11 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			useMakeTea.setMakeType(Constant.MakeTeaType4Db.TEA_SPECTRUM);
 			this.userMakeTeaService.save(useMakeTea);
 			this.updateChapuInfo2Redis(teaSpectrum, newDeviceId, useMakeTea);
-			this.updateDevChapuStatus(useTeaSpectrumReq, teaSpectrum, useMakeTea);
+			DeviceStateInfoEntity devStateInfo = this.updateDevChapuStatus(useTeaSpectrumReq, teaSpectrum, useMakeTea);
 			this.updateMyTeaSpectrum(useMakeTea);
+			if (this.hasWorkingRemainTime(devHttpResp)) {
+				this.asyncProcessWorkRemainTime(devHttpResp, devStateInfo);
+			}
 
 		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -469,7 +478,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	 * @param teaSpectrum
 	 * @param useMakeTea
 	 */
-	private void updateDevChapuStatus(UseTeaSpectrumReqDTO useTeaSpectrumReq, AppChapuEntity teaSpectrum, UserMakeTeaEntity useMakeTea) {
+	private DeviceStateInfoEntity updateDevChapuStatus(UseTeaSpectrumReqDTO useTeaSpectrumReq, AppChapuEntity teaSpectrum, UserMakeTeaEntity useMakeTea) {
 		DeviceStateInfoEntity deviceStateInfo = this.deviceStateInfoService.queryObject(useTeaSpectrumReq.getDeviceId());
 		deviceStateInfo.setMakeType(useMakeTea.getMakeType());
 		deviceStateInfo.setChapuId(teaSpectrum.getChapuId());
@@ -479,6 +488,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		deviceStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getUseTimes());
 		this.deviceStateInfoService.update(deviceStateInfo);
+		return deviceStateInfo;
 	}
 
 	private void updateMyTeaSpectrum(UserMakeTeaEntity useMakeTea) {
