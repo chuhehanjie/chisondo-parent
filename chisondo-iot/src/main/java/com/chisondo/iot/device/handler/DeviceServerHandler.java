@@ -139,6 +139,12 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             if (null != devMsg.getTemperature()) {
                 devStatusResp.setTemp(devMsg.getTemperature());
             }
+            if (null != devMsg.getChapuId()) {
+                devStatusResp.setChapuId(devMsg.getChapuId());
+            }
+            if (null != devMsg.getStep()) {
+                devStatusResp.setIndex(devMsg.getStep());
+            }
             if (null != devMsg.getWarmstatus()) {
                 devStatusResp.setWarm(devMsg.getWarmstatus());
             }

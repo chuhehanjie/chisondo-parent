@@ -264,8 +264,9 @@
 			`make_type`, 
 			`tea_sort_id`, 
 			`tea_sort_name`, 
-			`chapu_name`, 
-			`chapu_image`, 
+			`chapu_id`,
+			`chapu_name`,
+			`chapu_image`,
 			`chapu_make_times`, 
 			`index`
 		)
@@ -297,8 +298,9 @@
 			#{makeType}, 
 			#{teaSortId}, 
 			#{teaSortName}, 
-			#{chapuName}, 
-			#{chapuImage}, 
+			#{chapuId},
+			#{chapuName},
+			#{chapuImage},
 			#{chapuMakeTimes}, 
 			#{index}
 		)
@@ -332,6 +334,7 @@
 			<if test="makeType != null">`make_type` = #{makeType}, </if>
 			<if test="teaSortId != null">`tea_sort_id` = #{teaSortId}, </if>
 			<if test="teaSortName != null">`tea_sort_name` = #{teaSortName}, </if>
+			<if test="chapuId != null">`chapu_id` = #{chapuId}, </if>
 			<if test="chapuName != null">`chapu_name` = #{chapuName}, </if>
 			<if test="chapuImage != null">`chapu_image` = #{chapuImage}, </if>
 			<if test="chapuMakeTimes != null">`chapu_make_times` = #{chapuMakeTimes}, </if>

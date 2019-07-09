@@ -49,6 +49,10 @@ public class DevStatusMsgResp implements Serializable {
      */
     private Integer nowwarm;
 
+    private Integer chapuId;
+
+    private Integer step;
+
     public Integer getWorkstatus() {
         return workstatus;
     }
@@ -119,5 +123,21 @@ public class DevStatusMsgResp implements Serializable {
 
     public void setNowwarm(Integer nowwarm) {
         this.nowwarm = nowwarm;
+    }
+
+    public Integer getChapuId() {
+        return chapuId;
+    }
+
+    public void setChapuId(Integer chapuId) {
+        this.chapuId = chapuId;
+    }
+
+    public Integer getStep() {
+        return step;
+    }
+
+    public void setStep(Integer step) {
+        this.step = step;
     }
 }

@@ -152,6 +152,12 @@ public final class CommonUtils {
         DeviceStateInfoEntity devStateInfo = ValidateUtils.isNotEmpty(existedDevState) ? existedDevState : new DeviceStateInfoEntity();
         devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
         devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
+        if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getChapuId())) {
+            devStateInfo.setChapuId(devStatusReportResp.getMsg().getChapuId());
+        }
+        if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getStep())) {
+            devStateInfo.setIndex(devStatusReportResp.getMsg().getStep());
+        }
 //		devStateInfo.setDeviceStateInfo("");
         devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
         devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
