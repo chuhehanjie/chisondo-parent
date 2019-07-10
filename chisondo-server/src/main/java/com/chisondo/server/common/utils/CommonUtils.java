@@ -99,6 +99,7 @@ public final class CommonUtils {
         return params;
     }
 
+    @Deprecated
     public static DevStatusRespDTO convert2DevStatusDTO(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
         DevStatusRespDTO devStatusResp = new DevStatusRespDTO();
         devStatusResp.setDeviceId(devStatusReportResp.getDeviceID());
@@ -146,31 +147,6 @@ public final class CommonUtils {
         devStatusResp.setOnlineStatus(devStateInfo.getOnlineState());
         devStatusResp.setConnStatus(devStateInfo.getConnectState());
         return devStatusResp;
-    }
-
-    public static DeviceStateInfoEntity convert2DevStatusEntity(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity existedDevState) {
-        DeviceStateInfoEntity devStateInfo = ValidateUtils.isNotEmpty(existedDevState) ? existedDevState : new DeviceStateInfoEntity();
-        devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
-        devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
-        if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getChapuId())) {
-            devStateInfo.setChapuId(devStatusReportResp.getMsg().getChapuId());
-        }
-        if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getStep())) {
-            devStateInfo.setIndex(devStatusReportResp.getMsg().getStep());
-        }
-//		devStateInfo.setDeviceStateInfo("");
-        devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
-        devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
-        devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());
-        devStateInfo.setWarm(devStatusReportResp.getMsg().getWarmstatus());
-        devStateInfo.setDensity(devStatusReportResp.getMsg().getTaststatus());
-        devStateInfo.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
-        devStateInfo.setMakeDura(devStatusReportResp.getMsg().getSoak());
-        devStateInfo.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
-        devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
-        devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
-        devStateInfo.setWork(devStatusReportResp.getMsg().getWorkstatus());
-        return devStateInfo;
     }
 
     public static DeviceStateInfoEntity convert2DevStatusEntity(DeviceHttpResp devStatusReportResp, String deviceId) {

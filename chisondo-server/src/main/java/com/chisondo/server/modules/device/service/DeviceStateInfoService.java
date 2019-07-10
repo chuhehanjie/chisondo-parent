@@ -32,7 +32,7 @@ public interface DeviceStateInfoService {
 
     void saveOrUpdate(DeviceBindReqDTO devBindReq);
 
-    void updateDevStatus(DevStatusReportResp devStatusReportResp, String newDeviceId);
+    void updateDevStatus(DevStatusReportResp devStatusReportResp);
 
     void setDevChapu2Finish(Map<String, Object> params);
 

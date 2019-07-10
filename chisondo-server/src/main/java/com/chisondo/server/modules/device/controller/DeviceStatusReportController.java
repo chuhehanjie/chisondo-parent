@@ -74,9 +74,8 @@ public class DeviceStatusReportController extends AbstractController {
 			ActivedDeviceInfoEntity newDevice = this.addNewDevice(devStatusReportResp);
 			this.addDeviceStateInfo(devStatusReportResp, newDevice);
 		} else {
-			String newDeviceId = devStatusReportResp.getDeviceID();
 			devStatusReportResp.setDbDeviceId(deviceInfo.getDeviceId());
-			this.deviceStateInfoService.updateDevStatus(devStatusReportResp, newDeviceId);
+			this.deviceStateInfoService.updateDevStatus(devStatusReportResp);
 		}
 		return CommonResp.ok();
 	}

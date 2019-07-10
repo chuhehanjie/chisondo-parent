@@ -116,7 +116,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         DeviceHttpResp resp = (DeviceHttpResp) msg;
         log.debug("设备控制响应信息 = {}", JSONObject.toJSONString(resp));
         // 同时更新设备状态
-        this.updateDevState2Redis(resp);
+        this.updateDevState2Redis(resp.getMsg(), resp.getDeviceID(), false);
         // TODO 不需要发送设备状态到 HTTP update 20190705
         //this.httpUtils.sendDevState2Http(resp.getDeviceID(), false);
         this.sendTCPResp2Http(resp, resp.getDeviceID());
@@ -126,16 +126,22 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
 
     /**
      * 更新设备状态到 redis
-     * @param resp
+     * @param devMsg
+     * @param deviceId
      */
-    private void updateDevState2Redis(DeviceHttpResp resp) {
-        DevStatusRespDTO devStatusResp = this.redisUtils.get(resp.getDeviceID(), DevStatusRespDTO.class);
+    private void updateDevState2Redis(DevStatusMsgResp devMsg, String deviceId, boolean newCreate) {
+        DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
         if (null == devStatusResp) {
-            log.error("设备[{}]状态信息在 redis 中不存在！", resp.getDeviceID());
-            return;
+            if (newCreate) {
+                devStatusResp = new DevStatusRespDTO();
+                devStatusResp.setDeviceId(deviceId);
+                devStatusResp.setOnlineStatus(1);
+            } else {
+                log.error("设备[{}]状态信息在 redis 中不存在！", deviceId);
+                return;
+            }
         }
-        if (null != resp.getMsg()) {
-            DeviceMsgResp devMsg = resp.getMsg();
+        if (null != devMsg) {
             if (null != devMsg.getTemperature()) {
                 devStatusResp.setTemp(devMsg.getTemperature());
             }
@@ -158,7 +164,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
                 devStatusResp.setMakeDura(devMsg.getSoak());
             }
             // 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
-            devStatusResp.setReamin(StringUtils.isEmpty(devMsg.getRemaintime()) ? null : Integer.valueOf(devMsg.getRemaintime()) + 2);
+            devStatusResp.setReamin(this.getWorkRemainTime(devMsg.getRemaintime()));
             devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
             devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
             if (null != devMsg.getWorkstatus()) {
@@ -166,6 +172,10 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             }
         }
         this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
+    }
+
+    private Integer getWorkRemainTime(Integer remainTime) {
+        return StringUtils.isEmpty(remainTime) ? null : (remainTime > 0 ? remainTime + 2 : 0);
     }
 
     private void sendTCPResp2Http(Object resp, String deviceId) {
@@ -231,8 +241,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         reportResp.setTcpValTime(new Date());
         // 设置连接设备的客户端IP
         reportResp.setClientIP(this.convertClientIP(deviceChannel.remoteAddress().toString()));
-        // TODO 更新 redis 中设备状态
-        //this.redisClient.opsForValue().set(reportResp.getDeviceID(), JSONObject.toJSONString(reportResp), 60*20, TimeUnit.SECONDS);
+        this.updateDevState2Redis(reportResp.getMsg(), deviceId, true);
         this.httpUtils.reportDevStatus2App(reportResp);
     }
 

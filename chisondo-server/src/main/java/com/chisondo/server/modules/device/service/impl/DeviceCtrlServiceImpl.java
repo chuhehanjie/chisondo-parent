@@ -133,11 +133,13 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	/**
 	 * 处理设备工作剩余时间
+	 * 倒计时处理改为由设备上报时统一处理 update by dz 20190710
 	 * @param deviceHttpResp
 	 * @param deviceId
 	 */
+	@Deprecated
 	private void processDevWorkingRemainTime(final DeviceHttpResp deviceHttpResp, String deviceId) {
-		if (ValidateUtils.isEmpty(deviceHttpResp.getMsg())) {
+		/*if (ValidateUtils.isEmpty(deviceHttpResp.getMsg())) {
 			log.error("设备[{}]MSG为空", deviceHttpResp.getDeviceID());
 			return;
 		}
@@ -146,7 +148,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			this.asyncProcessWorkRemainTime(deviceHttpResp, devStateInfo);
 		} else {
 			this.deviceStateInfoService.update(devStateInfo);
-		}
+		}*/
 	}
 
 	private boolean hasWorkingRemainTime(DeviceHttpResp deviceHttpResp) {
@@ -158,6 +160,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	 * @param deviceHttpResp
 	 * @param devStateInfo
 	 */
+	@Deprecated
 	private void asyncProcessWorkRemainTime(DeviceHttpResp deviceHttpResp, DeviceStateInfoEntity devStateInfo) {
 		log.info("开始倒计时处理，设备ID = {}, action = {}, remain = {}", deviceHttpResp.getDeviceID(), deviceHttpResp.getAction(), deviceHttpResp.getMsg().getRemaintime());
 		ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
@@ -462,12 +465,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			useMakeTea.setMakeType(Constant.MakeTeaType4Db.TEA_SPECTRUM);
 			this.userMakeTeaService.save(useMakeTea);
 			this.updateChapuInfo2Redis(teaSpectrum, newDeviceId, useMakeTea);
-			DeviceStateInfoEntity devStateInfo = this.updateDevChapuStatus(useTeaSpectrumReq, teaSpectrum, useMakeTea);
+			this.updateDevChapuStatus(useTeaSpectrumReq, teaSpectrum, useMakeTea);
 			this.updateMyTeaSpectrum(useMakeTea);
-			if (this.hasWorkingRemainTime(devHttpResp)) {
-				this.asyncProcessWorkRemainTime(devHttpResp, devStateInfo);
-			}
-
 		}
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
@@ -478,7 +477,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	 * @param teaSpectrum
 	 * @param useMakeTea
 	 */
-	private DeviceStateInfoEntity updateDevChapuStatus(UseTeaSpectrumReqDTO useTeaSpectrumReq, AppChapuEntity teaSpectrum, UserMakeTeaEntity useMakeTea) {
+	private void updateDevChapuStatus(UseTeaSpectrumReqDTO useTeaSpectrumReq, AppChapuEntity teaSpectrum, UserMakeTeaEntity useMakeTea) {
 		DeviceStateInfoEntity deviceStateInfo = this.deviceStateInfoService.queryObject(useTeaSpectrumReq.getDeviceId());
 		deviceStateInfo.setMakeType(useMakeTea.getMakeType());
 		deviceStateInfo.setChapuId(teaSpectrum.getChapuId());
@@ -488,7 +487,6 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		deviceStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getUseTimes());
 		this.deviceStateInfoService.update(deviceStateInfo);
-		return deviceStateInfo;
 	}
 
 	private void updateMyTeaSpectrum(UserMakeTeaEntity useMakeTea) {
@@ -506,7 +504,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	private void updateChapuInfo2Redis(AppChapuEntity teaSpectrum, String newDeviceId, UserMakeTeaEntity useMakeTea) {
 		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(newDeviceId, DevStatusRespDTO.class);
-		devStatusRespDTO.setMakeType(useMakeTea.getMakeType());
+		devStatusRespDTO.setMakeType(Constant.MakeTeaType4Db.TEA_SPECTRUM);
 		devStatusRespDTO.setChapuId(teaSpectrum.getChapuId());
 		devStatusRespDTO.setChapuName(teaSpectrum.getName());
 		devStatusRespDTO.setChapuMakeTimes(teaSpectrum.getMakeTimes());

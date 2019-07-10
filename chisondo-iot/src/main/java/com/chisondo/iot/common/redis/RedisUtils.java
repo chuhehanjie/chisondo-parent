@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -97,7 +98,7 @@ public class RedisUtils {
         if (null != devStatusResp) {
             devStatusResp.setOnlineStatus(0);
             devStatusResp.setConnStatus(0);
-            devStatusResp.setOfflineTime(new Date());
+            devStatusResp.setOfflineTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             devStatusResp.setReamin(0);
             this.set(deviceId, devStatusResp);
         }
