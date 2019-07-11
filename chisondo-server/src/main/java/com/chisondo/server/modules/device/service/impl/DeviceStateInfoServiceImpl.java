@@ -186,7 +186,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
 		devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
 		devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
-		if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getChapuId())) {
+		if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getChapuId()) && ValidateUtils.notEquals(0, devStatusReportResp.getMsg().getChapuId())) {
 			if (ValidateUtils.notEquals(devStatusReportResp.getMsg().getChapuId(), devStateInfo.getChapuId())) {
 				AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusReportResp.getMsg().getChapuId());
 				devStateInfo.setChapuName(teaSpectrum.getName());
