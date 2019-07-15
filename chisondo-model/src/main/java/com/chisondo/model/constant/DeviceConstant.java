@@ -1,6 +1,6 @@
-package com.chisondo.iot.common.constant;
+package com.chisondo.model.constant;
 
-public class Constant {
+public class DeviceConstant {
 
     public static final String CLOSE_SYMBOL = "\\n";
 
@@ -83,5 +83,25 @@ public class Constant {
         int NOT_CONNECTED_WIFI = 4; // 未连接Wi-Fi
     }
 
+    public interface StopWorkActionFlag {
+        int STOP_MAKE_TEA = 1;
+        int STOP_BOIL_WATER = 2;
+        int STOP_WASH_TEA = 3;
+        int STOP_WARM = 4;
+    }
 
+    /**
+     * 沏茶类型
+     * 用于查询设备状态 makeType 枚举定义
+     */
+    public interface MakeType {
+        /**
+         * 茶谱沏茶
+         */
+        int TEA_SPECTRUM = 0;
+        /**
+         * 普通沏茶
+         */
+        int NORMAL = 1;
+    }
 }

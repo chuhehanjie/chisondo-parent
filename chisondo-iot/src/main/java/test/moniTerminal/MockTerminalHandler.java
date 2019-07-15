@@ -1,4 +1,5 @@
 package test.moniTerminal;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.req.SetDevChapuParamHttpReq;
 import com.chisondo.model.http.resp.DeviceMsgResp;
 import com.chisondo.model.http.req.StartWorkHttpReq;
@@ -6,7 +7,6 @@ import com.chisondo.model.http.resp.DevParamMsg;
 import com.chisondo.model.http.resp.*;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.iot.common.constant.Constant;
 import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -146,17 +146,17 @@ public class MockTerminalHandler extends SimpleChannelInboundHandler<String>{
 		resp.setRetn(MockData.SC_OK);
 		resp.setDesc(MockData.REQ_SUCCESS);
 		resp.setAction("qrydevicestateok");
-		resp.setActionFlag(Constant.DevStatus.HEART_BEAT);
+		resp.setActionFlag(DeviceConstant.DevStatus.HEART_BEAT);
 		resp.setDeviceID(deviceId);
 		DevStatusMsgResp msg = new DevStatusMsgResp();
-		msg.setWorkstatus(Constant.WorkStatus.MAKING_TEA);
-		msg.setWarmstatus(Constant.WarmStatus.KEEPING_WARM);
-		msg.setTaststatus(Constant.ConcentrationStatus.MIDDLE);
+		msg.setWorkstatus(DeviceConstant.WorkStatus.MAKING_TEA);
+		msg.setWarmstatus(DeviceConstant.WarmStatus.KEEPING_WARM);
+		msg.setTaststatus(DeviceConstant.ConcentrationStatus.MIDDLE);
 		msg.setTemperature(70);
 		msg.setSoak(100);
 		msg.setWaterlevel(150);
 		msg.setRemaintime(580);
-		msg.setErrorstatus(Constant.ErrorStatus.NORMAL);
+		msg.setErrorstatus(DeviceConstant.ErrorStatus.NORMAL);
 		msg.setNowwarm(65);
 		resp.setMsg(msg);
 		return resp;

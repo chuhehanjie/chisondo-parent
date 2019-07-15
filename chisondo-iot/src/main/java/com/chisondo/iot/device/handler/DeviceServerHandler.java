@@ -167,9 +167,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             devStatusResp.setReamin(this.getWorkRemainTime(devMsg.getRemaintime()));
             devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
             devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
-            if (null != devMsg.getWorkstatus()) {
-                devStatusResp.setWork(devMsg.getWorkstatus());
-            }
+            devStatusResp.setWork(devMsg.getWorkstatus());
         }
         this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
     }

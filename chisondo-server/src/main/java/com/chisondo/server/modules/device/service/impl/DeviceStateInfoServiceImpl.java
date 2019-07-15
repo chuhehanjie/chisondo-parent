@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.device.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.server.common.utils.*;
@@ -14,6 +15,7 @@ import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,7 +128,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	public void updateDevStatus(DevStatusReportResp devStatusReportResp) {
 		//  根据设备ID查询设备状态信息是否存在
 		DeviceStateInfoEntity existedDevState = this.queryObject(devStatusReportResp.getDbDeviceId());
-		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusReportResp, existedDevState);
+		DevStatusRespDTO devStatusResp = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
+		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusResp, existedDevState, devStatusReportResp);
 //		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		if (ValidateUtils.isEmpty(existedDevState)) {
 			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
@@ -142,7 +145,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			log.info("updateDevStatus success");
 		}
 		// 把设备状态信息保存到 redis 中
-		this.save2Redis(devStatusReportResp, devStateInfo);
+		this.save2Redis(devStatusResp, devStateInfo);
 	}
 
 	/**
@@ -178,39 +181,76 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		});
 	}
 
-	private DeviceStateInfoEntity buildDevStateInfo(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity existedDevState) {
+	private DeviceStateInfoEntity buildDevStateInfo(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity existedDevState, DevStatusReportResp devStatusReportResp) {
 		DeviceStateInfoEntity devStateInfo = ValidateUtils.isNotEmpty(existedDevState) ? existedDevState : new DeviceStateInfoEntity();
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
 //		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		devStateInfo.setLastConnTime(devStateInfo.getUpdateTime());
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
 		devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
-		devStateInfo.setNewDeviceId(devStatusReportResp.getDeviceID());
-		if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getChapuId()) && ValidateUtils.notEquals(0, devStatusReportResp.getMsg().getChapuId())) {
-			if (ValidateUtils.notEquals(devStatusReportResp.getMsg().getChapuId(), devStateInfo.getChapuId())) {
-				AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusReportResp.getMsg().getChapuId());
-				devStateInfo.setChapuName(teaSpectrum.getName());
-				devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
-				devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
-			}
-			devStateInfo.setChapuId(devStatusReportResp.getMsg().getChapuId());
-		}
-		if (ValidateUtils.isNotEmpty(devStatusReportResp.getMsg().getStep())) {
-			devStateInfo.setIndex(devStatusReportResp.getMsg().getStep());
+		devStateInfo.setNewDeviceId(devStatusRespDTO.getDeviceId());
+		this.processMakeTeaByChapu(devStatusRespDTO, devStateInfo);
+		if (ValidateUtils.isNotEmpty(devStatusRespDTO.getIndex())) {
+			devStateInfo.setIndex(devStatusRespDTO.getIndex());
 		}
 //		devStateInfo.setDeviceStateInfo("");
 		devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
-		devStateInfo.setMakeTemp(devStatusReportResp.getMsg().getTemperature());
-		devStateInfo.setTemp(devStatusReportResp.getMsg().getTemperature());
-		devStateInfo.setWarm(devStatusReportResp.getMsg().getWarmstatus());
-		devStateInfo.setDensity(devStatusReportResp.getMsg().getTaststatus());
-		devStateInfo.setWaterlv(devStatusReportResp.getMsg().getWaterlevel());
-		devStateInfo.setMakeDura(devStatusReportResp.getMsg().getSoak());
-		devStateInfo.setReamin(Integer.valueOf(devStatusReportResp.getMsg().getRemaintime()));
-		devStateInfo.setTea(Constant.ErrorStatus.LACK_TEA == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
-		devStateInfo.setWater(Constant.ErrorStatus.LACK_WATER == devStatusReportResp.getMsg().getErrorstatus() ? 1 : 0);
-		devStateInfo.setWork(devStatusReportResp.getMsg().getWorkstatus());
+		devStateInfo.setMakeTemp(devStatusRespDTO.getTemp());
+		devStateInfo.setTemp(devStatusRespDTO.getTemp());
+		devStateInfo.setWarm(devStatusRespDTO.getWarm());
+		devStateInfo.setDensity(devStatusRespDTO.getDensity());
+		devStateInfo.setWaterlv(devStatusRespDTO.getWaterlv());
+		devStateInfo.setMakeDura(devStatusRespDTO.getMakeDura());
+		devStateInfo.setReamin(devStatusRespDTO.getReamin());
+		devStateInfo.setTea(devStatusRespDTO.getTea());
+		devStateInfo.setWater(devStatusRespDTO.getWater());
 		return devStateInfo;
+	}
+
+	private void processMakeTeaByChapu(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
+		if (devStatusRespDTO.isMakeTeaByChapu() && ValidateUtils.equals(DeviceConstant.WorkStatus.IDLE, devStatusRespDTO.getWork())) {
+			// 茶谱沏茶中，但上报的状态为空闲，则需要设置为沏茶中
+			devStateInfo.setWork(DeviceConstant.WorkStatus.MAKING_TEA);
+			devStatusRespDTO.setWork(DeviceConstant.WorkStatus.MAKING_TEA);
+		} else {
+			if (ValidateUtils.equals(DeviceConstant.WorkStatus.MAKING_TEA, devStatusRespDTO.getWork())) {
+				// 3，当设备上报状态workstatus​为1（沏茶）时，若同时上报了茶谱ID，则显示上报的这个茶谱ID的茶谱沏茶。
+				if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(devStateInfo.getChapuId(), devStatusRespDTO.getChapuId())) {
+					AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusRespDTO.getChapuId());
+					if (ValidateUtils.isEmpty(teaSpectrum)) {
+						log.error("茶谱[{}]不存在！", devStatusRespDTO.getChapuId());
+					} else {
+						devStateInfo.setChapuId(teaSpectrum.getChapuId());
+						devStateInfo.setChapuName(teaSpectrum.getName());
+						devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+						devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+					}
+				} else if (ValidateUtils.equals(0, devStatusRespDTO.getChapuId())) {
+				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
+					this.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+				}
+			} else if (ValidateUtils.equals(DeviceConstant.WorkStatus.BOILING_WATER, devStatusRespDTO.getWork())) {
+				// 2，当设备上报状态workstatus​为3（烧水）时，结束茶谱沏茶，返回普通沏茶。
+				this.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+			}
+		}
+		if (ValidateUtils.isEmpty(devStateInfo.getWork())) {
+			devStateInfo.setWork(devStatusRespDTO.getWork());
+		}
+	}
+
+	private void set2NormalMakeTea(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
+		devStatusRespDTO.setMakeType(DeviceConstant.MakeType.NORMAL);
+		devStatusRespDTO.setChapuId(null);
+		devStatusRespDTO.setChapuName(null);
+		devStatusRespDTO.setChapuMakeTimes(null);
+		devStatusRespDTO.setChapuImage(null);
+		devStatusRespDTO.setMakeTeaByChapu(false);
+		devStateInfo.setMakeType(DeviceConstant.MakeType.NORMAL);
+		devStateInfo.setChapuId(null);
+		devStateInfo.setChapuName(null);
+		devStateInfo.setChapuMakeTimes(null);
+		devStateInfo.setChapuImage(null);
 	}
 
 	@Override
@@ -256,28 +296,21 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	@Override
 	public void save2(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
 		this.save(devStateInfo);
-		this.save2Redis(devStatusReportResp, devStateInfo);
+		DevStatusRespDTO devStatusResp = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
+		this.save2Redis(devStatusResp, devStateInfo);
 	}
 
-	private void save2Redis(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity devStateInfo) {
-		DevStatusRespDTO devStatusResp = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
+	private void save2Redis(DevStatusRespDTO devStatusResp, DeviceStateInfoEntity devStateInfo) {
 		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
-		devStatusResp.setMakeTemp(devStateInfo.getMakeTemp());
-		devStatusResp.setChapuId(devStateInfo.getChapuId());
-		devStatusResp.setChapuName(devStateInfo.getChapuName());
-		devStatusResp.setChapuImage(devStateInfo.getChapuImage());
-		devStatusResp.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
 		devStatusResp.setTeaSortId(devStateInfo.getTeaSortId());
 		devStatusResp.setTeaSortName(devStateInfo.getTeaSortName());
-		devStatusResp.setIndex(devStateInfo.getIndex());
-		devStatusResp.setMakeType(devStateInfo.getMakeType());
 //		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
 		if (this.hasWorkRemainTime(devStatusResp)) {
 			devStatusResp.setCountdownFlag(true);
-			this.redisUtils.set(devStatusReportResp.getDeviceID(), devStatusResp);
+			this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
 			this.processDevWorkRemainTime(devStatusResp, devStateInfo);
 		} else {
-			this.redisUtils.set(devStatusReportResp.getDeviceID(), devStatusResp);
+			this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
 		}
 	}
 

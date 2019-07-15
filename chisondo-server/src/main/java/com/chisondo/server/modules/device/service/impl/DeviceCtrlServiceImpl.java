@@ -1,8 +1,7 @@
 package com.chisondo.server.modules.device.service.impl;
-import com.chisondo.model.http.req.DevUpgradeMsg;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.model.constant.DevConstant;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.req.*;
 import com.chisondo.model.http.resp.DevParamMsg;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
@@ -511,6 +510,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		devStatusRespDTO.setIndex(useMakeTea.getMakeIndex());
 		devStatusRespDTO.setChapuImage(teaSpectrum.getImage());
 		devStatusRespDTO.setUseNum(teaSpectrum.getUseTimes());
+		devStatusRespDTO.setMakeTeaByChapu(true);
 		this.redisUtils.set(newDeviceId, devStatusRespDTO);
 	}
 
@@ -549,7 +549,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
         } else {
             // 结束保温
             StopWorkHttpReq stopWorkReq = new StopWorkHttpReq();
-            stopWorkReq.setActionflag(DevConstant.StopWorkActionFlag.STOP_WARM);
+            stopWorkReq.setActionflag(DeviceConstant.StopWorkActionFlag.STOP_WARM);
             stopWorkReq.setDeviceID(newDeviceId);
             devHttpResp = this.deviceHttpService.stopWork(stopWorkReq);
 			req.addAttr(Keys.DEV_REQ, stopWorkReq);
@@ -667,13 +667,13 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 	private Integer convertActionFlag(int operFlag) {
 		if (operFlag == Constant.StopWorkOperFlag.STOP_MAKE_TEA) {
-			return DevConstant.StopWorkActionFlag.STOP_MAKE_TEA;
+			return DeviceConstant.StopWorkActionFlag.STOP_MAKE_TEA;
 		} else if (operFlag == Constant.StopWorkOperFlag.STOP_BOIL_WATER) {
-			return DevConstant.StopWorkActionFlag.STOP_BOIL_WATER;
+			return DeviceConstant.StopWorkActionFlag.STOP_BOIL_WATER;
 		} else if (operFlag == Constant.StopWorkOperFlag.STOP_WASH_TEA) {
-			return DevConstant.StopWorkActionFlag.STOP_WASH_TEA;
+			return DeviceConstant.StopWorkActionFlag.STOP_WASH_TEA;
 		} else {
-			return DevConstant.StopWorkActionFlag.STOP_WARM;
+			return DeviceConstant.StopWorkActionFlag.STOP_WARM;
 		}
 	}
 

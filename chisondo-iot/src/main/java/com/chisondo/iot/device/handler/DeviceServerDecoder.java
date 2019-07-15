@@ -3,10 +3,9 @@ import com.alibaba.fastjson.JSONException;
 import com.chisondo.model.http.resp.*;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.iot.common.constant.Constant;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.device.request.DevStatusReportReq;
-import com.chisondo.model.http.req.DeviceHttpReq;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.string.StringDecoder;
@@ -16,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -72,14 +70,14 @@ public class DeviceServerDecoder extends StringDecoder {
     }
 
     private String filterCloseSymbol(String json) {
-        String resultJSON = json.endsWith(Constant.CLOSE_SYMBOL) ? json.replace(Constant.CLOSE_SYMBOL, "") : json;
+        String resultJSON = json.endsWith(DeviceConstant.CLOSE_SYMBOL) ? json.replace(DeviceConstant.CLOSE_SYMBOL, "") : json;
         return resultJSON.replaceAll("\n", "").replaceAll("\t", "");
     }
 
     public static void main(String[] args) {
         /*String json = "{\"statuspush\",\"actionFlag\":1,\"deviceID\":\"18170964\",\"msg\":{\"errorstatus\":0,\"nowwarm\":65,\"remaintime\":\"580\",\"soak\":100,\"taststatus\":2,\"temperature\":70,\"warmstatus\":1,\"waterlevel\":150,\"workstatus\":1},\"oK\":false,\"retn\":0}\\n";
-        if (json.endsWith(Constant.CLOSE_SYMBOL)) {
-            json = json.replace(Constant.CLOSE_SYMBOL, "");
+        if (json.endsWith(DeviceConstant.CLOSE_SYMBOL)) {
+            json = json.replace(DeviceConstant.CLOSE_SYMBOL, "");
         }
         DevStatusReportReq reportReq = JSONObject.parseObject(json, DevStatusReportReq.class);
         System.out.println(reportReq.getDeviceID());

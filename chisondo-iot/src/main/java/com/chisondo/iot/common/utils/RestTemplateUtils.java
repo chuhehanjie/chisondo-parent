@@ -36,7 +36,6 @@ public class RestTemplateUtils {
      * @return
      */
     public <T> T httpGetPathVariable(String url, Class<T> respType, Object... pathVariables){
-        T result = restTemplate.getForObject(url, respType, pathVariables);
         return restTemplate.getForObject(url, respType, pathVariables);
     }
 
@@ -50,7 +49,6 @@ public class RestTemplateUtils {
      * @return
      */
     public <T> T httpGetUrlVariable(String url, Class<T> respType, Map<String, Object> urlVariableMap){
-        log.info("Http Post请求   MediaType  get  \r\nUrl={}  \r\nparam={}", new String[]{url, JSON.toJSONString(urlVariableMap)});
         String urlParams = "";
 
         if(urlVariableMap!=null && urlVariableMap.size()>0){

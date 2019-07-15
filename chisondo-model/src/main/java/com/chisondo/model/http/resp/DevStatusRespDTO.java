@@ -39,6 +39,8 @@ public class DevStatusRespDTO implements Serializable {
      */
     private String offlineTime;
 
+    private boolean isMakeTeaByChapu;
+
     public Integer getConnStatus() {
         return connStatus;
     }
@@ -237,5 +239,13 @@ public class DevStatusRespDTO implements Serializable {
 
     public void setCountdownFlag(boolean countdownFlag) {
         this.countdownFlag = countdownFlag;
+    }
+
+    public boolean isMakeTeaByChapu() {
+        return isMakeTeaByChapu;
+    }
+
+    public void setMakeTeaByChapu(boolean makeTeaByChapu) {
+        isMakeTeaByChapu = makeTeaByChapu;
     }
 }

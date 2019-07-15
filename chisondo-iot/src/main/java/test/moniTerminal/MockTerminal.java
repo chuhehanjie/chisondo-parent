@@ -1,13 +1,9 @@
 package test.moniTerminal;
 
 import com.alibaba.fastjson.JSONObject;
-import com.chisondo.iot.common.constant.Constant;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.iot.device.request.DevStatusReportReq;
 import com.chisondo.model.http.resp.DevStatusMsgResp;
-
-import java.nio.charset.Charset;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -20,7 +16,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
-import test.CountHelper;
 
 /**
  * 客户端
@@ -73,17 +68,17 @@ public class MockTerminal {
     private static String getDevStatusInfo(String deviceId) {
         DevStatusReportReq reportReq = new DevStatusReportReq();
         reportReq.setAction("statuspush");
-        reportReq.setActionFlag(Constant.DevStatus.HEART_BEAT);
+        reportReq.setActionFlag(DeviceConstant.DevStatus.HEART_BEAT);
         reportReq.setDeviceID(deviceId); // "32839884"
         DevStatusMsgResp msg = new DevStatusMsgResp();
-        msg.setWorkstatus(Constant.WorkStatus.MAKING_TEA);
-        msg.setWarmstatus(Constant.WarmStatus.KEEPING_WARM);
-        msg.setTaststatus(Constant.ConcentrationStatus.MIDDLE);
+        msg.setWorkstatus(DeviceConstant.WorkStatus.MAKING_TEA);
+        msg.setWarmstatus(DeviceConstant.WarmStatus.KEEPING_WARM);
+        msg.setTaststatus(DeviceConstant.ConcentrationStatus.MIDDLE);
         msg.setTemperature(70);
         msg.setSoak(100);
         msg.setWaterlevel(150);
         msg.setRemaintime(580);
-        msg.setErrorstatus(Constant.ErrorStatus.NORMAL);
+        msg.setErrorstatus(DeviceConstant.ErrorStatus.NORMAL);
         msg.setNowwarm(65);
         reportReq.setMsg(msg);
         return JSONObject.toJSONString(reportReq);
