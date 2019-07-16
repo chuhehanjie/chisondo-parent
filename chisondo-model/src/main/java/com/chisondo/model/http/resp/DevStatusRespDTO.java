@@ -1,7 +1,6 @@
 package com.chisondo.model.http.resp;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class DevStatusRespDTO implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -39,7 +38,7 @@ public class DevStatusRespDTO implements Serializable {
      */
     private String offlineTime;
 
-    private boolean isMakeTeaByChapu;
+    private boolean makeTeaByChapuFlag;
 
     public Integer getConnStatus() {
         return connStatus;
@@ -241,11 +240,11 @@ public class DevStatusRespDTO implements Serializable {
         this.countdownFlag = countdownFlag;
     }
 
-    public boolean isMakeTeaByChapu() {
-        return isMakeTeaByChapu;
+    public boolean isMakeTeaByChapuFlag() {
+        return makeTeaByChapuFlag;
     }
 
-    public void setMakeTeaByChapu(boolean makeTeaByChapu) {
-        isMakeTeaByChapu = makeTeaByChapu;
+    public void setMakeTeaByChapuFlag(boolean makeTeaByChapuFlag) {
+        this.makeTeaByChapuFlag = makeTeaByChapuFlag;
     }
 }

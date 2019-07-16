@@ -36,6 +36,7 @@
         <result property="chapuImage" column="chapu_image"/>
         <result property="chapuMakeTimes" column="chapu_make_times"/>
         <result property="index" column="index"/>
+        <result property="makeTeaByChapuFlag" column="maketea_by_chapu_flag"/>
     </resultMap>
 
 	<select id="queryObject" resultType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
@@ -268,7 +269,8 @@
 			`chapu_name`,
 			`chapu_image`,
 			`chapu_make_times`, 
-			`index`
+			`index`,
+			`maketea_by_chapu_flag`
 		)
 		values
 		(
@@ -302,7 +304,8 @@
 			#{chapuName},
 			#{chapuImage},
 			#{chapuMakeTimes}, 
-			#{index}
+			#{index},
+			#{makeTeaByChapuFlag}
 		)
 	</insert>
 	 
@@ -338,6 +341,7 @@
 			<if test="chapuName != null">`chapu_name` = #{chapuName}, </if>
 			<if test="chapuImage != null">`chapu_image` = #{chapuImage}, </if>
 			<if test="chapuMakeTimes != null">`chapu_make_times` = #{chapuMakeTimes}, </if>
+			<if test="makeTeaByChapuFlag != null">`maketea_by_chapu_flag` = #{makeTeaByChapuFlag}, </if>
 			<if test="index != null">`index` = #{index}</if>
 		</set>
 		where device_id = #{deviceId}

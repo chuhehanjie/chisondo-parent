@@ -1,6 +1,7 @@
 package com.chisondo.server.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.HttpStatus;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DeviceHttpResp;
@@ -248,5 +249,20 @@ public final class CommonUtils {
         deviceState.setWater(devStatusResp.getWater());
         deviceState.setWork(devStatusResp.getWork());
         return deviceState;
+    }
+
+    public static void set2NormalMakeTea(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
+        devStatusRespDTO.setMakeType(DeviceConstant.MakeType.NORMAL);
+        devStatusRespDTO.setChapuId(null);
+        devStatusRespDTO.setChapuName(null);
+        devStatusRespDTO.setChapuMakeTimes(null);
+        devStatusRespDTO.setChapuImage(null);
+        devStatusRespDTO.setMakeTeaByChapuFlag(false);
+        devStateInfo.setMakeType(DeviceConstant.MakeType.NORMAL);
+        devStateInfo.setChapuId(null);
+        devStateInfo.setChapuName(null);
+        devStateInfo.setChapuMakeTimes(null);
+        devStateInfo.setChapuImage(null);
+        devStateInfo.setMakeTeaByChapuFlag(Constant.MakeTeaType.NORMAL);
     }
 }

@@ -485,6 +485,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		deviceStateInfo.setIndex(useMakeTea.getMakeIndex());
 		deviceStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getUseTimes());
+		deviceStateInfo.setMakeTeaByChapuFlag(Constant.MakeTeaType.TEA_SPECTRUM);
 		this.deviceStateInfoService.update(deviceStateInfo);
 	}
 
@@ -508,9 +509,10 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		devStatusRespDTO.setChapuName(teaSpectrum.getName());
 		devStatusRespDTO.setChapuMakeTimes(teaSpectrum.getMakeTimes());
 		devStatusRespDTO.setIndex(useMakeTea.getMakeIndex());
-		devStatusRespDTO.setChapuImage(teaSpectrum.getImage());
+		devStatusRespDTO.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		devStatusRespDTO.setUseNum(teaSpectrum.getUseTimes());
-		devStatusRespDTO.setMakeTeaByChapu(true);
+		devStatusRespDTO.setMakeTeaByChapuFlag(true);
+		log.info("更新茶谱信息到 redis , isMakeTeaByChapuFlag = {}", devStatusRespDTO.isMakeTeaByChapuFlag());
 		this.redisUtils.set(newDeviceId, devStatusRespDTO);
 	}
 
@@ -524,6 +526,13 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		useMakeTea.setStatus(Constant.UserMakeTeaStatus.CANCELED);
 		useMakeTea.setCancelTime(new Date());
 		this.userMakeTeaService.update(useMakeTea);
+		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		// 将设备设置为普通沏茶状态，并删除茶谱相关信息
+		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(newDeviceId, DevStatusRespDTO.class);
+		DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(useMakeTea.getDeviceId());
+		CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+		this.redisUtils.set(newDeviceId, devStatusRespDTO);
+		this.deviceStateInfoService.update(devStateInfo);
 		return CommonResp.ok();
 	}
 

@@ -11,11 +11,9 @@ import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
-import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,6 +127,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		//  根据设备ID查询设备状态信息是否存在
 		DeviceStateInfoEntity existedDevState = this.queryObject(devStatusReportResp.getDbDeviceId());
 		DevStatusRespDTO devStatusResp = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
+		log.info("从 redis 中取设备[{}]状态信息 = {}", devStatusResp.getDeviceId(), JSONObject.toJSONString(devStatusResp));
 		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusResp, existedDevState, devStatusReportResp);
 //		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		if (ValidateUtils.isEmpty(existedDevState)) {
@@ -208,10 +207,14 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	private void processMakeTeaByChapu(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
-		if (devStatusRespDTO.isMakeTeaByChapu() && ValidateUtils.equals(DeviceConstant.WorkStatus.IDLE, devStatusRespDTO.getWork())) {
-			// 茶谱沏茶中，但上报的状态为空闲，则需要设置为沏茶中
-			devStateInfo.setWork(DeviceConstant.WorkStatus.MAKING_TEA);
-			devStatusRespDTO.setWork(DeviceConstant.WorkStatus.MAKING_TEA);
+		if (devStatusRespDTO.isMakeTeaByChapuFlag() || ValidateUtils.equals(devStateInfo.getMakeTeaByChapuFlag(), Constant.MakeTeaType.TEA_SPECTRUM)) {
+			if (ValidateUtils.equals(DeviceConstant.WorkStatus.IDLE, devStatusRespDTO.getWork())) {
+				// 茶谱沏茶中，但上报的状态为空闲，则需要设置为沏茶中
+				devStateInfo.setWork(DeviceConstant.WorkStatus.MAKING_TEA);
+				devStatusRespDTO.setWork(DeviceConstant.WorkStatus.MAKING_TEA);
+				devStateInfo.setMakeTeaByChapuFlag(Constant.MakeTeaType.TEA_SPECTRUM);
+				devStatusRespDTO.setMakeTeaByChapuFlag(true);
+			}
 		} else {
 			if (ValidateUtils.equals(DeviceConstant.WorkStatus.MAKING_TEA, devStatusRespDTO.getWork())) {
 				// 3，当设备上报状态workstatus​为1（沏茶）时，若同时上报了茶谱ID，则显示上报的这个茶谱ID的茶谱沏茶。
@@ -224,33 +227,23 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 						devStateInfo.setChapuName(teaSpectrum.getName());
 						devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 						devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+						devStateInfo.setIndex(devStatusRespDTO.getIndex());
+						devStatusRespDTO.setChapuName(devStateInfo.getChapuImage());
+						devStatusRespDTO.setChapuImage(devStateInfo.getChapuName());
+						devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
 					}
 				} else if (ValidateUtils.equals(0, devStatusRespDTO.getChapuId())) {
 				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
-					this.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+					CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
 				}
 			} else if (ValidateUtils.equals(DeviceConstant.WorkStatus.BOILING_WATER, devStatusRespDTO.getWork())) {
 				// 2，当设备上报状态workstatus​为3（烧水）时，结束茶谱沏茶，返回普通沏茶。
-				this.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+				CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
 			}
 		}
 		if (ValidateUtils.isEmpty(devStateInfo.getWork())) {
 			devStateInfo.setWork(devStatusRespDTO.getWork());
 		}
-	}
-
-	private void set2NormalMakeTea(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
-		devStatusRespDTO.setMakeType(DeviceConstant.MakeType.NORMAL);
-		devStatusRespDTO.setChapuId(null);
-		devStatusRespDTO.setChapuName(null);
-		devStatusRespDTO.setChapuMakeTimes(null);
-		devStatusRespDTO.setChapuImage(null);
-		devStatusRespDTO.setMakeTeaByChapu(false);
-		devStateInfo.setMakeType(DeviceConstant.MakeType.NORMAL);
-		devStateInfo.setChapuId(null);
-		devStateInfo.setChapuName(null);
-		devStateInfo.setChapuMakeTimes(null);
-		devStateInfo.setChapuImage(null);
 	}
 
 	@Override

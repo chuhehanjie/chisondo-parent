@@ -81,6 +81,12 @@ public class DeviceStateInfoEntity  implements Serializable {
 
 	private String newDeviceId;
 
+	/**
+	 * 茶谱沏茶标识
+	 * 1、茶谱沏茶 0、非茶谱沏茶
+	 */
+	private int makeTeaByChapuFlag;
+
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
@@ -314,5 +320,13 @@ public class DeviceStateInfoEntity  implements Serializable {
 
 	public void setNewDeviceId(String newDeviceId) {
 		this.newDeviceId = newDeviceId;
+	}
+
+	public int getMakeTeaByChapuFlag() {
+		return makeTeaByChapuFlag;
+	}
+
+	public void setMakeTeaByChapuFlag(int makeTeaByChapuFlag) {
+		this.makeTeaByChapuFlag = makeTeaByChapuFlag;
 	}
 }
