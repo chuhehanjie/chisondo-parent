@@ -486,6 +486,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		deviceStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		deviceStateInfo.setChapuMakeTimes(teaSpectrum.getUseTimes());
 		deviceStateInfo.setMakeTeaByChapuFlag(Constant.MakeTeaType.TEA_SPECTRUM);
+		log.info("设置设备[{}]茶谱状态为茶谱沏茶中", deviceStateInfo.getNewDeviceId());
 		this.deviceStateInfoService.update(deviceStateInfo);
 	}
 
@@ -511,8 +512,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		devStatusRespDTO.setIndex(useMakeTea.getMakeIndex());
 		devStatusRespDTO.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 		devStatusRespDTO.setUseNum(teaSpectrum.getUseTimes());
-		devStatusRespDTO.setMakeTeaByChapuFlag(true);
-		log.info("更新茶谱信息到 redis , isMakeTeaByChapuFlag = {}", devStatusRespDTO.isMakeTeaByChapuFlag());
+		log.info("更新茶谱信息到 redis 设备ID = {}", devStatusRespDTO.getDeviceId());
 		this.redisUtils.set(newDeviceId, devStatusRespDTO);
 	}
 
@@ -729,7 +729,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			// 如果 makeType=0 才修改
 			DeviceStateInfoEntity deviceState = this.deviceStateInfoService.queryObject(deviceId);
 			if (ValidateUtils.equals(0, deviceState.getMakeType())) {
-				deviceState.setMakeType(1);
+				deviceState.setMakeType(DeviceConstant.MakeType.NORMAL);
 			}
 			this.deviceStateInfoService.update(deviceState);
 		}

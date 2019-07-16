@@ -38,8 +38,6 @@ public class DevStatusRespDTO implements Serializable {
      */
     private String offlineTime;
 
-    private boolean makeTeaByChapuFlag;
-
     public Integer getConnStatus() {
         return connStatus;
     }
@@ -240,11 +238,4 @@ public class DevStatusRespDTO implements Serializable {
         this.countdownFlag = countdownFlag;
     }
 
-    public boolean isMakeTeaByChapuFlag() {
-        return makeTeaByChapuFlag;
-    }
-
-    public void setMakeTeaByChapuFlag(boolean makeTeaByChapuFlag) {
-        this.makeTeaByChapuFlag = makeTeaByChapuFlag;
-    }
 }

@@ -17,4 +17,6 @@ import java.util.Map;
 public interface DeviceStateInfoDao extends BaseDao<DeviceStateInfoEntity> {
 
     void setDevChapu2Finish(Map<String, Object> params);
+
+    void updateConnectState(DeviceStateInfoEntity deviceState);
 }

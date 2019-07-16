@@ -366,4 +366,8 @@
 		</foreach>
 	</update>
 
+	<update id="updateConnectState" parameterType="com.chisondo.server.modules.device.entity.DeviceStateInfoEntity">
+		UPDATE tb_device_state_info set connect_state = #{connectState} WHERE device_id = #{deviceId}
+	</update>
+
 </mapper>

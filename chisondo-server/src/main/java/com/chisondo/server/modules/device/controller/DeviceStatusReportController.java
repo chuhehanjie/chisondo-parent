@@ -1,5 +1,6 @@
 package com.chisondo.server.modules.device.controller;
 
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.server.common.core.AbstractController;
 import com.chisondo.server.common.http.CommonResp;

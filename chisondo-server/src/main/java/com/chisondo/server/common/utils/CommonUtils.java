@@ -257,7 +257,6 @@ public final class CommonUtils {
         devStatusRespDTO.setChapuName(null);
         devStatusRespDTO.setChapuMakeTimes(null);
         devStatusRespDTO.setChapuImage(null);
-        devStatusRespDTO.setMakeTeaByChapuFlag(false);
         devStateInfo.setMakeType(DeviceConstant.MakeType.NORMAL);
         devStateInfo.setChapuId(null);
         devStateInfo.setChapuName(null);
