@@ -526,14 +526,17 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		useMakeTea.setStatus(Constant.UserMakeTeaStatus.CANCELED);
 		useMakeTea.setCancelTime(new Date());
 		this.userMakeTeaService.update(useMakeTea);
-		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+		this.recover2NormalMakeTea((String) req.getAttrByKey(Keys.NEW_DEVICE_ID), useMakeTea.getDeviceId());
+		return CommonResp.ok();
+	}
+
+	private void recover2NormalMakeTea(String newDeviceId, String deviceId) {
 		// 将设备设置为普通沏茶状态，并删除茶谱相关信息
 		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(newDeviceId, DevStatusRespDTO.class);
-		DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(useMakeTea.getDeviceId());
+		DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(deviceId);
 		CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
 		this.redisUtils.set(newDeviceId, devStatusRespDTO);
 		this.deviceStateInfoService.update(devStateInfo);
-		return CommonResp.ok();
 	}
 
 	@Override

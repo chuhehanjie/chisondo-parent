@@ -220,34 +220,33 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 				devStatusRespDTO.setMakeType(DeviceConstant.MakeType.TEA_SPECTRUM);
 				devStateInfo.setMakeTeaByChapuFlag(Constant.MakeTeaType.TEA_SPECTRUM);
 			}
-		} else {
-			if (ValidateUtils.equals(DeviceConstant.WorkStatus.MAKING_TEA, devStatusRespDTO.getWork())) {
-				// 3，当设备上报状态workstatus​为1（沏茶）时，若同时上报了茶谱ID，则显示上报的这个茶谱ID的茶谱沏茶。
-				if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(devStateInfo.getChapuId(), devStatusRespDTO.getChapuId())) {
-					log.info("更换茶谱，旧茶谱ID = {}, 新茶谱ID = {}", devStateInfo.getChapuId(), devStatusRespDTO.getChapuId());
-					AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusRespDTO.getChapuId());
-					if (ValidateUtils.isEmpty(teaSpectrum)) {
-						log.error("茶谱[{}]不存在！", devStatusRespDTO.getChapuId());
-					} else {
-						devStateInfo.setChapuId(teaSpectrum.getChapuId());
-						devStateInfo.setChapuName(teaSpectrum.getName());
-						devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
-						devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
-						devStateInfo.setIndex(devStatusRespDTO.getIndex());
-						devStatusRespDTO.setChapuName(devStateInfo.getChapuImage());
-						devStatusRespDTO.setChapuImage(devStateInfo.getChapuName());
-						devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
-					}
-				} else if (ValidateUtils.equals(0, devStatusRespDTO.getChapuId())) {
-					log.info("上报的茶谱ID为0，需要结束茶谱");
-				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
-					CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+		}
+		if (ValidateUtils.equals(DeviceConstant.WorkStatus.MAKING_TEA, devStatusRespDTO.getWork())) {
+			// 3，当设备上报状态workstatus​为1（沏茶）时，若同时上报了茶谱ID，则显示上报的这个茶谱ID的茶谱沏茶。
+			if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(devStateInfo.getChapuId(), devStatusRespDTO.getChapuId())) {
+				log.info("更换茶谱，旧茶谱ID = {}, 新茶谱ID = {}", devStateInfo.getChapuId(), devStatusRespDTO.getChapuId());
+				AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusRespDTO.getChapuId());
+				if (ValidateUtils.isEmpty(teaSpectrum)) {
+					log.error("茶谱[{}]不存在！", devStatusRespDTO.getChapuId());
+				} else {
+					devStateInfo.setChapuId(teaSpectrum.getChapuId());
+					devStateInfo.setChapuName(teaSpectrum.getName());
+					devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+					devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+					devStateInfo.setIndex(devStatusRespDTO.getIndex());
+					devStatusRespDTO.setChapuName(devStateInfo.getChapuImage());
+					devStatusRespDTO.setChapuImage(devStateInfo.getChapuName());
+					devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
 				}
-			} else if (ValidateUtils.equals(DeviceConstant.WorkStatus.BOILING_WATER, devStatusRespDTO.getWork())) {
-				log.info("烧水操作，需要结束茶谱");
-				// 2，当设备上报状态workstatus​为3（烧水）时，结束茶谱沏茶，返回普通沏茶。
+			} else if (ValidateUtils.equals(0, devStatusRespDTO.getChapuId())) {
+				log.info("上报的茶谱ID为0，需要结束茶谱");
+				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
 				CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
 			}
+		} else if (ValidateUtils.equals(DeviceConstant.WorkStatus.BOILING_WATER, devStatusRespDTO.getWork())) {
+			log.info("烧水操作，需要结束茶谱");
+			// 2，当设备上报状态workstatus​为3（烧水）时，结束茶谱沏茶，返回普通沏茶。
+			CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
 		}
 		devStateInfo.setWork(devStatusRespDTO.getWork());
 	}
