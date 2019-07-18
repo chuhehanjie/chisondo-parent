@@ -157,21 +157,23 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 				new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
 		scheduledExecutorService.execute(() -> {
 			log.info("开始倒计时处理，设备ID = {}, remain = {}", devStatusResp.getDeviceId(), devStatusResp.getReamin());
-			boolean needUpdate = true;
 			int remainTime = devStatusResp.getReamin() - 1;
-			for (int i = remainTime; i >= 0; i--) {
-				try {
+			try {
+				for (int i = remainTime; i >= 0; i--) {
 					DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
-					if (ValidateUtils.isNotEmpty(tempDevStatusResp) && ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
-						needUpdate = false;
-						break;
+					if (ValidateUtils.isNotEmpty(tempDevStatusResp.getReamin())) {
+						if (ValidateUtils.equals(0, tempDevStatusResp.getReamin())) {
+							break;
+						} else if (tempDevStatusResp.getReamin() != remainTime) {
+							remainTime = tempDevStatusResp.getReamin();
+							i = remainTime;
+							continue;
+						}
 					}
-					tempDevStatusResp.setReamin(i);
-					this.redisUtils.set(devStatusResp.getDeviceId(), tempDevStatusResp);
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					log.error("更新设备工作剩余时间失败！", e);
+					Thread.sleep(990);
 				}
+			} catch (InterruptedException e) {
+				log.error("更新设备工作剩余时间失败！", e);
 			}
 			DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
 			tempDevStatusResp.setCountdownFlag(false);
