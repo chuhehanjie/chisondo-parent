@@ -168,7 +168,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             if (null != devMsg.getSoak()) {
                 devStatusRespDTO.setMakeDura(devMsg.getSoak());
             }
-            // 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
+            // 需要将 remain 时间多加 1 秒，因为设备已经在倒计时了，而服务端会有延时
             devStatusRespDTO.setReamin(this.getWorkRemainTime(devMsg.getRemaintime()));
             devStatusRespDTO.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
             devStatusRespDTO.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
@@ -178,7 +178,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     }
 
     private Integer getWorkRemainTime(Integer remainTime) {
-        return StringUtils.isEmpty(remainTime) ? null : (remainTime > 0 ? remainTime + 2 : 0);
+        return StringUtils.isEmpty(remainTime) ? null : (remainTime > 0 ? remainTime + 1 : 0);
     }
 
     private void sendTCPResp2Http(Object resp, String deviceId) {
