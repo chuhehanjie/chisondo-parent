@@ -38,6 +38,11 @@ public class DevStatusRespDTO implements Serializable {
      */
     private String offlineTime;
 
+    /**
+     * 1 - 心跳  2-电源按键 3-浓度按键 4-启动按键 5 - 保温按键 6-确认按键 7-沏茶自动结束（倒计时到0秒）8-缺水状态 9-缺茶状态
+     */
+    private Integer actionFlag;
+
     public Integer getConnStatus() {
         return connStatus;
     }
@@ -238,4 +243,11 @@ public class DevStatusRespDTO implements Serializable {
         this.countdownFlag = countdownFlag;
     }
 
+    public Integer getActionFlag() {
+        return actionFlag;
+    }
+
+    public void setActionFlag(Integer actionFlag) {
+        this.actionFlag = actionFlag;
+    }
 }

@@ -68,7 +68,7 @@ public class MockTerminal {
     private static String getDevStatusInfo(String deviceId) {
         DevStatusReportReq reportReq = new DevStatusReportReq();
         reportReq.setAction("statuspush");
-        reportReq.setActionFlag(DeviceConstant.DevStatus.HEART_BEAT);
+        reportReq.setActionFlag(DeviceConstant.DevReportActionFlag.HEART_BEAT);
         reportReq.setDeviceID(deviceId); // "32839884"
         DevStatusMsgResp msg = new DevStatusMsgResp();
         msg.setWorkstatus(DeviceConstant.WorkStatus.MAKING_TEA);

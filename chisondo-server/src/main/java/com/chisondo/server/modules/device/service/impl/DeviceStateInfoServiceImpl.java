@@ -11,6 +11,7 @@ import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
+import com.chisondo.server.modules.device.utils.DevWorkRemainTimeUtils;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import lombok.extern.slf4j.Slf4j;
@@ -149,9 +150,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 
 	/**
 	 * 处理设备工作剩余时间
-	 * @param devStatusResp
-	 * @param devStateInfo
-	 */
+	 *//*
 	private void processDevWorkRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
 		ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
 				new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
@@ -164,7 +163,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 					if (ValidateUtils.isNotEmpty(tempDevStatusResp.getReamin())) {
 						if (ValidateUtils.equals(0, tempDevStatusResp.getReamin())) {
 							break;
-						} else if (tempDevStatusResp.getReamin() != remainTime) {
+						}
+						if (tempDevStatusResp.getReamin() != remainTime) {
 							remainTime = tempDevStatusResp.getReamin();
 							i = remainTime;
 							continue;
@@ -180,7 +180,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			tempDevStatusResp.setReamin(0);
 			this.redisUtils.set(devStatusResp.getDeviceId(), tempDevStatusResp);
 		});
-	}
+	}*/
 
 	private DeviceStateInfoEntity buildDevStateInfo(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity existedDevState, DevStatusReportResp devStatusReportResp) {
 		DeviceStateInfoEntity devStateInfo = ValidateUtils.isNotEmpty(existedDevState) ? existedDevState : new DeviceStateInfoEntity();
@@ -236,8 +236,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 					devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 					devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
 					devStateInfo.setIndex(devStatusRespDTO.getIndex());
-					devStatusRespDTO.setChapuName(devStateInfo.getChapuImage());
-					devStatusRespDTO.setChapuImage(devStateInfo.getChapuName());
+					devStatusRespDTO.setChapuName(devStateInfo.getChapuName());
+					devStatusRespDTO.setChapuImage(devStateInfo.getChapuImage());
 					devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
 				}
 			} else if (ValidateUtils.equals(0, devStatusRespDTO.getChapuId())) {
@@ -266,31 +266,27 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			log.error("新设备[{}]信息不存在！", newDevId);
 			return;
 		}
-		DevStatusRespDTO devStatusResp = this.redisUtils.get(newDevId, DevStatusRespDTO.class);
+		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(newDevId, DevStatusRespDTO.class);
 		DeviceStateInfoEntity deviceState = new DeviceStateInfoEntity();
 		deviceState.setDeviceId(deviceInfo.getDeviceId());
 		deviceState.setUpdateTime(DateUtils.currentDate());
 		deviceState.setLastConnTime(DateUtils.currentDate());
-		deviceState.setMakeTemp(devStatusResp.getMakeTemp());
-		deviceState.setTemp(devStatusResp.getTemp());
-		deviceState.setWarm(devStatusResp.getWarm());
-		deviceState.setDensity(devStatusResp.getDensity());
-		deviceState.setWaterlv(devStatusResp.getWaterlv());
-		deviceState.setMakeDura(devStatusResp.getMakeDura());
-		deviceState.setReamin(devStatusResp.getReamin());
-		deviceState.setTea(devStatusResp.getTea());
-		deviceState.setWater(devStatusResp.getWater());
-		deviceState.setWork(devStatusResp.getWork());
-		if (this.hasWorkRemainTime(devStatusResp)) {
-			this.processDevWorkRemainTime(devStatusResp, deviceState);
+		deviceState.setMakeTemp(devStatusRespDTO.getMakeTemp());
+		deviceState.setTemp(devStatusRespDTO.getTemp());
+		deviceState.setWarm(devStatusRespDTO.getWarm());
+		deviceState.setDensity(devStatusRespDTO.getDensity());
+		deviceState.setWaterlv(devStatusRespDTO.getWaterlv());
+		deviceState.setMakeDura(devStatusRespDTO.getMakeDura());
+		deviceState.setReamin(devStatusRespDTO.getReamin());
+		deviceState.setTea(devStatusRespDTO.getTea());
+		deviceState.setWater(devStatusRespDTO.getWater());
+		deviceState.setWork(devStatusRespDTO.getWork());
+		if (DevWorkRemainTimeUtils.hasWorkRemainTime(devStatusRespDTO)) {
+			DevWorkRemainTimeUtils.asyncProcessWorkRemainTime(devStatusRespDTO, deviceState);
 		} else {
 			this.update(deviceState);
 		}
 		log.error("更新设备[{}]状态信息成功！新设备ID = {}", deviceInfo.getDeviceId(), deviceInfo.getNewDeviceId());
-	}
-
-	private boolean hasWorkRemainTime(DevStatusRespDTO devStatusResp) {
-		return ValidateUtils.isNotEmpty(devStatusResp.getReamin()) && devStatusResp.getReamin() > 0 && !devStatusResp.isCountdownFlag();
 	}
 
 	@Override
@@ -300,17 +296,15 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		this.save2Redis(devStatusResp, devStateInfo);
 	}
 
-	private void save2Redis(DevStatusRespDTO devStatusResp, DeviceStateInfoEntity devStateInfo) {
-		devStatusResp.setOnlineStatus(Constant.OnlineState.YES);
-		devStatusResp.setTeaSortId(devStateInfo.getTeaSortId());
-		devStatusResp.setTeaSortName(devStateInfo.getTeaSortName());
+	private void save2Redis(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
+		devStatusRespDTO.setOnlineStatus(Constant.OnlineState.YES);
+		devStatusRespDTO.setTeaSortId(devStateInfo.getTeaSortId());
+		devStatusRespDTO.setTeaSortName(devStateInfo.getTeaSortName());
 //		devStatusResp.setConnStatus(Constant.ConnectState.CONNECTED);
-		if (this.hasWorkRemainTime(devStatusResp)) {
-			devStatusResp.setCountdownFlag(true);
-			this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
-			this.processDevWorkRemainTime(devStatusResp, devStateInfo);
+		if (DevWorkRemainTimeUtils.hasWorkRemainTime(devStatusRespDTO)) {
+			DevWorkRemainTimeUtils.asyncProcessWorkRemainTime(devStatusRespDTO, devStateInfo);
 		} else {
-			this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
+			this.redisUtils.set(devStatusRespDTO.getDeviceId(), devStatusRespDTO);
 		}
 	}
 

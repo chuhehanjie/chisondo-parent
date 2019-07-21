@@ -18,6 +18,7 @@ import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceCtrlService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
+import com.chisondo.server.modules.device.utils.DevWorkRemainTimeUtils;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.entity.AppChapuMineEntity;
@@ -121,7 +122,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
                 }*/
                 // 需要倒计时处理
 				String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
-				this.processDevWorkingRemainTime(devHttpResp, deviceId);
+				DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
 				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 			} else {
 				// 设备接口服务返回失败
@@ -130,63 +131,8 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		}
 	}
 
-	/**
-	 * 处理设备工作剩余时间
-	 * 倒计时处理改为由设备上报时统一处理 update by dz 20190710
-	 * @param deviceHttpResp
-	 * @param deviceId
-	 */
-	@Deprecated
-	private void processDevWorkingRemainTime(final DeviceHttpResp deviceHttpResp, String deviceId) {
-		/*if (ValidateUtils.isEmpty(deviceHttpResp.getMsg())) {
-			log.error("设备[{}]MSG为空", deviceHttpResp.getDeviceID());
-			return;
-		}
-		DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(deviceHttpResp, deviceId);
-		if (this.hasWorkingRemainTime(deviceHttpResp)) {
-			this.asyncProcessWorkRemainTime(deviceHttpResp, devStateInfo);
-		} else {
-			this.deviceStateInfoService.update(devStateInfo);
-		}*/
-	}
-
 	private boolean hasWorkingRemainTime(DeviceHttpResp deviceHttpResp) {
 		return ValidateUtils.isNotEmpty(deviceHttpResp.getMsg().getRemaintime()) && deviceHttpResp.getMsg().getRemaintime() > 0;
-	}
-
-	/**
-	 * 异步处理工作剩余时间
-	 * @param deviceHttpResp
-	 * @param devStateInfo
-	 */
-	@Deprecated
-	private void asyncProcessWorkRemainTime(DeviceHttpResp deviceHttpResp, DeviceStateInfoEntity devStateInfo) {
-		log.info("开始倒计时处理，设备ID = {}, action = {}, remain = {}", deviceHttpResp.getDeviceID(), deviceHttpResp.getAction(), deviceHttpResp.getMsg().getRemaintime());
-		ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
-                new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
-		scheduledExecutorService.execute(() -> {
-            boolean needUpdate = true;
-            int remainTime = deviceHttpResp.getMsg().getRemaintime() - 1;
-            try {
-                for (int i = remainTime; i >= 0; i--) {
-                    DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
-                    if (ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
-                        needUpdate = false;
-                        break;
-                    }
-                    tempDevStatusResp.setReamin(i);
-                    devStateInfo.setReamin(i);
-                    this.redisUtils.set(deviceHttpResp.getDeviceID(), tempDevStatusResp);
-                    Thread.sleep(990);
-                }
-            } catch (InterruptedException e) {
-                log.error("更新设备工作剩余时间失败！", e);
-            }
-            if (!needUpdate) {
-                devStateInfo.setReamin(0);
-            }
-            this.deviceStateInfoService.update(devStateInfo);
-        });
 	}
 
 	private DeviceHttpReq buildDevHttpReq(StartOrReserveMakeTeaReqDTO startOrReserveTeaReq, String newDeviceId) {
@@ -341,7 +287,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			log.info("调用设置洗茶参数 HTTP 服务响应：{}", devHttpResp);
 		}
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
-		this.processDevWorkingRemainTime(devHttpResp, deviceId);
+		DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
@@ -373,7 +319,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			log.info("调用设置烧水参数 HTTP 服务响应：{}", devHttpResp);
 		}
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
-		this.processDevWorkingRemainTime(devHttpResp, deviceId);
+		DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
 		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
 	}
 
@@ -393,7 +339,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用停止沏茶/洗茶/烧水 HTTP 服务响应：{}", devHttpResp);
 		if (devHttpResp.isOK()) {
-			this.processDevWorkingRemainTime(devHttpResp, deviceId);
+			DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
 			// 更新用户泡茶表状态
 			UserMakeTeaEntity userMakeTea = userMakeTeaList.get(0);
 			userMakeTea.setStatus(Constant.UserMakeTeaStatus.CANCELED);

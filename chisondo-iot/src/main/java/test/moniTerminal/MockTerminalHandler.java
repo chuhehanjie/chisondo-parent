@@ -146,7 +146,7 @@ public class MockTerminalHandler extends SimpleChannelInboundHandler<String>{
 		resp.setRetn(MockData.SC_OK);
 		resp.setDesc(MockData.REQ_SUCCESS);
 		resp.setAction("qrydevicestateok");
-		resp.setActionFlag(DeviceConstant.DevStatus.HEART_BEAT);
+		resp.setActionFlag(DeviceConstant.DevReportActionFlag.HEART_BEAT);
 		resp.setDeviceID(deviceId);
 		DevStatusMsgResp msg = new DevStatusMsgResp();
 		msg.setWorkstatus(DeviceConstant.WorkStatus.MAKING_TEA);

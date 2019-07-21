@@ -116,7 +116,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         DeviceHttpResp resp = (DeviceHttpResp) msg;
         log.debug("设备控制响应信息 = {}", JSONObject.toJSONString(resp));
         // 同时更新设备状态
-        this.updateDevState2Redis(resp.getMsg(), resp.getDeviceID(), false);
+        this.updateDevState2Redis(resp.getMsg(), resp.getDeviceID(), null);
         // TODO 不需要发送设备状态到 HTTP update 20190705
         //this.httpUtils.sendDevState2Http(resp.getDeviceID(), false);
         this.sendTCPResp2Http(resp, resp.getDeviceID());
@@ -128,48 +128,53 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
      * 更新设备状态到 redis
      * @param devMsg
      * @param deviceId
+     * @param actionFlag
      */
-    private void updateDevState2Redis(DevStatusMsgResp devMsg, String deviceId, boolean newCreate) {
-        DevStatusRespDTO devStatusResp = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
-        if (null == devStatusResp) {
-            if (newCreate) {
-                devStatusResp = new DevStatusRespDTO();
-                devStatusResp.setDeviceId(deviceId);
-                devStatusResp.setOnlineStatus(1);
+    private void updateDevState2Redis(DevStatusMsgResp devMsg, String deviceId, Integer actionFlag) {
+        DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+        if (null == devStatusRespDTO) {
+            if (null != actionFlag) {
+                devStatusRespDTO = new DevStatusRespDTO();
+                devStatusRespDTO.setDeviceId(deviceId);
+                devStatusRespDTO.setOnlineStatus(1);
             } else {
                 log.error("设备[{}]状态信息在 redis 中不存在！", deviceId);
                 return;
             }
         }
+        if (null != actionFlag) {
+            devStatusRespDTO.setActionFlag(actionFlag);
+        }
         if (null != devMsg) {
             if (null != devMsg.getTemperature()) {
-                devStatusResp.setTemp(devMsg.getTemperature());
+                devStatusRespDTO.setTemp(devMsg.getTemperature());
+                devStatusRespDTO.setMakeTemp(devMsg.getTemperature());
             }
             if (null != devMsg.getChapuId()) {
-                devStatusResp.setChapuId(devMsg.getChapuId());
+                devStatusRespDTO.setChapuId(devMsg.getChapuId());
             }
             if (null != devMsg.getStep()) {
-                devStatusResp.setIndex(devMsg.getStep());
+                devStatusRespDTO.setIndex(devMsg.getStep());
             }
             if (null != devMsg.getWarmstatus()) {
-                devStatusResp.setWarm(devMsg.getWarmstatus());
+                devStatusRespDTO.setWarm(devMsg.getWarmstatus());
             }
             if (null != devMsg.getTaststatus()) {
-                devStatusResp.setDensity(devMsg.getTaststatus());
+                devStatusRespDTO.setDensity(devMsg.getTaststatus());
             }
             if (null != devMsg.getWaterlevel()) {
-                devStatusResp.setWaterlv(devMsg.getWaterlevel());
+                devStatusRespDTO.setWaterlv(devMsg.getWaterlevel());
             }
             if (null != devMsg.getSoak()) {
-                devStatusResp.setMakeDura(devMsg.getSoak());
+                devStatusRespDTO.setMakeDura(devMsg.getSoak());
             }
             // 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
-            devStatusResp.setReamin(this.getWorkRemainTime(devMsg.getRemaintime()));
-            devStatusResp.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
-            devStatusResp.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
-            devStatusResp.setWork(devMsg.getWorkstatus());
+            devStatusRespDTO.setReamin(this.getWorkRemainTime(devMsg.getRemaintime()));
+            devStatusRespDTO.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
+            devStatusRespDTO.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
+            devStatusRespDTO.setWork(devMsg.getWorkstatus());
         }
-        this.redisUtils.set(devStatusResp.getDeviceId(), devStatusResp);
+        this.redisUtils.set(devStatusRespDTO.getDeviceId(), devStatusRespDTO);
     }
 
     private Integer getWorkRemainTime(Integer remainTime) {
@@ -239,7 +244,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
         reportResp.setTcpValTime(new Date());
         // 设置连接设备的客户端IP
         reportResp.setClientIP(this.convertClientIP(deviceChannel.remoteAddress().toString()));
-        this.updateDevState2Redis(reportResp.getMsg(), deviceId, true);
+        this.updateDevState2Redis(reportResp.getMsg(), deviceId, reportResp.getActionFlag());
         this.httpUtils.reportDevStatus2App(reportResp);
     }
 

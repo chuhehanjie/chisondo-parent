@@ -4,7 +4,7 @@ public class DeviceConstant {
 
     public static final String CLOSE_SYMBOL = "\\n";
 
-    public interface DevStatus {
+    public interface DevReportActionFlag {
         /**
          * 心跳
          */
@@ -104,4 +104,5 @@ public class DeviceConstant {
          */
         int NORMAL = 1;
     }
+
 }
