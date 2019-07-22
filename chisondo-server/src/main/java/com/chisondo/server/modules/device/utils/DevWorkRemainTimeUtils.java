@@ -88,6 +88,7 @@ public final class DevWorkRemainTimeUtils {
                 new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
         scheduledExecutorService.execute(() -> {
             boolean stopChapuFlag = true;
+            boolean onlyOnce = true;
             int remainTime = devStatusRespDTO.getReamin() - 1;
             String deviceId = devStatusRespDTO.getDeviceId();
             devStatusRespDTO.setCountdownFlag(true);
@@ -101,8 +102,14 @@ public final class DevWorkRemainTimeUtils {
                     }
                     // actionFlag 为 4 时，表示结束茶谱，此时倒计时时间以传入的为准
                     if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, tempDevStatusResp.getActionFlag()) && stopChapuFlag) {
-                        i = remainTime;
+                        i = tempDevStatusResp.getReamin();
                         stopChapuFlag = false;
+                        log.info("启动按键了， remain = {}", i);
+                    }
+                    if (tempDevStatusResp.isStopMakeTea() && onlyOnce) {
+                        i = tempDevStatusResp.getReamin();
+                        onlyOnce = false;
+                        log.info("停止沏茶了， remain = {}", i);
                     }
                     tempDevStatusResp.setReamin(i);
                     getRedisUtils().set(deviceId, tempDevStatusResp);
@@ -114,6 +121,7 @@ public final class DevWorkRemainTimeUtils {
             } finally {
                 DevStatusRespDTO tempDevStatusResp = getRedisUtils().get(deviceId, DevStatusRespDTO.class);
                 tempDevStatusResp.setCountdownFlag(false);
+                tempDevStatusResp.setStopMakeTea(false);
                 getRedisUtils().set(deviceId, tempDevStatusResp);
                 log.error("设备[{}]倒计时结束！", deviceId);
             }

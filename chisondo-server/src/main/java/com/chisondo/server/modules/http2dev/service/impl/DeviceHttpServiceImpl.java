@@ -1,14 +1,13 @@
 package com.chisondo.server.modules.http2dev.service.impl;
 
 import com.chisondo.model.constant.DevReqURIConstant;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.req.*;
-import com.chisondo.model.http.resp.DevChapuHttpResp;
-import com.chisondo.model.http.resp.DevSettingHttpResp;
-import com.chisondo.model.http.resp.DevStatusReportResp;
-import com.chisondo.model.http.resp.DeviceHttpResp;
+import com.chisondo.model.http.resp.*;
 import com.chisondo.server.common.utils.Constant;
+import com.chisondo.server.common.utils.RedisUtils;
 import com.chisondo.server.common.utils.RestTemplateUtils;
-import com.chisondo.server.modules.device.service.DeviceStateInfoService;
+import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -25,15 +24,18 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     private RestTemplateUtils restTemplateUtils;
 
     @Autowired
-    private DeviceStateInfoService deviceStateInfoService;
+    private RedisUtils redisUtils;
 
     @Value("${chisondo.server.http2DevURL}")
     private String http2DevURL;
 
     private DeviceHttpResp deviceControl(String url, Object req, String deviceId) {
+        long startTime = System.currentTimeMillis();
         try {
-            this.deviceStateInfoService.updateConnectState(deviceId, Constant.ConnectState.CONNECTED);
+            this.updateDevConnectState(deviceId, Constant.ConnectState.CONNECTED);
+//            this.deviceStateInfoService.updateConnectState(deviceId, Constant.ConnectState.CONNECTED);
             DeviceHttpResp resp = this.restTemplateUtils.httpPostMediaTypeJson(url, DeviceHttpResp.class, req);
+            log.info("设备 [{}] 操作 [{}] 耗时 [{}] 毫秒", deviceId, resp.getAction(), (System.currentTimeMillis() - startTime));
             return resp;
         } catch (RestClientException e) {
             log.error("设备控制请求异常！", e);
@@ -43,8 +45,15 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
             return new DeviceHttpResp(HttpStatus.SC_INTERNAL_SERVER_ERROR, "设备控制请求异常！");
         } finally {
             // 将设备连接状态改为未连接
-            this.deviceStateInfoService.updateConnectState(deviceId, Constant.ConnectState.NOT_CONNECTED);
+            // this.deviceStateInfoService.updateConnectState(deviceId, Constant.ConnectState.NOT_CONNECTED);
+            this.updateDevConnectState(deviceId, Constant.ConnectState.NOT_CONNECTED);
         }
+    }
+
+    private void updateDevConnectState(String deviceId, int connectState) {
+        DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(deviceId, DevStatusRespDTO.class);
+        devStatusRespDTO.setConnStatus(connectState);
+        this.redisUtils.set(deviceId, devStatusRespDTO);
     }
 
     /**
@@ -103,7 +112,14 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     @Override
     public DeviceHttpResp stopWork(StopWorkHttpReq req) {
         req.setAction("stopwork");
-        return this.deviceControl(this.http2DevURL + DevReqURIConstant.STOP_WORK, req, req.getDeviceID());
+        DeviceHttpResp resp = this.deviceControl(this.http2DevURL + DevReqURIConstant.STOP_WORK, req, req.getDeviceID());
+        if (ValidateUtils.equals(DeviceConstant.StopWorkActionFlag.STOP_MAKE_TEA, req.getActionflag()) && resp.isOK()) {
+            // 如果是停止茶谱沏茶并且响应成功，需要设置当前为停止沏茶标识
+            DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(req.getDeviceID(), DevStatusRespDTO.class);
+            devStatusRespDTO.setStopMakeTea(true);
+            this.redisUtils.set(req.getDeviceID(), devStatusRespDTO);
+        }
+        return resp;
     }
 
     /**

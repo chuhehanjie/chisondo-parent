@@ -43,6 +43,11 @@ public class DevStatusRespDTO implements Serializable {
      */
     private Integer actionFlag;
 
+    /**
+     * 做停止沏茶
+     */
+    private boolean isStopMakeTea;
+
     public Integer getConnStatus() {
         return connStatus;
     }
@@ -249,5 +254,13 @@ public class DevStatusRespDTO implements Serializable {
 
     public void setActionFlag(Integer actionFlag) {
         this.actionFlag = actionFlag;
+    }
+
+    public boolean isStopMakeTea() {
+        return isStopMakeTea;
+    }
+
+    public void setStopMakeTea(boolean stopMakeTea) {
+        this.isStopMakeTea = stopMakeTea;
     }
 }

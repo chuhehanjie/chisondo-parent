@@ -56,20 +56,29 @@ public class DevOperateLogAspect {
 		long endTime = System.currentTimeMillis();
 		long callTime = endTime - startTime;
 		Method method = this.getCallMethod(point);
-		log.error("执行业务方法 [{}] 共耗时 {} 毫秒", method.getName() , callTime);
 		if (!this.isOldDev(point)) {
 			// 不是老设备才记录操作日志
-			DevOperateLog devOperateLog = method.getAnnotation(DevOperateLog.class);
-			if (devOperateLog.asyncCall()) {
+			DevOperateLog annotation = method.getAnnotation(DevOperateLog.class);
+			DeviceOperateLogEntity devOperateLog = this.buildDevOperLog(startTime, endTime, annotation);
+			if (annotation.asyncCall()) {
 				ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1,
 						new BasicThreadFactory.Builder().namingPattern("scheduled-pool-%d").daemon(true).build());
-				scheduledExecutorService.execute(() -> this.saveDevOperateLog(point, result, startTime, endTime, devOperateLog.value()));
+				scheduledExecutorService.execute(() -> this.saveDevOperateLog(point, result, devOperateLog));
 			} else {
 				//保存设备操作日志
-				this.saveDevOperateLog(point, result, startTime, endTime, devOperateLog.value());
+				this.saveDevOperateLog(point, result, devOperateLog);
 			}
 		}
+		log.error("执行业务方法 [{}] 共耗时 {} 毫秒", method.getName() , callTime);
 		return result;
+	}
+
+	private DeviceOperateLogEntity buildDevOperLog(long startTime, long endTime, DevOperateLog annotation) {
+		DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
+		devOperateLog.setStartTime(new Date(startTime));
+		devOperateLog.setEndTime(new Date(endTime));
+		devOperateLog.setDesc(annotation.value());
+		return devOperateLog;
 	}
 
 	private boolean isOldDev(ProceedingJoinPoint point) {
@@ -83,22 +92,18 @@ public class DevOperateLogAspect {
 		return method;
 	}
 
-	private void saveDevOperateLog(ProceedingJoinPoint joinPoint, Object result, long startTime, long endTime, String methodDesc) {
+	private void saveDevOperateLog(ProceedingJoinPoint joinPoint, Object result, DeviceOperateLogEntity devOperateLog) {
 		try {
 			CommonReq req = (CommonReq) joinPoint.getArgs()[0];
 			CommonResp resp = (CommonResp) result;
 			UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
 			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
-			DeviceOperateLogEntity devOperateLog = new DeviceOperateLogEntity();
 			devOperateLog.setDeviceId(ValidateUtils.isEmpty(deviceInfo) ? "" : deviceInfo.getDeviceId().toString());
 			devOperateLog.setTeamanId(ValidateUtils.isEmpty(user) ? "" : user.getMemberId() + "");
 			devOperateLog.setUserMobileNo(ValidateUtils.isEmpty(user) ? "" :user.getPhone());
 			devOperateLog.setOperType(0); // TODO 操作类型未定义
 			devOperateLog.setReqContent(this.buildReqContent(req));
 			devOperateLog.setResContent(JSONObject.toJSONString(resp));
-			devOperateLog.setStartTime(new Date(startTime));
-			devOperateLog.setEndTime(new Date(endTime));
-			devOperateLog.setDesc(methodDesc);
 			devOperateLog.setOperResult(resp.getRetn() == HttpStatus.SC_OK ? Constant.RespResult.SUCCESS : Constant.RespResult.FAILED);
 			this.devOperateLogService.save(devOperateLog);
 		} catch (Exception e) {

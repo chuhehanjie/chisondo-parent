@@ -80,7 +80,7 @@ public class RestTemplateUtils {
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<String> formEntity = new HttpEntity<String>(JSON.toJSONString(params), headers);
         T result = restTemplate.postForObject(url, formEntity, respType);
-        log.info("Http Post请求   MediaType = application/json  \r\nurl = {}  \r\nparam = {} \r\nresult = {} \r\n请求耗时 = {}ms", new String[]{url, JSON.toJSONString(params), JSON.toJSONString(result), (System.currentTimeMillis() - start) + ""});
+        //log.info("Http Post请求   MediaType = application/json  \r\nurl = {}  \r\nparam = {} \r\nresult = {} \r\n请求耗时 = {}ms", new String[]{url, JSON.toJSONString(params), JSON.toJSONString(result), (System.currentTimeMillis() - start) + ""});
         return result;
     }
 

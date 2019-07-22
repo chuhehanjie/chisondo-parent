@@ -49,7 +49,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         }
         // 时间戳如果大于 当前时间5分钟会返回“请求超时”
         if (this.isReqTimeout(timestamp)) {
-            CommonUtils.outJSONResponse(response, CommonResp.error(HttpStatus.SC_REQUEST_TIMEOUT, "请求超时！"));
+            CommonUtils.outJSONResponse(response, CommonResp.error(HttpStatus.SC_REQUEST_TIMEOUT, "请求时间戳超时！"));
             return false;
         }
 //        System.currentTimeMillis()

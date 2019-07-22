@@ -128,9 +128,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		//  根据设备ID查询设备状态信息是否存在
 		DeviceStateInfoEntity existedDevState = this.queryObject(devStatusReportResp.getDbDeviceId());
 		DevStatusRespDTO devStatusResp = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
-		log.info("从 redis 中取设备[{}]状态信息 = {}", devStatusResp.getDeviceId(), JSONObject.toJSONString(devStatusResp));
+		//log.info("从 redis 中取设备[{}]状态信息 = {}", devStatusResp.getDeviceId(), JSONObject.toJSONString(devStatusResp));
 		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusResp, existedDevState, devStatusReportResp);
-//		log.info("devStateInfo JSON = {}", JSONObject.toJSONString(devStateInfo));
 		if (ValidateUtils.isEmpty(existedDevState)) {
 			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
 			devStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());
