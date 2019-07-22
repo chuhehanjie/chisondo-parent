@@ -61,7 +61,7 @@ public class DeviceChannelInitializer extends ChannelInitializer<SocketChannel> 
     }
 
     //心跳
-    private static final int READ_IDEL_TIME_OUT = 1250; // 读超时
+    private static final int READ_IDEL_TIME_OUT = 125; // 读超时
     private static final int WRITE_IDEL_TIME_OUT = 216;// 写超时
     private static final int ALL_IDEL_TIME_OUT = 300; // 所有超时
 
