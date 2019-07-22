@@ -56,7 +56,7 @@ public class DevOperateLogAspect {
 		long endTime = System.currentTimeMillis();
 		long callTime = endTime - startTime;
 		Method method = this.getCallMethod(point);
-		log.error("执行业务方法 [{}] 共耗时 {} 毫秒",method.getName() , callTime);
+		log.error("执行业务方法 [{}] 共耗时 {} 毫秒", method.getName() , callTime);
 		if (!this.isOldDev(point)) {
 			// 不是老设备才记录操作日志
 			DevOperateLog devOperateLog = method.getAnnotation(DevOperateLog.class);
