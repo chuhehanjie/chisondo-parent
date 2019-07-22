@@ -87,7 +87,6 @@ public final class DevWorkRemainTimeUtils {
         ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
                 new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
         scheduledExecutorService.execute(() -> {
-            boolean needUpdate = true;
             boolean stopChapuFlag = true;
             int remainTime = devStatusRespDTO.getReamin() - 1;
             String deviceId = devStatusRespDTO.getDeviceId();
@@ -97,32 +96,27 @@ public final class DevWorkRemainTimeUtils {
                 for (int i = remainTime; i >= 0; i--) {
                     DevStatusRespDTO tempDevStatusResp = getRedisUtils().get(deviceId, DevStatusRespDTO.class);
                     if (ValidateUtils.equals(tempDevStatusResp.getReamin(), 0)) {
-                        needUpdate = false;
                         getRedisUtils().set(deviceId, tempDevStatusResp);
                         break;
                     }
                     // actionFlag 为 4 时，表示结束茶谱，此时倒计时时间以传入的为准
                     if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, tempDevStatusResp.getActionFlag()) && stopChapuFlag) {
-                        remainTime = tempDevStatusResp.getReamin();
                         i = remainTime;
                         stopChapuFlag = false;
                     }
                     tempDevStatusResp.setReamin(i);
-                    devStateInfo.setReamin(i);
-                    if (i == 0) {
-                        tempDevStatusResp.setCountdownFlag(false);
-                    }
                     getRedisUtils().set(deviceId, tempDevStatusResp);
+                    log.info("剩余时间 = {}", i);
                     Thread.sleep(990);
                 }
             } catch (InterruptedException e) {
                 log.error("更新设备工作剩余时间失败！", e);
+            } finally {
+                DevStatusRespDTO tempDevStatusResp = getRedisUtils().get(deviceId, DevStatusRespDTO.class);
+                tempDevStatusResp.setCountdownFlag(false);
+                getRedisUtils().set(deviceId, tempDevStatusResp);
+                log.error("设备[{}]倒计时结束！", deviceId);
             }
-            if (!needUpdate) {
-                devStateInfo.setReamin(0);
-            }
-            getDevStateInfoService().update(devStateInfo);
-            log.error("设备[{}]倒计时结束！", deviceId);
         });
     }
 
