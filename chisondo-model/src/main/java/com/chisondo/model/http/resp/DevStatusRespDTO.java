@@ -44,9 +44,9 @@ public class DevStatusRespDTO implements Serializable {
     private Integer actionFlag;
 
     /**
-     * 做停止沏茶
+     * 做停止操作
      */
-    private boolean isStopMakeTea;
+    private boolean isStopAction;
 
     public Integer getConnStatus() {
         return connStatus;
@@ -256,11 +256,11 @@ public class DevStatusRespDTO implements Serializable {
         this.actionFlag = actionFlag;
     }
 
-    public boolean isStopMakeTea() {
-        return isStopMakeTea;
+    public boolean isStopAction() {
+        return isStopAction;
     }
 
-    public void setStopMakeTea(boolean stopMakeTea) {
-        this.isStopMakeTea = stopMakeTea;
+    public void setStopAction(boolean stopAction) {
+        this.isStopAction = stopAction;
     }
 }

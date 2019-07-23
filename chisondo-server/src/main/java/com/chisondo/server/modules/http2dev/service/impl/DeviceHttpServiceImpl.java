@@ -1,13 +1,11 @@
 package com.chisondo.server.modules.http2dev.service.impl;
 
 import com.chisondo.model.constant.DevReqURIConstant;
-import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.req.*;
 import com.chisondo.model.http.resp.*;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.RedisUtils;
 import com.chisondo.server.common.utils.RestTemplateUtils;
-import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
@@ -116,7 +114,7 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
         if (resp.isOK()) {
             // 需要设置当前为停止沏茶标识
             DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(req.getDeviceID(), DevStatusRespDTO.class);
-            devStatusRespDTO.setStopMakeTea(true);
+            devStatusRespDTO.setStopAction(true);
             this.redisUtils.set(req.getDeviceID(), devStatusRespDTO);
         }
         return resp;

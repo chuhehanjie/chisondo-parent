@@ -696,7 +696,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		DeviceHttpResp devHttpResp = this.deviceHttpService.lockOrUnlockDev(devHttpReq);
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用锁定或解锁设备 HTTP 服务响应：{}", devHttpResp);
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	@Override
@@ -706,7 +706,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		DeviceHttpResp devHttpResp = this.deviceHttpService.devUpgrade(devHttpReq);
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用设备升级 HTTP 服务响应：{}", devHttpResp);
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	private DevUpgradeHttpReq buildDevUpgradeHttpReq(DevUpgradeReqDTO devUpgradeReqDTO) {
