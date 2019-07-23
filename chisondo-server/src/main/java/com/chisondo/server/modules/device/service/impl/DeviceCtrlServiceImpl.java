@@ -123,7 +123,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
                 // 需要倒计时处理
 				String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 				DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
-				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+				return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 			} else {
 				// 设备接口服务返回失败
 				return CommonResp.error(devHttpResp.getRetn(), devHttpResp.getDesc());
@@ -288,7 +288,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		}
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 		DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	@Override
@@ -320,7 +320,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		}
 		String deviceId = (String) req.getAttrByKey(Keys.DEVICE_ID);
 		DevWorkRemainTimeUtils.processDevWorkingRemainTime(devHttpResp, deviceId);
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	@Override
@@ -346,7 +346,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			userMakeTea.setCancelTime(DateUtils.currentDate());
 			this.userMakeTeaService.update(userMakeTea);
 		}
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	private List<UserMakeTeaEntity> queryUserMakeTeaRecords(String deviceId) {
@@ -413,7 +413,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			this.updateDevChapuStatus(useTeaSpectrumReq, teaSpectrum, useMakeTea);
 			this.updateMyTeaSpectrum(useMakeTea);
 		}
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	/**
@@ -513,7 +513,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 			req.addAttr(Keys.DEV_REQ, stopWorkReq);
         }
 		log.info("调用保温控制 HTTP 服务响应：{}", devHttpResp);
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
 	}
 
 	@Override
@@ -597,7 +597,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		DeviceHttpResp devHttpResp = this.deviceHttpService.setDevChapuParam(devHttpReq);
 		req.addAttr(Keys.DEV_REQ, devHttpReq);
 		log.info("调用更换液晶屏茶谱 HTTP 服务响应：{}", devHttpResp);
-		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc());
+		return new CommonResp(devHttpResp.getRetn(), devHttpResp.getDesc(), JSONObject.toJSONString(devHttpResp));
     }
 
 	@Override

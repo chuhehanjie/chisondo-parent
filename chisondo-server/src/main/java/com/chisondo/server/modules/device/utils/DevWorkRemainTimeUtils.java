@@ -71,7 +71,7 @@ public final class DevWorkRemainTimeUtils {
             devStatusRespDTO.setMakeDura(devMsg.getSoak());
         }
         // 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
-        devStatusRespDTO.setReamin(ValidateUtils.isEmpty(devMsg.getRemaintime()) ? null : (devMsg.getRemaintime() > 0 ? devMsg.getRemaintime() + 2 : 0));
+        devStatusRespDTO.setReamin(ValidateUtils.isEmpty(devMsg.getRemaintime()) ? null : (devMsg.getRemaintime() > 0 ? devMsg.getRemaintime() + 1 : 0));
         devStatusRespDTO.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusRespDTO.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusRespDTO.setWork(devMsg.getWorkstatus());

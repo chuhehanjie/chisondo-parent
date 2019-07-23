@@ -113,8 +113,8 @@ public class DeviceHttpServiceImpl implements DeviceHttpService {
     public DeviceHttpResp stopWork(StopWorkHttpReq req) {
         req.setAction("stopwork");
         DeviceHttpResp resp = this.deviceControl(this.http2DevURL + DevReqURIConstant.STOP_WORK, req, req.getDeviceID());
-        if (ValidateUtils.equals(DeviceConstant.StopWorkActionFlag.STOP_MAKE_TEA, req.getActionflag()) && resp.isOK()) {
-            // 如果是停止茶谱沏茶并且响应成功，需要设置当前为停止沏茶标识
+        if (resp.isOK()) {
+            // 需要设置当前为停止沏茶标识
             DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(req.getDeviceID(), DevStatusRespDTO.class);
             devStatusRespDTO.setStopMakeTea(true);
             this.redisUtils.set(req.getDeviceID(), devStatusRespDTO);

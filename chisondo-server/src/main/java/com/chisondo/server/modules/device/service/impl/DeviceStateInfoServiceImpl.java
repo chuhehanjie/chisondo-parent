@@ -249,6 +249,11 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			// 2，当设备上报状态workstatus​为3（烧水）时，结束茶谱沏茶，返回普通沏茶。
 			CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
 		}
+		// 设备启动按键 需要设置 makeType 为茶谱沏茶
+		if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, devStatusRespDTO.getActionFlag())) {
+			devStateInfo.setMakeType(DeviceConstant.MakeType.TEA_SPECTRUM);
+			devStatusRespDTO.setMakeType(DeviceConstant.MakeType.TEA_SPECTRUM);
+		}
 		devStateInfo.setWork(devStatusRespDTO.getWork());
 	}
 
