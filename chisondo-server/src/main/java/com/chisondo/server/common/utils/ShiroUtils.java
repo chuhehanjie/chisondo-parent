@@ -1,3 +1,4 @@
+/*
 package com.chisondo.server.common.utils;
 
 import com.chisondo.server.common.exception.CommonException;
@@ -6,13 +7,15 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
+*/
 /**
  * Shiro工具类
  * 
  * @author ding.zhong
  * @email 258321511@qq.com
  * @date Mar 12.19
- */
+ *//*
+
 public class ShiroUtils {
 
 	public static Session getSession() {
@@ -53,3 +56,4 @@ public class ShiroUtils {
 	}
 
 }
+*/

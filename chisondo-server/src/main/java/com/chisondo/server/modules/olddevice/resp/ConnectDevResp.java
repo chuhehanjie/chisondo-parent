@@ -1,7 +1,6 @@
 package com.chisondo.server.modules.olddevice.resp;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.HttpStatus;
 
 import java.io.Serializable;
 

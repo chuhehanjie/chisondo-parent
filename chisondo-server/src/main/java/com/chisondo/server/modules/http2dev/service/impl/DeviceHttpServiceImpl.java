@@ -1,6 +1,7 @@
 package com.chisondo.server.modules.http2dev.service.impl;
 
 import com.chisondo.model.constant.DevReqURIConstant;
+import com.chisondo.model.http.HttpStatus;
 import com.chisondo.model.http.req.*;
 import com.chisondo.model.http.resp.*;
 import com.chisondo.server.common.utils.Constant;
@@ -8,7 +9,6 @@ import com.chisondo.server.common.utils.RedisUtils;
 import com.chisondo.server.common.utils.RestTemplateUtils;
 import com.chisondo.server.modules.http2dev.service.DeviceHttpService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -2,7 +2,7 @@ package com.chisondo.server.common.http;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.apache.http.HttpStatus;
+import com.chisondo.model.http.HttpStatus;
 
 import java.io.Serializable;
 

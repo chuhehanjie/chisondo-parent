@@ -1,7 +1,5 @@
 package com.chisondo.server.common.core;
 
-import com.chisondo.server.modules.device.entity.SysUserEntity;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +13,4 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractController {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected SysUserEntity getUser() {
-		return (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
-	}
-
-	protected Long getUserId() {
-		return getUser().getUserId();
-	}
 }

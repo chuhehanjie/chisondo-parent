@@ -1,7 +1,7 @@
 package com.chisondo.server.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.HttpStatus;
+import com.chisondo.model.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;

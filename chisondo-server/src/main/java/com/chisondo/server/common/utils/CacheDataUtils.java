@@ -1,6 +1,5 @@
 package com.chisondo.server.common.utils;
 
-import com.alibaba.fastjson.JSONObject;
 import com.chisondo.server.modules.sys.entity.CompanyEntity;
 import com.chisondo.server.modules.sys.entity.SysConfigEntity;
 import com.chisondo.server.modules.sys.service.CompanyService;

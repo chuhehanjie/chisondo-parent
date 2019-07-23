@@ -1,6 +1,7 @@
 package com.chisondo.server.common.aspect;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chisondo.model.http.HttpStatus;
 import com.chisondo.server.common.annotation.DevOperateLog;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
@@ -13,7 +14,6 @@ import com.chisondo.server.modules.device.service.DeviceOperateLogService;
 import com.chisondo.server.modules.user.entity.UserVipEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.apache.http.HttpStatus;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

@@ -1,5 +1,6 @@
 package com.chisondo.server.common.interceptor;
 
+import com.chisondo.model.http.HttpStatus;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.CacheDataUtils;
 import com.chisondo.server.common.utils.CommonUtils;
@@ -8,7 +9,6 @@ import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.controller.DeviceStatusReportController;
 import com.chisondo.server.modules.sys.entity.CompanyEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -16,7 +16,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
 
 @Slf4j
 @Component

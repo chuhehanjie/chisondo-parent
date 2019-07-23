@@ -1,6 +1,5 @@
 package com.chisondo.server.modules.device.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.resp.DevStatusReportResp;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
@@ -15,14 +14,11 @@ import com.chisondo.server.modules.device.utils.DevWorkRemainTimeUtils;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 
 @Service("deviceStateInfoService")
