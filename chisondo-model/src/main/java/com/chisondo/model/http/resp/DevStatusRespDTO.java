@@ -263,4 +263,9 @@ public class DevStatusRespDTO implements Serializable {
     public void setStopAction(boolean stopAction) {
         this.isStopAction = stopAction;
     }
+
+    @Override
+    public String toString() {
+        return "<< 设备ID = " + this.deviceId + ", actionFlag = " + this.actionFlag + ", 剩余时间 = " + this.reamin + ", 茶谱ID = " + this.chapuId + ", work = " + this.work + " >>";
+    }
 }

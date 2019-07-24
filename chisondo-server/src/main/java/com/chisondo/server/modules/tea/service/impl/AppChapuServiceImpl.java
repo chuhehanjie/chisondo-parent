@@ -49,10 +49,20 @@ public class AppChapuServiceImpl implements AppChapuService {
 
 	@Autowired
 	private UserDeviceService userDeviceService;
+
+	@Autowired
+	private RedisUtils redisUtils;
 	
 	@Override
 	public AppChapuEntity queryObject(Integer chapuId){
-		return appChapuDao.queryObject(chapuId);
+		AppChapuEntity teaSpectrum = this.redisUtils.get(Keys.PREFIX_TEA_SPECTRUM + chapuId, AppChapuEntity.class);
+		if (ValidateUtils.isEmpty(teaSpectrum)) {
+			teaSpectrum = this.appChapuDao.queryObject(chapuId);
+			if (ValidateUtils.isNotEmpty(teaSpectrum)) {
+				this.redisUtils.set(Keys.PREFIX_TEA_SPECTRUM + chapuId, teaSpectrum, 500);
+			}
+		}
+		return teaSpectrum;
 	}
 	
 	@Override

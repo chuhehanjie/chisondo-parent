@@ -11,6 +11,7 @@ import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.ActivedDeviceInfoService;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
 import com.chisondo.server.modules.device.utils.DevWorkRemainTimeUtils;
+import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
 import com.chisondo.server.modules.tea.entity.AppChapuEntity;
 import com.chisondo.server.modules.tea.service.AppChapuService;
 import lombok.extern.slf4j.Slf4j;
@@ -123,9 +124,9 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	public void updateDevStatus(DevStatusReportResp devStatusReportResp) {
 		//  根据设备ID查询设备状态信息是否存在
 		DeviceStateInfoEntity existedDevState = this.queryObject(devStatusReportResp.getDbDeviceId());
-		DevStatusRespDTO devStatusResp = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
-		//log.info("从 redis 中取设备[{}]状态信息 = {}", devStatusResp.getDeviceId(), JSONObject.toJSONString(devStatusResp));
-		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusResp, existedDevState, devStatusReportResp);
+		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
+		log.info("从 redis 中取设备状态信息 = {}", devStatusRespDTO);
+		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusRespDTO, existedDevState, devStatusReportResp);
 		if (ValidateUtils.isEmpty(existedDevState)) {
 			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
 			devStateInfo.setClientIpAddress(devStatusReportResp.getClientIP());
@@ -140,47 +141,12 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			log.info("updateDevStatus success");
 		}
 		// 把设备状态信息保存到 redis 中
-		this.save2Redis(devStatusResp, devStateInfo);
+		this.save2Redis(devStatusRespDTO, devStateInfo);
 	}
-
-	/**
-	 * 处理设备工作剩余时间
-	 *//*
-	private void processDevWorkRemainTime(final DevStatusRespDTO devStatusResp, final DeviceStateInfoEntity devStateInfo) {
-		ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
-				new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
-		scheduledExecutorService.execute(() -> {
-			log.info("开始倒计时处理，设备ID = {}, remain = {}", devStatusResp.getDeviceId(), devStatusResp.getReamin());
-			int remainTime = devStatusResp.getReamin() - 1;
-			try {
-				for (int i = remainTime; i >= 0; i--) {
-					DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
-					if (ValidateUtils.isNotEmpty(tempDevStatusResp.getReamin())) {
-						if (ValidateUtils.equals(0, tempDevStatusResp.getReamin())) {
-							break;
-						}
-						if (tempDevStatusResp.getReamin() != remainTime) {
-							remainTime = tempDevStatusResp.getReamin();
-							i = remainTime;
-							continue;
-						}
-					}
-					Thread.sleep(990);
-				}
-			} catch (InterruptedException e) {
-				log.error("更新设备工作剩余时间失败！", e);
-			}
-			DevStatusRespDTO tempDevStatusResp = this.redisUtils.get(devStatusResp.getDeviceId(), DevStatusRespDTO.class);
-			tempDevStatusResp.setCountdownFlag(false);
-			tempDevStatusResp.setReamin(0);
-			this.redisUtils.set(devStatusResp.getDeviceId(), tempDevStatusResp);
-		});
-	}*/
 
 	private DeviceStateInfoEntity buildDevStateInfo(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity existedDevState, DevStatusReportResp devStatusReportResp) {
 		DeviceStateInfoEntity devStateInfo = ValidateUtils.isNotEmpty(existedDevState) ? existedDevState : new DeviceStateInfoEntity();
 		devStateInfo.setOnlineState(Constant.OnlineState.YES);
-//		devStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		devStateInfo.setLastConnTime(devStateInfo.getUpdateTime());
 		devStateInfo.setUpdateTime(DateUtils.currentDate());
 		devStateInfo.setDeviceId(devStatusReportResp.getDbDeviceId());
@@ -189,7 +155,6 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		if (ValidateUtils.isNotEmpty(devStatusRespDTO.getIndex())) {
 			devStateInfo.setIndex(devStatusRespDTO.getIndex());
 		}
-//		devStateInfo.setDeviceStateInfo("");
 		devStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
 		devStateInfo.setMakeTemp(devStatusRespDTO.getTemp());
 		devStateInfo.setTemp(devStatusRespDTO.getTemp());
@@ -231,11 +196,12 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 					devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
 					devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
 					devStateInfo.setIndex(devStatusRespDTO.getIndex());
+					devStatusRespDTO.setChapuId(teaSpectrum.getChapuId());
 					devStatusRespDTO.setChapuName(devStateInfo.getChapuName());
 					devStatusRespDTO.setChapuImage(devStateInfo.getChapuImage());
 					devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
 				}
-			} else if (ValidateUtils.equals(0, devStatusRespDTO.getChapuId())) {
+			} else if (ValidateUtils.equals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId())) {
 				log.info("上报的茶谱ID为0，需要结束茶谱");
 				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
 				CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
@@ -249,6 +215,10 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, devStatusRespDTO.getActionFlag())) {
 			devStateInfo.setMakeType(DeviceConstant.MakeType.TEA_SPECTRUM);
 			devStatusRespDTO.setMakeType(DeviceConstant.MakeType.TEA_SPECTRUM);
+		}
+		// 上报的茶谱ID为0，但设备状态中的茶谱ID不为0，则需要设置上报茶谱ID为设备状态中的茶谱ID
+		if (ValidateUtils.equals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStateInfo.getChapuId())) {
+			devStatusRespDTO.setChapuId(devStateInfo.getChapuId());
 		}
 		devStateInfo.setWork(devStatusRespDTO.getWork());
 	}

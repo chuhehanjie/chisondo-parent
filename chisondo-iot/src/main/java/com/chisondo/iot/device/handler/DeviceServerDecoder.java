@@ -28,7 +28,7 @@ public class DeviceServerDecoder extends StringDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         String json = IOTUtils.convertByteBufToString(msg);
         log.error("decoder msg 接收设备[{}]响应 = {}", ctx.channel().remoteAddress(), json);
-        if (StringUtils.isEmpty(json)) {
+        if (StringUtils.isEmpty(json) || StringUtils.isEmpty(json.trim())) {
             return;
         }
         json = this.filterCloseSymbol(json);

@@ -4,6 +4,11 @@ public class TeaSpectrumConstant {
 
     public static final int QUERY_ALL = 0;
 
+    /**
+     * 空茶谱
+     */
+    public static final int EMPTY_TEA_SPECTRUM = 0;
+
     public interface StandardFlag {
         int STANDARD = 1;
         int NORMAL = 2;

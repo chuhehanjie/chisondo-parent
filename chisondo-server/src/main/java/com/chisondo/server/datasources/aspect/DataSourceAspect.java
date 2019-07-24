@@ -55,11 +55,11 @@ public class DataSourceAspect implements Ordered {
     public Object around4SecondDS(ProceedingJoinPoint point) throws Throwable {
         try {
             DynamicDataSource.setDataSource(DataSourceNames.SECOND);
-            logger.debug("dataSource切换到：second");
+//            logger.debug("dataSource切换到：second");
             return point.proceed();
         } finally {
             DynamicDataSource.clearDataSource();
-            logger.debug("clean second datasource");
+//            logger.debug("clean second datasource");
         }
     }
 
@@ -67,11 +67,11 @@ public class DataSourceAspect implements Ordered {
     public Object around4ThirdDS(ProceedingJoinPoint point) throws Throwable {
         try {
             DynamicDataSource.setDataSource(DataSourceNames.THIRD);
-            logger.debug("dataSource切换到：third");
+//            logger.debug("dataSource切换到：third");
             return point.proceed();
         } finally {
             DynamicDataSource.clearDataSource();
-            logger.debug("clean third datasource");
+//            logger.debug("clean third datasource");
         }
     }
 
