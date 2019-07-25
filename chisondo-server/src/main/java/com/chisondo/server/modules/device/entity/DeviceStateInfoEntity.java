@@ -307,7 +307,7 @@ public class DeviceStateInfoEntity  implements Serializable {
 	}
 
 	public Integer getChapuId() {
-		return null == chapuId ? 0 : chapuId;
+		return this.chapuId;
 	}
 
 	public void setChapuId(Integer chapuId) {
@@ -329,4 +329,5 @@ public class DeviceStateInfoEntity  implements Serializable {
 	public void setMakeTeaByChapuFlag(Integer makeTeaByChapuFlag) {
 		this.makeTeaByChapuFlag = makeTeaByChapuFlag;
 	}
+
 }

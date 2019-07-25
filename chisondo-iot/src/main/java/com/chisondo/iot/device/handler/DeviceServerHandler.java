@@ -6,6 +6,7 @@ import com.chisondo.iot.common.utils.HttpUtils;
 import com.chisondo.iot.common.utils.IOTUtils;
 import com.chisondo.iot.device.server.DevTcpChannelManager;
 import com.chisondo.iot.http.server.DevHttpChannelManager;
+import com.chisondo.model.constant.DeviceConstant;
 import com.chisondo.model.http.resp.*;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
@@ -151,7 +152,16 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
                 devStatusRespDTO.setMakeTemp(devMsg.getTemperature());
             }
             if (null != devMsg.getChapuId()) {
-                devStatusRespDTO.setChapuId(devMsg.getChapuId());
+                if (0 == devMsg.getChapuId() && null == devStatusRespDTO.getChapuId()) {
+                    devStatusRespDTO.setChapuId(devMsg.getChapuId());
+                }
+                if (0 != devMsg.getChapuId()) {
+                    devStatusRespDTO.setChapuId(devMsg.getChapuId());
+                }
+            }
+            // work = 1 且 茶谱ID = 0,则需要设置茶谱ID为0
+            if (ObjectUtils.nullSafeEquals(1, devMsg.getWorkstatus()) && ObjectUtils.nullSafeEquals(0, devMsg.getChapuId())) {
+                devStatusRespDTO.setChapuId(0);
             }
             if (null != devMsg.getStep()) {
                 devStatusRespDTO.setIndex(devMsg.getStep());
@@ -178,7 +188,7 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
     }
 
     private Integer getWorkRemainTime(Integer remainTime) {
-        return StringUtils.isEmpty(remainTime) ? null : (remainTime > 0 ? remainTime + 1 : 0);
+        return StringUtils.isEmpty(remainTime) ? null : (remainTime > 0 ? remainTime + DeviceConstant.PLUS_REMAIN : 0);
     }
 
     private void sendTCPResp2Http(Object resp, String deviceId) {

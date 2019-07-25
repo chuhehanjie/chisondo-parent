@@ -125,7 +125,6 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		//  根据设备ID查询设备状态信息是否存在
 		DeviceStateInfoEntity existedDevState = this.queryObject(devStatusReportResp.getDbDeviceId());
 		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(devStatusReportResp.getDeviceID(), DevStatusRespDTO.class);
-		log.info("从 redis 中取设备状态信息 = {}", devStatusRespDTO);
 		DeviceStateInfoEntity devStateInfo = this.buildDevStateInfo(devStatusRespDTO, existedDevState, devStatusReportResp);
 		if (ValidateUtils.isEmpty(existedDevState)) {
 			devStateInfo.setDeviceStateInfo(devStateInfo.getDeviceId() + "STATE");
@@ -174,6 +173,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 	}
 
 	private void processMakeTeaByChapu(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
+		log.info("从 redis 中取设备状态信息 = {}, 设备状态表的茶谱ID = {}", devStatusRespDTO, devStateInfo.getChapuId());
 		if (ValidateUtils.equals(devStateInfo.getMakeTeaByChapuFlag(), Constant.MakeTeaType.TEA_SPECTRUM)) {
 			log.info("设备还在茶谱沏茶中");
 			if (ValidateUtils.equals(DeviceConstant.WorkStatus.IDLE, devStatusRespDTO.getWork())) {
@@ -187,20 +187,7 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			// 3，当设备上报状态workstatus​为1（沏茶）时，若同时上报了茶谱ID，则显示上报的这个茶谱ID的茶谱沏茶。
 			if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(devStateInfo.getChapuId(), devStatusRespDTO.getChapuId())) {
 				log.info("更换茶谱，旧茶谱ID = {}, 新茶谱ID = {}", devStateInfo.getChapuId(), devStatusRespDTO.getChapuId());
-				AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusRespDTO.getChapuId());
-				if (ValidateUtils.isEmpty(teaSpectrum)) {
-					log.error("茶谱[{}]不存在！", devStatusRespDTO.getChapuId());
-				} else {
-					devStateInfo.setChapuId(teaSpectrum.getChapuId());
-					devStateInfo.setChapuName(teaSpectrum.getName());
-					devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
-					devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
-					devStateInfo.setIndex(devStatusRespDTO.getIndex());
-					devStatusRespDTO.setChapuId(teaSpectrum.getChapuId());
-					devStatusRespDTO.setChapuName(devStateInfo.getChapuName());
-					devStatusRespDTO.setChapuImage(devStateInfo.getChapuImage());
-					devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
-				}
+				this.plusChapuInfo(devStatusRespDTO, devStateInfo);
 			} else if (ValidateUtils.equals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId())) {
 				log.info("上报的茶谱ID为0，需要结束茶谱");
 				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
@@ -218,9 +205,32 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		}
 		// 上报的茶谱ID为0，但设备状态中的茶谱ID不为0，则需要设置上报茶谱ID为设备状态中的茶谱ID
 		if (ValidateUtils.equals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStateInfo.getChapuId())) {
+			log.info("设置 devStatusRespDTO 茶谱ID = {}", devStateInfo.getChapuId());
 			devStatusRespDTO.setChapuId(devStateInfo.getChapuId());
 		}
+		// 缓存里的设备状态茶谱ID不为空且不等于0且茶谱名称为空,则需要补充茶谱信息
+		if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId()) && ValidateUtils.isEmptyString(devStatusRespDTO.getChapuName())) {
+			log.info("补充茶谱信息, 茶谱ID = {}", devStatusRespDTO.getChapuId());
+			this.plusChapuInfo(devStatusRespDTO, devStateInfo);
+		}
 		devStateInfo.setWork(devStatusRespDTO.getWork());
+	}
+
+	private void plusChapuInfo(DevStatusRespDTO devStatusRespDTO, DeviceStateInfoEntity devStateInfo) {
+		AppChapuEntity teaSpectrum = this.chapuService.queryObject(devStatusRespDTO.getChapuId());
+		if (ValidateUtils.isEmpty(teaSpectrum)) {
+            log.error("茶谱[{}]不存在！", devStatusRespDTO.getChapuId());
+        } else {
+            devStateInfo.setChapuId(teaSpectrum.getChapuId());
+            devStateInfo.setChapuName(teaSpectrum.getName());
+            devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+            devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+            devStateInfo.setIndex(devStatusRespDTO.getIndex());
+            devStatusRespDTO.setChapuId(teaSpectrum.getChapuId());
+            devStatusRespDTO.setChapuName(devStateInfo.getChapuName());
+            devStatusRespDTO.setChapuImage(devStateInfo.getChapuImage());
+            devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
+        }
 	}
 
 	@Override

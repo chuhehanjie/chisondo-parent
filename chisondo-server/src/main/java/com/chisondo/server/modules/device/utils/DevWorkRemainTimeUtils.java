@@ -10,6 +10,9 @@ import com.chisondo.server.common.utils.SpringContextUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.entity.DeviceStateInfoEntity;
 import com.chisondo.server.modules.device.service.DeviceStateInfoService;
+import com.chisondo.server.modules.tea.constant.TeaSpectrumConstant;
+import com.chisondo.server.modules.tea.entity.AppChapuEntity;
+import com.chisondo.server.modules.tea.service.AppChapuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
@@ -37,7 +40,7 @@ public final class DevWorkRemainTimeUtils {
         }
         DeviceStateInfoEntity devStateInfo = CommonUtils.convert2DevStatusEntity(deviceHttpResp, deviceId);
         DevStatusRespDTO devStatusRespDTO = getRedisUtils().get(deviceHttpResp.getDeviceID(), DevStatusRespDTO.class);
-        updateDevState2Redis(devStatusRespDTO, deviceHttpResp);
+        updateDevState2Redis(devStatusRespDTO, deviceHttpResp, devStateInfo);
         if (hasWorkRemainTime(devStatusRespDTO)) {
             asyncProcessWorkRemainTime(devStatusRespDTO, devStateInfo);
         } else {
@@ -46,14 +49,25 @@ public final class DevWorkRemainTimeUtils {
         }
     }
 
-    private static void updateDevState2Redis(DevStatusRespDTO devStatusRespDTO, DeviceHttpResp deviceHttpResp) {
+    private static void updateDevState2Redis(DevStatusRespDTO devStatusRespDTO, DeviceHttpResp deviceHttpResp, DeviceStateInfoEntity devStateInfo) {
         DeviceMsgResp devMsg = deviceHttpResp.getMsg();
         if (null != devMsg.getTemperature()) {
             devStatusRespDTO.setTemp(devMsg.getTemperature());
             devStatusRespDTO.setMakeTemp(devMsg.getTemperature());
         }
-        if (null != devMsg.getChapuId()) {
-            devStatusRespDTO.setChapuId(devMsg.getChapuId());
+        if (ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devMsg.getChapuId()) && ValidateUtils.notEquals(devStatusRespDTO.getChapuId(), devMsg.getChapuId())) {
+            AppChapuEntity teaSpectrum = getAppChapuService().queryObject(devMsg.getChapuId());
+            if (ValidateUtils.isNotEmpty(teaSpectrum)) {
+                devStateInfo.setChapuId(teaSpectrum.getChapuId());
+                devStateInfo.setChapuName(teaSpectrum.getName());
+                devStateInfo.setChapuImage(CommonUtils.plusFullImgPath(teaSpectrum.getImage()));
+                devStateInfo.setChapuMakeTimes(teaSpectrum.getMakeTimes());
+                devStateInfo.setIndex(devStatusRespDTO.getIndex());
+                devStatusRespDTO.setChapuId(teaSpectrum.getChapuId());
+                devStatusRespDTO.setChapuName(devStateInfo.getChapuName());
+                devStatusRespDTO.setChapuImage(devStateInfo.getChapuImage());
+                devStatusRespDTO.setChapuMakeTimes(devStateInfo.getChapuMakeTimes());
+            }
         }
         if (null != devMsg.getStep()) {
             devStatusRespDTO.setIndex(devMsg.getStep());
@@ -70,8 +84,8 @@ public final class DevWorkRemainTimeUtils {
         if (null != devMsg.getSoak()) {
             devStatusRespDTO.setMakeDura(devMsg.getSoak());
         }
-        // 需要将 remain 时间多加 2 秒，因为设备已经在倒计时了，而服务端会有延时
-        devStatusRespDTO.setReamin(ValidateUtils.isEmpty(devMsg.getRemaintime()) ? null : (devMsg.getRemaintime() > 0 ? devMsg.getRemaintime() + 1 : 0));
+        // 需要将 remain 时间多加 1 秒，因为设备已经在倒计时了，而服务端会有延时
+        devStatusRespDTO.setReamin(ValidateUtils.isEmpty(devMsg.getRemaintime()) ? null : (devMsg.getRemaintime() > 0 ? devMsg.getRemaintime() + DeviceConstant.PLUS_REMAIN : 0));
         devStatusRespDTO.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusRespDTO.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusRespDTO.setWork(devMsg.getWorkstatus());
@@ -140,5 +154,9 @@ public final class DevWorkRemainTimeUtils {
 
     private static DeviceStateInfoService getDevStateInfoService() {
         return (DeviceStateInfoService) SpringContextUtils.getBean("deviceStateInfoService");
+    }
+
+    private static AppChapuService getAppChapuService() {
+        return (AppChapuService) SpringContextUtils.getBean("appChapuService");
     }
 }
