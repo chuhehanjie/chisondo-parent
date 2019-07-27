@@ -21,6 +21,8 @@ public class Keys {
 
     public static final String AUTH_FLAG = "AUTH_FLAG";
 
+    public static final String DEV_CONCURRENT_INTERVAL = "DEV_CONCURRENT_INTERVAL";
+
     public static final String AUTH_RULE = "AUTH_RULE";
 
     public static final String ACCKEY = "acckey";
@@ -81,4 +83,6 @@ public class Keys {
     public static final String PREFIX_NEW_DEVICE = "NEW_DEVICE_";
 
     public static final String PREFIX_TEA_SPECTRUM = "TEA_SPECTRUM_";
+
+    public static final String PREFIX_DEV_CONCURRENT = "DEV_CONCURRENT_";
 }

@@ -5,6 +5,7 @@ import com.chisondo.model.http.req.QryDeviceInfoHttpReq;
 import com.chisondo.model.http.resp.DevSettingHttpResp;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.model.http.resp.TeaSpectrumMsgResp;
+import com.chisondo.server.common.annotation.DevConcurrentOperation;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
@@ -62,6 +63,7 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 	 * @return
 	 */
 	@Override
+	@DevConcurrentOperation
 	public CommonResp queryDevSettingInfo(CommonReq req) {
 		ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
 

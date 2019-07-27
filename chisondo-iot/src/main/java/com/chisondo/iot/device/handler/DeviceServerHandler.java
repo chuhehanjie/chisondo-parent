@@ -183,6 +183,11 @@ public class DeviceServerHandler extends SimpleChannelInboundHandler<Object> { /
             devStatusRespDTO.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
             devStatusRespDTO.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
             devStatusRespDTO.setWork(devMsg.getWorkstatus());
+            // 如果是启动按键,则需要设备当前剩余时间
+            if (ObjectUtils.nullSafeEquals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, devStatusRespDTO.getActionFlag())) {
+                log.info("启动了按键,当前设备[{}]剩余时间 = {}", deviceId, devStatusRespDTO.getReamin());
+                devStatusRespDTO.setCurRemainTime(devStatusRespDTO.getReamin());
+            }
         }
         this.redisUtils.set(devStatusRespDTO.getDeviceId(), devStatusRespDTO);
     }

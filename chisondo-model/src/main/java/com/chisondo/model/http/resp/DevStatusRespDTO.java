@@ -48,6 +48,12 @@ public class DevStatusRespDTO implements Serializable {
      */
     private boolean isStopAction;
 
+
+    /**
+     * 当前剩余
+     */
+    private Integer curRemainTime;
+
     public Integer getConnStatus() {
         return connStatus;
     }
@@ -262,6 +268,14 @@ public class DevStatusRespDTO implements Serializable {
 
     public void setStopAction(boolean stopAction) {
         this.isStopAction = stopAction;
+    }
+
+    public Integer getCurRemainTime() {
+        return curRemainTime;
+    }
+
+    public void setCurRemainTime(Integer curRemainTime) {
+        this.curRemainTime = curRemainTime;
     }
 
     @Override

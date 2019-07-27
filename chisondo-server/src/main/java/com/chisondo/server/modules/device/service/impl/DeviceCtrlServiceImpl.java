@@ -6,6 +6,7 @@ import com.chisondo.model.http.req.*;
 import com.chisondo.model.http.resp.DevParamMsg;
 import com.chisondo.model.http.resp.DevStatusRespDTO;
 import com.chisondo.model.http.resp.DeviceHttpResp;
+import com.chisondo.server.common.annotation.DevConcurrentOperation;
 import com.chisondo.server.common.exception.CommonException;
 import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
@@ -86,6 +87,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	private RedisUtils redisUtils;
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp startOrReserveMakeTea(CommonReq req) {
 		StartOrReserveMakeTeaReqDTO startOrReserveTeaReq = (StartOrReserveMakeTeaReqDTO) req.getAttrByKey(Keys.REQ);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
@@ -254,6 +256,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp washTea(CommonReq req) {
 		/**
 		 * isSave
@@ -289,6 +292,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp boilWater(CommonReq req) {
 		/**
 		 * 0-执行烧水功能 1-执行烧水并修改液晶屏烧水按钮参数 2-只修改液晶屏烧水按钮参数，不执行烧水操作（为空则默认：0）
@@ -321,6 +325,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp stopWorking(CommonReq req) {
 		StopWorkReqDTO stopWorkReq = (StopWorkReqDTO) req.getAttrByKey(Keys.REQ);
 		String deviceId = stopWorkReq.getDeviceId();
@@ -359,6 +364,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp makeTeaByTeaSpectrum(CommonReq req) {
 		UseTeaSpectrumReqDTO useTeaSpectrumReq = (UseTeaSpectrumReqDTO) req.getAttrByKey(Keys.REQ);
 		UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
@@ -483,6 +489,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp keepWarmCtrl(CommonReq req) {
 		/*
 		  ①、终端控制指令包括：保温控制；
@@ -535,6 +542,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp setDeviceSound(CommonReq req) {
 		SetDevSoundReqDTO setDevSoundReq = JSONObject.parseObject(req.getBizBody(), SetDevSoundReqDTO.class);
 		SetDevOtherParamHttpReq devHttpReq = new SetDevOtherParamHttpReq();
@@ -575,6 +583,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	 * @return
 	 */
     @Override
+	@DevConcurrentOperation
     public CommonResp changeDevTeaSpectrum(CommonReq req) {
 	    ChgDevTeaSpectrumReqDTO chgDevTeaSpectrumReq = JSONObject.parseObject(req.getBizBody(), ChgDevTeaSpectrumReqDTO.class);
         AppChapuEntity teaSpectrum = (AppChapuEntity) req.getAttrByKey(Keys.TEA_SPECTRUM_INFO);
@@ -682,6 +691,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp lockOrUnlockDev(CommonReq req) {
 		String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
 		JSONObject jsonObj = (JSONObject) req.getAttrByKey(Keys.REQ);
@@ -697,6 +707,7 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 	}
 
 	@Override
+	@DevConcurrentOperation
 	public CommonResp devUpgrade(CommonReq req) {
 		DevUpgradeReqDTO devUpgradeReqDTO = (DevUpgradeReqDTO) req.getAttrByKey(Keys.REQ);
 		DevUpgradeHttpReq devHttpReq = this.buildDevUpgradeHttpReq(devUpgradeReqDTO);

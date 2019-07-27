@@ -101,7 +101,6 @@ public final class DevWorkRemainTimeUtils {
         ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(2,
                 new BasicThreadFactory.Builder().namingPattern("scheduled-pool2-%d").daemon(true).build());
         scheduledExecutorService.execute(() -> {
-            boolean stopChapuFlag = true;
             boolean onceOnly = true;
             int remainTime = devStatusRespDTO.getReamin() - 1;
             String deviceId = devStatusRespDTO.getDeviceId();
@@ -115,9 +114,9 @@ public final class DevWorkRemainTimeUtils {
                         break;
                     }
                     // actionFlag 为 4 时，表示结束茶谱，此时倒计时时间以传入的为准
-                    if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, tempDevStatusResp.getActionFlag()) && stopChapuFlag) {
-                        i = tempDevStatusResp.getReamin();
-                        stopChapuFlag = false;
+                    if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, tempDevStatusResp.getActionFlag()) && ValidateUtils.isNotEmpty(tempDevStatusResp.getCurRemainTime())) {
+                        i = tempDevStatusResp.getCurRemainTime();
+                        tempDevStatusResp.setCurRemainTime(null);
                         log.info("启动按键了， remain = {}", i);
                     }
                     if (tempDevStatusResp.isStopAction() && onceOnly) {
