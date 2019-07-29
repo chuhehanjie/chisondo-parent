@@ -370,4 +370,8 @@
 		UPDATE tb_device_state_info set connect_state = #{connectState} WHERE device_id = #{deviceId}
 	</update>
 
+	<update id="deleteChapuInfo" parameterType="java.lang.String">
+		UPDATE tb_device_state_info set chapu_id = null, chapu_name = null, chapu_image = null, chapu_make_times = null where device_id = #{deviceId}
+	</update>
+
 </mapper>

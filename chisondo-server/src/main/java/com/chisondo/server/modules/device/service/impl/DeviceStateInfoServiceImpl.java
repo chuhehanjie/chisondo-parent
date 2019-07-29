@@ -185,18 +185,21 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		}
 		if (ValidateUtils.equals(DeviceConstant.WorkStatus.MAKING_TEA, devStatusRespDTO.getWork())) {
 			// 3，当设备上报状态workstatus​为1（沏茶）时，若同时上报了茶谱ID，则显示上报的这个茶谱ID的茶谱沏茶。
-			if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(devStateInfo.getChapuId(), devStatusRespDTO.getChapuId())) {
+			if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId())
+					&& ValidateUtils.notEquals(devStateInfo.getChapuId(), devStatusRespDTO.getChapuId())) {
 				log.info("更换茶谱，旧茶谱ID = {}, 新茶谱ID = {}", devStateInfo.getChapuId(), devStatusRespDTO.getChapuId());
 				this.plusChapuInfo(devStatusRespDTO, devStateInfo);
 			} else if (ValidateUtils.equals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId())) {
 				log.info("上报的茶谱ID为0，需要结束茶谱");
 				// 4，​当设备上报状态workstatus​为1（沏茶）时，若同时上报的茶谱ID为0，则结束茶谱沏茶，返回普通沏茶状态。
 				CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+				this.deleteChapuInfo(devStateInfo.getDeviceId());
 			}
 		} else if (ValidateUtils.equals(DeviceConstant.WorkStatus.BOILING_WATER, devStatusRespDTO.getWork())) {
 			log.info("烧水操作，需要结束茶谱");
 			// 2，当设备上报状态workstatus​为3（烧水）时，结束茶谱沏茶，返回普通沏茶。
 			CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+			this.deleteChapuInfo(devStateInfo.getDeviceId());
 		}
 		// 设备启动按键 需要设置 makeType 为茶谱沏茶
 		if (ValidateUtils.equals(DeviceConstant.DevReportActionFlag.ENABLE_BUTTON, devStatusRespDTO.getActionFlag())) {
@@ -209,7 +212,8 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 			devStatusRespDTO.setChapuId(devStateInfo.getChapuId());
 		}
 		// 缓存里的设备状态茶谱ID不为空且不等于0且茶谱名称为空,则需要补充茶谱信息
-		if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) && ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId()) && ValidateUtils.isEmptyString(devStatusRespDTO.getChapuName())) {
+		if (ValidateUtils.isNotEmpty(devStatusRespDTO.getChapuId()) &&
+				ValidateUtils.notEquals(TeaSpectrumConstant.EMPTY_TEA_SPECTRUM, devStatusRespDTO.getChapuId()) && ValidateUtils.isEmptyString(devStatusRespDTO.getChapuName())) {
 			log.info("补充茶谱信息, 茶谱ID = {}", devStatusRespDTO.getChapuId());
 			this.plusChapuInfo(devStatusRespDTO, devStateInfo);
 		}
@@ -294,5 +298,10 @@ public class DeviceStateInfoServiceImpl implements DeviceStateInfoService {
 		deviceState.setDeviceId(deviceId);
 		deviceState.setConnectState(connectState);
 		this.deviceStateInfoDao.updateConnectState(deviceState);
+	}
+
+	@Override
+	public void deleteChapuInfo(String deviceId) {
+		this.deviceStateInfoDao.deleteChapuInfo(deviceId);
 	}
 }

@@ -484,8 +484,9 @@ public class DeviceCtrlServiceImpl implements DeviceCtrlService {
 		DevStatusRespDTO devStatusRespDTO = this.redisUtils.get(newDeviceId, DevStatusRespDTO.class);
 		DeviceStateInfoEntity devStateInfo = this.deviceStateInfoService.queryObject(deviceId);
 		CommonUtils.set2NormalMakeTea(devStatusRespDTO, devStateInfo);
+		this.deviceStateInfoService.deleteChapuInfo(devStateInfo.getDeviceId());
 		this.redisUtils.set(newDeviceId, devStatusRespDTO);
-		this.deviceStateInfoService.update(devStateInfo);
+		log.error("取消使用茶谱沏茶了, 茶谱ID = {}", devStateInfo.getChapuId());
 	}
 
 	@Override

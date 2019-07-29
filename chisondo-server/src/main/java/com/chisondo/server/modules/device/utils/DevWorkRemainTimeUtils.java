@@ -89,6 +89,8 @@ public final class DevWorkRemainTimeUtils {
         devStatusRespDTO.setTea(2 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusRespDTO.setWater(1 == devMsg.getErrorstatus() ? 1 : 0);
         devStatusRespDTO.setWork(devMsg.getWorkstatus());
+        // 程序下发指令时,需要设置 actionFlag 为心跳
+        devStatusRespDTO.setActionFlag(DeviceConstant.DevReportActionFlag.HEART_BEAT);
     }
 
     /**

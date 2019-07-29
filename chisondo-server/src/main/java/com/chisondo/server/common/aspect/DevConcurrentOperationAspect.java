@@ -9,7 +9,6 @@ import com.chisondo.server.common.utils.RedisUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +41,10 @@ public class DevConcurrentOperationAspect {
         return Keys.PREFIX_DEV_CONCURRENT + newDeviceId;
     }
 
-    @After("@annotation(devConcurrentOperation)")
+    /*@After("@annotation(devConcurrentOperation)")
     public void after(JoinPoint joinPoint, DevConcurrentOperation devConcurrentOperation) {
         String key = this.getKey(joinPoint.getArgs()[0]);
         this.redisUtils.delete(key);
         log.error("清除设备[{}]并发操作", key);
-    }
+    }*/
 }

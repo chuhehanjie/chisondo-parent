@@ -19,4 +19,6 @@ public interface DeviceStateInfoDao extends BaseDao<DeviceStateInfoEntity> {
     void setDevChapu2Finish(Map<String, Object> params);
 
     void updateConnectState(DeviceStateInfoEntity deviceState);
+
+    void deleteChapuInfo(String deviceId);
 }

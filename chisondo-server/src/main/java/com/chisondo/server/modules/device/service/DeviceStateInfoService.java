@@ -41,4 +41,6 @@ public interface DeviceStateInfoService {
     void save2(DevStatusReportResp devStatusReportResp, DeviceStateInfoEntity deviceStateInfo);
 
     void updateConnectState(String deviceId, int connectState);
+
+    void deleteChapuInfo(String deviceId);
 }

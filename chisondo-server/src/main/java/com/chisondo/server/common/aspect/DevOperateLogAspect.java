@@ -7,6 +7,7 @@ import com.chisondo.server.common.http.CommonReq;
 import com.chisondo.server.common.http.CommonResp;
 import com.chisondo.server.common.utils.Constant;
 import com.chisondo.server.common.utils.Keys;
+import com.chisondo.server.common.utils.RedisUtils;
 import com.chisondo.server.common.utils.ValidateUtils;
 import com.chisondo.server.modules.device.entity.ActivedDeviceInfoEntity;
 import com.chisondo.server.modules.device.entity.DeviceOperateLogEntity;
@@ -42,6 +43,9 @@ public class DevOperateLogAspect {
 	@Autowired
 	private DeviceOperateLogService devOperateLogService;
 
+	@Autowired
+	private RedisUtils redisUtils;
+
 	@Pointcut("@annotation(com.chisondo.server.common.annotation.DevOperateLog)")
 	public void devOperateLogPointcut() {
 		
@@ -68,7 +72,11 @@ public class DevOperateLogAspect {
 				//保存设备操作日志
 				this.saveDevOperateLog(point, result, devOperateLog);
 			}
+			String key = Keys.PREFIX_DEV_CONCURRENT + devOperateLog.getDeviceId();
+			this.redisUtils.delete(key);
+			log.info("清除设备[{}]并发操作", key);
 		}
+
 		log.error("执行业务方法 [{}] 共耗时 {} 毫秒", method.getName() , callTime);
 		return result;
 	}
@@ -97,8 +105,8 @@ public class DevOperateLogAspect {
 			CommonReq req = (CommonReq) joinPoint.getArgs()[0];
 			CommonResp resp = (CommonResp) result;
 			UserVipEntity user = (UserVipEntity) req.getAttrByKey(Keys.USER_INFO);
-			ActivedDeviceInfoEntity deviceInfo = (ActivedDeviceInfoEntity) req.getAttrByKey(Keys.DEVICE_INFO);
-			devOperateLog.setDeviceId(ValidateUtils.isEmpty(deviceInfo) ? "" : deviceInfo.getDeviceId().toString());
+			String newDeviceId = (String) req.getAttrByKey(Keys.NEW_DEVICE_ID);
+			devOperateLog.setDeviceId(newDeviceId);
 			devOperateLog.setTeamanId(ValidateUtils.isEmpty(user) ? "" : user.getMemberId() + "");
 			devOperateLog.setUserMobileNo(ValidateUtils.isEmpty(user) ? "" :user.getPhone());
 			devOperateLog.setOperType(0); // TODO 操作类型未定义
