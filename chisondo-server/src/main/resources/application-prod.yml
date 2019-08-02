@@ -1,6 +1,6 @@
 chisondo:
   server:
-    http2DevURL: http://127.0.0.1:8099/
+    http2DevURL: http://172.18.2.226:8099/
 #    oldDevReqURL: http://entrypoint.teamanworld.com:9090/TeamanAccServ/wxaccess?api=
 spring:
   redis:

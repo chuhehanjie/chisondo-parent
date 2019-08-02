@@ -34,4 +34,4 @@ chisondo:
 chris:
   interface:
     url:
-      appHttpURL: http://127.0.0.1:8086/
+      appHttpURL: http://172.18.2.225:8186/
