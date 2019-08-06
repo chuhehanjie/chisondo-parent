@@ -112,10 +112,10 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
 			}
 			devSettingResp.setChapuInfo(chapuList);
 		}
+		devSettingResp.setVersion(httpResp.getVersion());
 		String v = CacheDataUtils.getConfigValueByKey("COMPANY_VERSION_" + HttpContextUtils.getHttpServletRequest().getHeader(Keys.REQSRC));
 		if (ValidateUtils.isNotEmptyString(v)) {
 			JSONObject jsonObject = JSONObject.parseObject(v);
-			devSettingResp.setVersion(jsonObject.getString("version"));
 			devSettingResp.setNewversion(jsonObject.getString("newversion"));
 			devSettingResp.setCompanyCode(jsonObject.getString("companyCode"));
 			devSettingResp.setStandyServer(jsonObject.getString("standyServer"));

@@ -15,6 +15,8 @@ public class DevSettingHttpResp extends CommonHttpResp {
 
     private List<TeaSpectrumMsgResp> chapumsg;
 
+    private String version;
+
     public DevSettingHttpResp(int retn, String desc) {
         super(retn, desc);
     }
@@ -69,5 +71,13 @@ public class DevSettingHttpResp extends CommonHttpResp {
 
     public void setChapumsg(List<TeaSpectrumMsgResp> chapumsg) {
         this.chapumsg = chapumsg;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
