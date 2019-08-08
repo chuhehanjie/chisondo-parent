@@ -85,7 +85,8 @@ public class DeviceStatusReportController extends AbstractController {
 		DeviceStateInfoEntity deviceStateInfo = new DeviceStateInfoEntity();
 		deviceStateInfo.setDeviceId(deviceInfo.getDeviceId());
 		deviceStateInfo.setOnlineState(Constant.OnlineState.YES);
-		deviceStateInfo.setDeviceStateInfo("TEST10086"); // TODO 待确认 设备状态信息值先写死
+		// 设备ID + S + 新设备ID前15位
+		deviceStateInfo.setDeviceStateInfo(deviceInfo.getDeviceId() + "S" + (deviceInfo.getNewDeviceId().length() > 14 ? deviceInfo.getNewDeviceId().substring(0, 14) : deviceInfo.getNewDeviceId()));
 		deviceStateInfo.setConnectState(Constant.ConnectState.CONNECTED);
 		deviceStateInfo.setUpdateTime(DateUtils.currentDate());
 		deviceStateInfo.setLastValTime(devStatusReportResp.getTcpValTime());
