@@ -21,6 +21,7 @@
         <result property="volFlag" column="vol_flag"/>
         <result property="gmsFlag" column="gms_flag"/>
 		<result property="newDeviceId" column="new_device_id"/>
+		<result property="simNumber" column="sim_number"/>
     </resultMap>
 
 	<sql id="queryDevInfoOfUser">
@@ -195,7 +196,8 @@
 			`company_id`, 
 			`vol_flag`, 
 			`gms_flag`,
-			`new_device_id`
+			`new_device_id`,
+			`sim_number`
 		)
 		values
 		(
@@ -214,7 +216,8 @@
 			#{companyId}, 
 			#{volFlag}, 
 			#{gmsFlag},
-			#{newDeviceId}
+			#{newDeviceId},
+			#{simNumber}
 		)
 	</insert>
 	 
@@ -236,6 +239,7 @@
 			<if test="volFlag != null">`vol_flag` = #{volFlag}, </if>
 			<if test="newDeviceId != null">`new_device_id` = #{newDeviceId}, </if>
 			<if test="gmsFlag != null">`gms_flag` = #{gmsFlag}</if>
+			<if test="simNumber != null">`sim_number` = #{simNumber}</if>
 		</set>
 		where device_id = #{deviceId}
 	</update>

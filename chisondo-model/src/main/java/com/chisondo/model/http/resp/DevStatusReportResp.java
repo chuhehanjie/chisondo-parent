@@ -33,6 +33,8 @@ public class DevStatusReportResp extends CommonHttpResp {
 
     private String dbDeviceId;
 
+    private String simnumber;
+
     public String getAction() {
         return action;
     }
@@ -87,5 +89,13 @@ public class DevStatusReportResp extends CommonHttpResp {
 
     public void setDbDeviceId(String dbDeviceId) {
         this.dbDeviceId = dbDeviceId;
+    }
+
+    public String getSimnumber() {
+        return simnumber;
+    }
+
+    public void setSimnumber(String simnumber) {
+        this.simnumber = simnumber;
     }
 }

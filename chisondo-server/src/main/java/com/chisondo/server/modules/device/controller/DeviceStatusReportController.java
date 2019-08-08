@@ -138,6 +138,7 @@ public class DeviceStatusReportController extends AbstractController {
 		deviceInfo.setCompanyId(-1);
 		deviceInfo.setVolFlag(null);
 		deviceInfo.setGmsFlag(null);
+		deviceInfo.setSimNumber(devStatusReportResp.getSimnumber());
 		deviceInfoService.save(deviceInfo);
 		return deviceInfo;
 	}

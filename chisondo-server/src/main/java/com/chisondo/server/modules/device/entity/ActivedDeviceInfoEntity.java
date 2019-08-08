@@ -50,6 +50,11 @@ public class ActivedDeviceInfoEntity  implements Serializable {
 	 */
 	private String newDeviceId;
 
+	/**
+	 * SIM 卡号
+	 */
+	private String simNumber;
+
 	public String getDeviceId() {
 		return deviceId;
 	}
@@ -163,5 +168,13 @@ public class ActivedDeviceInfoEntity  implements Serializable {
 
 	public void setNewDeviceId(String newDeviceId) {
 		this.newDeviceId = newDeviceId;
+	}
+
+	public String getSimNumber() {
+		return simNumber;
+	}
+
+	public void setSimNumber(String simNumber) {
+		this.simNumber = simNumber;
 	}
 }
